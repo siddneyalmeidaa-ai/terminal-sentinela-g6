@@ -2,41 +2,110 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>S.A. V1250 - SUPREMACIA NASA</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TERMINAL SN-V1280 - SUPREMACIA DATA</title>
     <style>
-        :root { --dark: #000; --gold: #D4AF37; --pink: #ff00ff; --nasa: #0b3d91; --cyan: #00f3ff; --red: #ff1744; --green: #00e676; --purple: #a020f0; }
-        body { background: var(--dark); color: white; font-family: 'Arial Black', sans-serif; margin: 0; padding: 10px; text-align: center; }
-        .master-container { border: 2px solid var(--nasa); border-radius: 40px; padding: 20px; background: radial-gradient(circle at top, #0b3d9122, #000); box-shadow: 0 0 40px var(--nasa); max-width: 450px; margin: auto; }
-        .radar-box { width: 100px; height: 100px; border: 3px solid var(--pink); border-radius: 50%; margin: 0 auto 15px; position: relative; overflow: hidden; box-shadow: 0 0 20px var(--pink); }
-        .radar-sweep { width: 100%; height: 100%; background: conic-gradient(from 0deg, transparent, var(--pink)); animation: rotate 2s linear infinite; opacity: 0.3; }
-        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        .painel-voo { background: rgba(0, 243, 255, 0.03); border: 1.5px solid var(--cyan); border-radius: 25px; padding: 20px; margin-bottom: 15px; }
-        #percentual { font-size: 4em; color: var(--cyan); display: block; text-shadow: 0 0 15px var(--cyan); }
-        .btn-ignicao { background: var(--pink); color: #fff; padding: 20px; border-radius: 20px; font-size: 1.3em; font-weight: 900; width: 100%; border: none; cursor: pointer; box-shadow: 0 0 25px var(--pink); text-transform: uppercase; }
-        #histLog { background: rgba(0,0,0,0.6); border-radius: 15px; padding: 12px; text-align: left; max-height: 120px; overflow-y: auto; margin-top: 10px; font-family: monospace; font-size: 9px; }
+        :root { --neon-green: #00ff00; --alert-red: #ff0000; --nasa-blue: #0b3d91; --gold: #D4AF37; }
+        body { background: #000; color: var(--neon-green); font-family: 'Courier New', monospace; padding: 15px; font-size: 11px; margin: 0; }
+        .header { border-bottom: 1px solid #333; padding-bottom: 5px; margin-bottom: 15px; display: flex; justify-content: space-between; font-size: 10px; }
+        .data-panel { border: 1px solid #222; padding: 10px; margin-bottom: 15px; background: rgba(0, 20, 0, 0.5); }
+        .grid-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .stat-label { color: var(--gold); display: block; margin-bottom: 5px; }
+        .stat-value { font-size: 18px; font-weight: bold; }
+        .vácuo { color: var(--alert-red); animation: blink 1s infinite; }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #222; padding: 6px; text-align: left; }
+        .btn-attack { background: var(--alert-red); color: #fff; border: none; padding: 15px; width: 100%; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 10px; box-shadow: 0 0 15px rgba(255,0,0,0.4); }
+        #log-terminal { background: #050505; border: 1px solid #111; height: 100px; overflow-y: auto; padding: 10px; font-size: 9px; margin-top: 10px; color: #888; }
     </style>
 </head>
 <body>
-    <div class="master-container">
-        <div style="font-size:9px; color:var(--nasa); margin-bottom:10px;">OWNER: SIDNEY (SN) // IPI ATIVO</div>
-        <div class="radar-box"><div class="radar-sweep"></div></div>
-        <div class="painel-voo">
-            <span id="percentual">PENDENTE</span>
-            <div id="status" style="font-size:11px; color:var(--gold); margin-top:10px;">IA-SENTINELA AGUARDANDO</div>
-        </div>
-        <button class="btn-ignicao" onclick="disparar()">IGNIÇÃO FANTASMA 🔱</button>
-        <div id="histLog"></div>
+    <div class="header">
+        <span>OPERADOR: SN // IPI: 10%</span>
+        <span id="clock">00:00:00</span>
     </div>
+
+    <div class="data-panel">
+        <span class="stat-label">MONITOR DE LEILÃO (CLIQUES)</span>
+        <div class="grid-stats">
+            <div>MEUS: <span id="myClicks" style="color:var(--neon-green)">0</span></div>
+            <div style="color:var(--alert-red)">CONCORRENTES: <span id="enemyClicks">0</span></div>
+        </div>
+    </div>
+
+    <div class="data-panel">
+        <span class="stat-label">IA-SENTINELA: STATUS DE VÁCUO</span>
+        <div id="vacuumStatus" style="font-size: 14px;">ESCANEANDO...</div>
+    </div>
+
+    <div class="data-panel">
+        <span class="stat-label">DRENAGEM DE GOOGLE ADS (DATA-STREAM)</span>
+        <table>
+            <thead><tr><th>Termo</th><th>CPC</th><th>Stake (-50%)</th></tr></thead>
+            <tbody id="keywordTable"></tbody>
+        </table>
+    </div>
+
+    <button class="btn-attack" onclick="ativarDrenoFracionado()">ATIVAR DRENO FRACIONADO 🔱</button>
+    <div id="log-terminal"></div>
+
     <script>
-        function disparar() {
-            document.getElementById('status').innerText = "CALCULANDO PROJEÇÃO (-50%)...";
-            setTimeout(() => {
-                document.getElementById('percentual').innerText = "96%";
-                document.getElementById('status').innerText = "LUCRO LIBERADO";
-                document.getElementById('histLog').innerHTML = `> STAKE: 1 REAL [${new Date().toLocaleTimeString()}]<br>` + document.getElementById('histLog').innerHTML;
-            }, 1000);
+        let drenoAtivo = false;
+
+        function addLog(msg, color = "#888") {
+            const log = document.getElementById('log-terminal');
+            log.innerHTML = `<div style="color:${color}">> [${new Date().toLocaleTimeString()}] ${msg}</div>` + log.innerHTML;
         }
+
+        function updateStats() {
+            const my = Math.floor(Math.random() * 50 + 120);
+            const enemy = Math.floor(Math.random() * 80 + 30);
+            document.getElementById('myClicks').innerText = my;
+            document.getElementById('enemyClicks').innerText = enemy;
+            
+            // IA-Sentinela monitorando vácuo (1.00x)
+            if(enemy > 90) {
+                document.getElementById('vacuumStatus').innerHTML = "<span class='vácuo'>VÁCUO DETECTADO! PULA!</span>";
+                addLog("VÁCUO IDENTIFICADO PELA IA-SENTINELA", "red");
+            } else {
+                document.getElementById('vacuumStatus').innerText = "ESTÁVEL (LIBERADO)";
+            }
+
+            const keywords = [
+                {t: 'depósito pix', c: '0.45', s: '20 centavos'},
+                {t: 'cadastro rápido', c: '0.12', s: '10 centavos'},
+                {t: 'login oficial', c: '1.20', s: '1 Real'}
+            ];
+            let html = '';
+            keywords.forEach(k => {
+                html += `<tr><td>${k.t}</td><td>R$ ${k.c}</td><td style="color:var(--gold)">${k.s}</td></tr>`;
+            });
+            document.getElementById('keywordTable').innerHTML = html;
+        }
+
+        function ativarDrenoFracionado() {
+            if(drenoAtivo) return;
+            drenoAtivo = true;
+            addLog("MODO DRENAGEM FRACIONADA ATIVADO.", "var(--neon-green)");
+            executarCicloHumano();
+        }
+
+        function executarCicloHumano() {
+            // Fracionamento: Espera entre 30s e 4min para mimetizar comportamento normal
+            let delay = Math.floor(Math.random() * (240000 - 30000) + 30000);
+            addLog(`FRACIONAMENTO: PRÓXIMO CLIQUE EM ${(delay/1000).toFixed(0)}s`, "var(--gold)");
+            
+            setTimeout(() => {
+                addLog("SIMULANDO SCROLL E CLIQUE NO ADVERSÁRIO...", "cyan");
+                // Aqui o script simula a interação com o link do concorrente
+                executarCicloHumano(); 
+            }, delay);
+        }
+
+        setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }, 1000);
+        setInterval(updateStats, 5000);
+        updateStats();
     </script>
 </body>
 </html>
