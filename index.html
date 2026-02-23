@@ -3,49 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TERMINAL SN-V1280 - DATA STREAM OURO/LIXO</title>
+    <title>TERMINAL SN-V1280 - ENGENHARIA CIVIL DATA</title>
     <style>
-        :root { --neon-green: #00ff00; --alert-red: #ff0000; --gold: #D4AF37; --cyan: #00f3ff; }
-        body { background: #000; color: var(--neon-green); font-family: 'Courier New', monospace; padding: 15px; font-size: 11px; margin: 0; }
+        :root { --neon-green: #00ff00; --alert-red: #ff0000; --gold: #D4AF37; --cyan: #00f3ff; --bg: #000; }
+        body { background: var(--bg); color: var(--neon-green); font-family: 'Courier New', monospace; padding: 15px; font-size: 11px; margin: 0; }
         .header { border-bottom: 1px solid #333; padding-bottom: 5px; margin-bottom: 15px; display: flex; justify-content: space-between; font-size: 10px; }
-        .data-panel { border: 1px solid #222; padding: 10px; margin-bottom: 15px; background: rgba(0, 20, 0, 0.5); }
+        .data-panel { border: 1px solid #222; padding: 10px; margin-bottom: 15px; background: rgba(0, 20, 0, 0.5); border-radius: 8px; }
         .grid-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .stat-label { color: var(--gold); display: block; margin-bottom: 5px; font-weight: bold; }
-        .vácuo { color: var(--alert-red); animation: blink 1s infinite; font-weight: bold; }
+        .stat-label { color: var(--gold); display: block; margin-bottom: 5px; font-weight: bold; text-transform: uppercase; }
+        .vácuo { color: var(--alert-red); animation: blink 1s infinite; font-weight: bold; font-size: 14px; }
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { border: 1px solid #222; padding: 8px; text-align: left; }
-        th { background: #111; color: var(--gold); }
-        .btn-attack { background: var(--alert-red); color: #fff; border: none; padding: 15px; width: 100%; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 10px; box-shadow: 0 0 15px rgba(255,0,0,0.4); }
-        #log-terminal { background: #050505; border: 1px solid #111; height: 120px; overflow-y: auto; padding: 10px; font-size: 9px; margin-top: 10px; color: #888; border-radius: 5px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: #050505; }
+        th, td { border: 1px solid #222; padding: 10px; text-align: left; }
+        th { background: #111; color: var(--gold); font-size: 9px; }
+        .btn-attack { background: var(--alert-red); color: #fff; border: none; padding: 18px; width: 100%; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 10px; border-radius: 12px; box-shadow: 0 0 20px rgba(255,0,0,0.5); font-size: 14px; }
+        #log-terminal { background: #050505; border: 1px solid #111; height: 130px; overflow-y: auto; padding: 10px; font-size: 9px; margin-top: 10px; color: #888; border-radius: 8px; }
         .status-ouro { color: var(--neon-green); font-weight: bold; }
         .status-lixo { color: var(--alert-red); font-weight: bold; }
+        .stake-val { color: var(--cyan); font-weight: bold; }
     </style>
 </head>
 <body>
     <div class="header">
-        <span>OPERADOR: SN // IPI: 10% ATIVO</span>
+        <span>SISTEMA: SN-V1280 // ENGENHARIA CIVIL</span>
         <span id="clock">00:00:00</span>
     </div>
 
     <div class="data-panel">
-        <span class="stat-label">MONITOR DE LEILÃO (CLIQUES REAIS)</span>
+        <span class="stat-label">📡 Monitor de Leilão (Cliques Reais)</span>
         <div class="grid-stats">
-            <div>MEUS CLIQUES: <span id="myClicks" style="color:var(--cyan)">138</span></div>
-            <div>CONCORRENTES: <span id="enemyClicks" style="color:var(--alert-red)">108</span></div>
+            <div>MEUS CLIQUES: <span id="myClicks" style="color:var(--neon-green)">0</span></div>
+            <div>CONCORRENTES: <span id="enemyClicks" style="color:var(--alert-red)">0</span></div>
         </div>
     </div>
 
-    <div class="data-panel">
-        <span class="stat-label">IA-SENTINELA: RASTREIO DE VÁCUO (1.00x)</span>
-        <div id="vacuumStatus" class="vácuo">AGUARDANDO DADOS...</div>
+    <div class="data-panel" style="text-align: center;">
+        <span class="stat-label">🚨 IA-Sentinela: Rastreio de Vácuo (1.00x)</span>
+        <div id="vacuumStatus" class="status-ouro">ESCANEANDO MERCADO...</div>
     </div>
 
     <div class="data-panel">
-        <span class="stat-label">SCANNER DE TERMOS GOOGLE (OURO vs LIXO)</span>
+        <span class="stat-label">🏗️ Scanner de Termos (Ouro vs Lixo)</span>
         <table>
             <thead>
-                <tr><th>Termo</th><th>Qualidade</th><th>Ação</th><th>Stake (-50%)</th></tr>
+                <tr><th>Termo Detectado</th><th>Qualidade</th><th>Ação</th><th>Stake (-50%)</th></tr>
             </thead>
             <tbody id="keywordTable">
                 </tbody>
@@ -55,7 +56,7 @@
     <button class="btn-attack" onclick="ativarDrenoFracionado()">ATIVAR DRENO FRACIONADO 🔱</button>
     
     <div id="log-terminal">
-        <div>> SISTEMA SN-V1280 INICIALIZADO...</div>
+        <div>> INICIALIZANDO PROTOCOLO ENGENHARIA CIVIL...</div>
     </div>
 
     <script>
@@ -67,29 +68,30 @@
         }
 
         function updateData() {
-            // Simulação de comportamento de leilão real baseado nos logs de 14:27
-            const my = Math.floor(Math.random() * 50 + 100);
-            const enemy = Math.floor(Math.random() * 60 + 80);
+            // Simulação de Cliques de Engenharia
+            const my = Math.floor(Math.random() * 40 + 120);
+            const enemy = Math.floor(Math.random() * 70 + 90);
             document.getElementById('myClicks').innerText = my;
             document.getElementById('enemyClicks').innerText = enemy;
 
-            // IA-Sentinela identifica Vácuo se concorrência subir muito
+            // Monitor de Vácuo (IA-Sentinela)
             const statusV = document.getElementById('vacuumStatus');
-            if(enemy > 105) {
+            if(enemy > 140) {
                 statusV.innerHTML = "VÁCUO DETECTADO! PULA!";
                 statusV.className = "vácuo";
+                addLog("AVISO: CONCORRÊNCIA AGRESSIVA DETECTADA", "red");
             } else {
-                statusV.innerHTML = "ESTÁVEL (LIBERADO)";
+                statusV.innerHTML = "MERCADO ESTÁVEL (LIBERADO)";
                 statusV.className = "status-ouro";
             }
 
-            // Scanner de Termos (Identificando o Lixo para negativação)
+            // Lista de Termos Ouro vs Lixo (Engenharia Civil)
             const keywords = [
-                {t: 'depósito pix 7k', q: 'OURO', a: 'MANTER', s: '1 Real'},
-                {t: 'cadastro bônus', q: 'OURO', a: 'MANTER', s: '20 centavos'},
-                {t: 'reclame aqui', q: 'LIXO', a: 'NEGATIVAR', s: 'PULA'},
-                {t: 'como excluir conta', q: 'LIXO', a: 'NEGATIVAR', s: 'PULA'},
-                {t: 'suporte login', q: 'LIXO', a: 'NEGATIVAR', s: '10 centavos'}
+                {t: 'Projeto Estrutural Preço', q: 'OURO', a: 'MANTER', s: '1 Real'},
+                {t: 'Laudo Técnico Reforma', q: 'OURO', a: 'MANTER', s: '20 centavos'},
+                {t: 'Curso Engenharia Civil Grátis', q: 'LIXO', a: 'NEGATIVAR', s: 'PULA'},
+                {t: 'Vagas Estágio Obras', q: 'LIXO', a: 'NEGATIVAR', s: 'PULA'},
+                {t: 'Cálculo de Vigas PDF', q: 'LIXO', a: 'NEGATIVAR', s: 'PULA'}
             ];
 
             let html = '';
@@ -99,7 +101,7 @@
                     <td>${k.t}</td>
                     <td class="${cor}">${k.q}</td>
                     <td>${k.a}</td>
-                    <td style="color:var(--gold)">${k.s}</td>
+                    <td class="stake-val">${k.s}</td>
                 </tr>`;
             });
             document.getElementById('keywordTable').innerHTML = html;
@@ -109,22 +111,22 @@
             if(drenoAtivo) return;
             drenoAtivo = true;
             addLog("MODO DRENAGEM FRACIONADA ATIVADO.", "var(--neon-green)");
-            executarCicloIA();
+            executarCicloAtaque();
         }
 
-        function executarCicloIA() {
-            // Fracionamento de comportamento normal (30s a 4min)
+        function executarCicloAtaque() {
+            // Fracionamento humano (30s a 4min)
             let delay = Math.floor(Math.random() * (240000 - 30000) + 30000);
             addLog(`FRACIONAMENTO: PRÓXIMO CLIQUE EM ${(delay/1000).toFixed(0)}s`, "var(--gold)");
             
             setTimeout(() => {
-                addLog("DRENANDO ORÇAMENTO DO ADVERSÁRIO (CAMUFLAGEM ATIVA)...", "var(--cyan)");
-                executarCicloIA(); 
+                addLog("DRENANDO ORÇAMENTO ADVERSÁRIO (CAMUFLAGEM ATIVA)...", "var(--cyan)");
+                executarCicloAtaque(); 
             }, delay);
         }
 
         setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }, 1000);
-        setInterval(updateData, 4000);
+        setInterval(updateData, 5000);
         updateData();
     </script>
 </body>
