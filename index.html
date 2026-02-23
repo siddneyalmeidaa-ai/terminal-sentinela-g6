@@ -3,125 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TERMINAL SN-V1280 - ENGENHARIA CIVIL DATA</title>
+    <title>GESTÃO ESTRATÉGICA SN - ENGENHARIA</title>
     <style>
-        :root { --neon-green: #00ff00; --alert-red: #ff0000; --gold: #D4AF37; --cyan: #00f3ff; --bg: #000; }
-        body { background: var(--bg); color: var(--neon-green); font-family: 'Courier New', monospace; padding: 15px; font-size: 11px; margin: 0; }
-        .header { border-bottom: 1px solid #333; padding-bottom: 5px; margin-bottom: 15px; display: flex; justify-content: space-between; font-size: 10px; }
-        .data-panel { border: 1px solid #222; padding: 10px; margin-bottom: 15px; background: rgba(0, 20, 0, 0.5); border-radius: 8px; }
-        .grid-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .stat-label { color: var(--gold); display: block; margin-bottom: 5px; font-weight: bold; text-transform: uppercase; }
-        .vácuo { color: var(--alert-red); animation: blink 1s infinite; font-weight: bold; font-size: 14px; }
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: #050505; }
-        th, td { border: 1px solid #222; padding: 10px; text-align: left; }
-        th { background: #111; color: var(--gold); font-size: 9px; }
-        .btn-attack { background: var(--alert-red); color: #fff; border: none; padding: 18px; width: 100%; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 10px; border-radius: 12px; box-shadow: 0 0 20px rgba(255,0,0,0.5); font-size: 14px; }
-        #log-terminal { background: #050505; border: 1px solid #111; height: 130px; overflow-y: auto; padding: 10px; font-size: 9px; margin-top: 10px; color: #888; border-radius: 8px; }
-        .status-ouro { color: var(--neon-green); font-weight: bold; }
-        .status-lixo { color: var(--alert-red); font-weight: bold; }
-        .stake-val { color: var(--cyan); font-weight: bold; }
+        :root { --soft-green: #2ecc71; --soft-red: #e74c3c; --gold: #f1c40f; --deep-blue: #2c3e50; --white: #ecf0f1; }
+        body { background: #1a1a1a; color: var(--white); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; margin: 0; }
+        .header { border-bottom: 2px solid var(--deep-blue); padding-bottom: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; font-size: 12px; color: #95a5a6; }
+        .data-panel { background: #2c3e50; padding: 15px; margin-bottom: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .grid-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .stat-label { color: var(--gold); display: block; margin-bottom: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+        .status-msg { font-size: 16px; font-weight: bold; }
+        .market-alert { color: var(--soft-red); animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: #34495e; border-radius: 8px; overflow: hidden; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #2c3e50; }
+        th { background: #23303d; color: var(--gold); text-transform: uppercase; font-size: 10px; }
+        .btn-optimize { background: var(--soft-red); color: white; border: none; padding: 18px; width: 100%; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 15px; border-radius: 8px; font-size: 14px; transition: 0.3s; }
+        .btn-optimize:hover { background: #c0392b; }
+        #log-terminal { background: #000; border: 1px solid #333; height: 100px; overflow-y: auto; padding: 10px; font-size: 11px; margin-top: 15px; color: #bdc3c7; border-radius: 5px; }
     </style>
 </head>
 <body>
     <div class="header">
-        <span>SISTEMA: SN-V1280 // ENGENHARIA CIVIL</span>
+        <span>GESTOR RESPONSÁVEL: SN // PROJETO: CONSULTORIA TÉCNICA</span>
         <span id="clock">00:00:00</span>
     </div>
 
     <div class="data-panel">
-        <span class="stat-label">📡 Monitor de Leilão (Cliques Reais)</span>
+        <span class="stat-label">📊 Participação de Mercado (Market Share)</span>
         <div class="grid-stats">
-            <div>MEUS CLIQUES: <span id="myClicks" style="color:var(--neon-green)">0</span></div>
-            <div>CONCORRENTES: <span id="enemyClicks" style="color:var(--alert-red)">0</span></div>
+            <div>PERFORMANCE ATUAL: <span id="myClicks" style="color:var(--soft-green)">0</span></div>
+            <div>DENSIDADE CONCORRENTE: <span id="enemyClicks" style="color:var(--soft-red)">0</span></div>
         </div>
     </div>
 
     <div class="data-panel" style="text-align: center;">
-        <span class="stat-label">🚨 IA-Sentinela: Rastreio de Vácuo (1.00x)</span>
-        <div id="vacuumStatus" class="status-ouro">ESCANEANDO MERCADO...</div>
+        <span class="stat-label">⚖️ Análise de Viabilidade Operacional</span>
+        <div id="viabilityStatus" style="color:var(--soft-green)">ANALISANDO FLUXO...</div>
     </div>
 
     <div class="data-panel">
-        <span class="stat-label">🏗️ Scanner de Termos (Ouro vs Lixo)</span>
+        <span class="stat-label">🏗️ Qualificação de Leads (Google Search)</span>
         <table>
             <thead>
-                <tr><th>Termo Detectado</th><th>Qualidade</th><th>Ação</th><th>Stake (-50%)</th></tr>
+                <tr><th>Termo Identificado</th><th>Qualificação</th><th>Ação Recomendada</th></tr>
             </thead>
             <tbody id="keywordTable">
                 </tbody>
         </table>
     </div>
 
-    <button class="btn-attack" onclick="ativarDrenoFracionado()">ATIVAR DRENO FRACIONADO 🔱</button>
+    <button class="btn-optimize" onclick="ativarOtimizacao()">Otimizar Autoridade de Domínio 🔱</button>
     
     <div id="log-terminal">
-        <div>> INICIALIZANDO PROTOCOLO ENGENHARIA CIVIL...</div>
+        <div>> INICIALIZANDO DASHBOARD DE CONSULTORIA...</div>
     </div>
 
     <script>
-        let drenoAtivo = false;
+        let otimizacaoAtiva = false;
 
-        function addLog(msg, color = "#888") {
+        function addLog(msg, color = "#bdc3c7") {
             const log = document.getElementById('log-terminal');
             log.innerHTML = `<div style="color:${color}">> [${new Date().toLocaleTimeString()}] ${msg}</div>` + log.innerHTML;
         }
 
         function updateData() {
-            // Simulação de Cliques de Engenharia
-            const my = Math.floor(Math.random() * 40 + 120);
-            const enemy = Math.floor(Math.random() * 70 + 90);
+            const my = Math.floor(Math.random() * 50 + 150);
+            const enemy = Math.floor(Math.random() * 60 + 130);
             document.getElementById('myClicks').innerText = my;
             document.getElementById('enemyClicks').innerText = enemy;
 
-            // Monitor de Vácuo (IA-Sentinela)
-            const statusV = document.getElementById('vacuumStatus');
-            if(enemy > 140) {
-                statusV.innerHTML = "VÁCUO DETECTADO! PULA!";
-                statusV.className = "vácuo";
-                addLog("AVISO: CONCORRÊNCIA AGRESSIVA DETECTADA", "red");
+            const statusV = document.getElementById('viabilityStatus');
+            if(enemy > 160) {
+                statusV.innerHTML = "<span class='market-alert'>VIABILIDADE BAIXA: MERCADO SATURADO</span>";
+                addLog("REAVALIAÇÃO DE INVESTIMENTO RECOMENDADA", "var(--soft-red)");
             } else {
-                statusV.innerHTML = "MERCADO ESTÁVEL (LIBERADO)";
-                statusV.className = "status-ouro";
+                statusV.innerHTML = "<span style='color:var(--soft-green)'>VIABILIDADE ALTA: MERCADO ESTÁVEL</span>";
             }
 
-            // Lista de Termos Ouro vs Lixo (Engenharia Civil)
             const keywords = [
-                {t: 'Projeto Estrutural Preço', q: 'OURO', a: 'MANTER', s: '1 Real'},
-                {t: 'Laudo Técnico Reforma', q: 'OURO', a: 'MANTER', s: '20 centavos'},
-                {t: 'Curso Engenharia Civil Grátis', q: 'LIXO', a: 'NEGATIVAR', s: 'PULA'},
-                {t: 'Vagas Estágio Obras', q: 'LIXO', a: 'NEGATIVAR', s: 'PULA'},
-                {t: 'Cálculo de Vigas PDF', q: 'LIXO', a: 'NEGATIVAR', s: 'PULA'}
+                {t: 'Projeto Estrutural Preço', q: 'ALTA CONVERSÃO', a: 'MANTER'},
+                {t: 'Laudo Técnico de Reforma', q: 'ALTA CONVERSÃO', a: 'MANTER'},
+                {t: 'Curso Engenharia Civil Grátis', q: 'DESQUALIFICADO', a: 'NEGATIVAR'},
+                {t: 'Vagas Estágio Obras', q: 'DESQUALIFICADO', a: 'NEGATIVAR'},
+                {t: 'Cálculo de Vigas PDF', q: 'DESQUALIFICADO', a: 'NEGATIVAR'}
             ];
 
             let html = '';
             keywords.forEach(k => {
-                const cor = k.q === 'OURO' ? 'status-ouro' : 'status-lixo';
+                const cor = k.q === 'ALTA CONVERSÃO' ? 'var(--soft-green)' : 'var(--soft-red)';
                 html += `<tr>
                     <td>${k.t}</td>
-                    <td class="${cor}">${k.q}</td>
+                    <td style="color:${cor}; font-weight:bold;">${k.q}</td>
                     <td>${k.a}</td>
-                    <td class="stake-val">${k.s}</td>
                 </tr>`;
             });
             document.getElementById('keywordTable').innerHTML = html;
         }
 
-        function ativarDrenoFracionado() {
-            if(drenoAtivo) return;
-            drenoAtivo = true;
-            addLog("MODO DRENAGEM FRACIONADA ATIVADO.", "var(--neon-green)");
-            executarCicloAtaque();
+        function ativarOtimizacao() {
+            if(otimizacaoAtiva) return;
+            otimizacaoAtiva = true;
+            addLog("PROCESSO DE OTIMIZAÇÃO DE AUTORIDADE INICIADO.", "var(--soft-green)");
+            cicloGestao();
         }
 
-        function executarCicloAtaque() {
-            // Fracionamento humano (30s a 4min)
+        function cicloGestao() {
             let delay = Math.floor(Math.random() * (240000 - 30000) + 30000);
-            addLog(`FRACIONAMENTO: PRÓXIMO CLIQUE EM ${(delay/1000).toFixed(0)}s`, "var(--gold)");
-            
+            addLog(`PRÓXIMA ANÁLISE DE POSICIONAMENTO EM ${(delay/1000).toFixed(0)}s`, "var(--gold)");
             setTimeout(() => {
-                addLog("DRENANDO ORÇAMENTO ADVERSÁRIO (CAMUFLAGEM ATIVA)...", "var(--cyan)");
-                executarCicloAtaque(); 
+                addLog("AJUSTANDO PRIORIDADE DE EXIBIÇÃO...", "var(--white)");
+                cicloGestao(); 
             }, delay);
         }
 
