@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>S.A. V1250 - SUPREMACIA NASA (CENTRO DE COMANDO)</title>
+    <style>
+        :root { --dark: #000; --gold: #D4AF37; --pink: #ff00ff; --nasa: #0b3d91; --cyan: #00f3ff; --red: #ff1744; --green: #00e676; --purple: #a020f0; }
+        body { background: var(--dark); color: white; font-family: 'Arial Black', sans-serif; margin: 0; padding: 10px; text-align: center; }
+        .master-container { border: 2px solid var(--nasa); border-radius: 40px; padding: 20px; background: radial-gradient(circle at top, #0b3d9122, #000); box-shadow: 0 0 40px var(--nasa); max-width: 450px; margin: auto; }
+        
+        /* Menu do Terminal */
+        .terminal-nav { display: flex; justify-content: space-around; margin-bottom: 15px; background: #111; border-radius: 10px; padding: 5px; }
+        .nav-btn { background: none; border: none; color: #444; font-size: 10px; cursor: pointer; font-weight: 900; }
+        .nav-active { color: var(--cyan); text-shadow: 0 0 5px var(--cyan); }
+
+        .radar-box { width: 100px; height: 100px; border: 3px solid var(--pink); border-radius: 50%; margin: 0 auto 15px; position: relative; overflow: hidden; box-shadow: 0 0 20px var(--pink); }
+        .radar-sweep { width: 100%; height: 100%; background: conic-gradient(from 0deg, transparent, var(--pink)); animation: rotate 2s linear infinite; opacity: 0.3; }
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        
+        .espectro { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 15px; }
+        .box { padding: 10px; border-radius: 12px; font-size: 9px; background: #111; color: #444; border: 1px solid #222; font-weight: 900; }
+        .v-active { background: var(--red) !important; color: #fff !important; box-shadow: 0 0 15px var(--red); }
+        .ro-active { background: var(--purple) !important; color: #fff !important; box-shadow: 0 0 15px var(--purple); }
+        .rs-active { background: var(--pink) !important; color: #fff !important; box-shadow: 0 0 20px var(--pink); animation: blink 0.5s infinite; }
+        
+        .painel-voo { background: rgba(0, 243, 255, 0.03); border: 1.5px solid var(--cyan); border-radius: 25px; padding: 20px; margin-bottom: 15px; }
+        #percentual { font-size: 4em; color: var(--cyan); display: block; line-height: 1; text-shadow: 0 0 15px var(--cyan); }
+        #status-missao { font-size: 11px; color: var(--gold); margin-top: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .btn-ignicao { background: var(--pink); color: #fff; padding: 20px; border-radius: 20px; font-size: 1.3em; font-weight: 900; width: 100%; border: none; cursor: pointer; box-shadow: 0 0 25px var(--pink); text-transform: uppercase; margin-bottom: 10px; }
+        .sentinela-history { background: rgba(0,0,0,0.6); border-radius: 15px; padding: 12px; border: 1px solid #111; text-align: left; max-height: 120px; overflow-y: auto; }
+        .hist-item { font-family: monospace; font-size: 9px; padding: 4px
+      
