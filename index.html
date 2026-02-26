@@ -6,66 +6,71 @@
     <title>🔗 CADEIA Ψ SOBERANIA - OPERATOR S.A.</title>
     <style>
         * { -webkit-tap-highlight-color: transparent; outline: none; box-sizing: border-box; }
-        body { background: #000; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; font-family: 'Courier New', monospace; color: #0f0; overflow: hidden; touch-action: none; user-select: none; }
+        body { background: #000; margin: 0; font-family: 'Courier New', monospace; color: #0f0; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
         
-        #terminal-box { position: relative; width: 95%; max-width: 450px; height: 820px; border: 3px solid #0f0; border-radius: 20px; overflow: hidden; box-shadow: 0 0 30px #0f0; background: #000; display: flex; flex-direction: column; }
-        canvas { position: absolute; top: 0; left: 0; z-index: 1; opacity: 0.15; pointer-events: none; }
-        
-        #ui-layer { position: relative; z-index: 10; padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
-        
+        /* CAMADA 1: CHUVA DIGITAL (OPÇÃO 3: FLOW) */
+        canvas#matrix { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; opacity: 0.25; pointer-events: none; }
+
+        /* CAMADA 2: INTERFACE */
+        #ui-layer { position: relative; z-index: 10; padding: 15px; height: 100%; display: flex; flex-direction: column; background: rgba(0,0,0,0.3); }
+
+        /* HEADER TÁTICO */
         .header { display: flex; justify-content: space-between; border-bottom: 1px solid #050; padding-bottom: 10px; margin-bottom: 10px; }
-        .radar-unit { text-align: right; }
         .radar-dot { display: inline-block; width: 10px; height: 10px; background: #0f0; border-radius: 50%; box-shadow: 0 0 10px #0f0; animation: pulse 1.5s infinite; }
         
-        .main-display { background: rgba(0,25,0,0.9); padding: 15px; border-radius: 15px; border: 1px solid #0f0; margin-bottom: 10px; box-shadow: inset 0 0 15px #0f03; }
-        .vibrante { color: #fff; text-shadow: 0 0 10px #0f0; font-weight: bold; font-size: 24px; display: block; margin: 5px 0; }
-        .label { font-size: 10px; color: #0a0; text-transform: uppercase; margin: 0; }
+        /* HUD PRINCIPAL */
+        .main-display { background: rgba(0,25,0,0.85); padding: 15px; border-radius: 15px; border: 1px solid #0f0; margin-bottom: 10px; box-shadow: 0 0 20px rgba(0,255,0,0.2); }
+        .vibrante { color: #fff; text-shadow: 0 0 10px #0f0; font-weight: bold; font-size: 26px; display: block; margin: 5px 0; }
+        .label { font-size: 9px; color: #0a0; text-transform: uppercase; }
 
-        #log-area { flex-grow: 1; margin: 10px 0; padding: 12px; border: 1px solid #030; background: rgba(0, 5, 0, 0.95); font-size: 11px; overflow-y: auto; border-radius: 10px; scrollbar-width: none; }
-        .item { border-bottom: 1px solid #020; padding: 8px 0; display: flex; justify-content: space-between; align-items: center; }
+        /* GRID DE CARDS (SUBSTITUI O CADERNO) */
+        #log-area { flex-grow: 1; margin: 5px 0; overflow-y: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+        #log-content { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .card { background: rgba(0, 30, 0, 0.6); border: 1px solid #050; border-radius: 10px; padding: 10px; animation: slideIn 0.3s ease; }
+        .card-id { font-size: 8px; color: #0a0; }
+        .card-val { font-size: 12px; font-weight: bold; display: block; margin-top: 4px; }
 
-        .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .btn { padding: 15px; border-radius: 12px; font-weight: bold; cursor: pointer; text-transform: uppercase; border: none; font-size: 11px; transition: 0.2s; }
-        #btn-trap { background: #222; color: #fff; border: 1px solid #555; }
-        #btn-trap.active { background: #f00; border-color: #fff; box-shadow: 0 0 15px #f00; animation: blink 0.6s infinite; }
+        /* CONTROLES FIXOS */
+        .footer-ctrl { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding-bottom: 15px; }
+        .btn { padding: 16px; border-radius: 12px; font-weight: bold; cursor: pointer; text-transform: uppercase; border: none; font-size: 11px; }
+        #btn-trap { background: #1a1a1a; color: #fff; border: 1px solid #444; }
+        #btn-trap.active { background: #f00; border-color: #fff; box-shadow: 0 0 15px #f00; }
         #btn-ignicao { background: #0f0; color: #000; font-size: 16px; grid-column: span 2; font-weight: 900; box-shadow: 0 0 20px #0f0; }
-        #btn-ignicao:active { transform: scale(0.96); background: #fff; }
 
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
-        @keyframes blink { 50% { opacity: 0.5; } }
+        @keyframes slideIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
     </style>
 </head>
 <body>
 
-<div id="terminal-box">
-    <canvas id="matrix"></canvas>
-    <div id="ui-layer">
-        <div class="header">
-            <div style="font-size: 9px; line-height: 1.2;">🔗 SOBERANIA Ψ V.2100<br>👁️ ⚡ 🧠 🎯 👻 🔮<br><span style="color:#fff; background:#050; padding:2px 5px; border-radius:3px; font-weight: bold;">👤 OPERATOR: S.A.</span></div>
-            <div class="radar-unit">
-                <span id="radar-text" style="font-size:9px; color:#0f0; font-weight: bold;">VIGILÂNCIA: LIMPO</span><br>
-                <div class="radar-dot" id="radar-dot"></div>
-            </div>
-        </div>
+<canvas id="matrix"></canvas>
 
-        <div class="main-display">
-            <span class="label">ASSERTIVIDADE DE FLUXO</span>
-            <span class="vibrante" id="pct">0%</span>
-            <div style="display:flex; justify-content:space-between; margin-top:10px;">
-                <div><span class="label">AÇÃO Ψ</span><br><span id="cmd" style="color:#0ff; font-weight:bold; font-size:16px;">PRONTO</span></div>
-                <div style="text-align:right;"><span class="label">STAKE DITADA</span><br><span id="stk" style="color:#ff0; font-weight:bold; font-size:16px;">R$ 0,00</span></div>
-            </div>
+<div id="ui-layer">
+    <div class="header">
+        <div style="font-size: 9px;">🔗 SOBERANIA Ψ V.2200<br><span style="color:#fff; background:#050; padding:2px 5px; border-radius:3px; font-weight:bold;">👤 OPERATOR: S.A.</span></div>
+        <div style="text-align:right;">
+            <span id="radar-text" style="font-size:9px; color:#0f0; font-weight:bold;">VIGILÂNCIA: LIMPO</span><br>
+            <div class="radar-dot" id="radar-dot"></div>
         </div>
-
-        <div id="log-area"><div id="log-content"></div></div>
-
-        <div class="btn-grid">
-            <button class="btn" id="btn-trap" onclick="toggleTrap()">🪤 ARMAR ISCAS</button>
-            <button class="btn" style="background:#9d4edd; color:#fff;" onclick="window.location.reload()">⚡ RESET CACHE</button>
-            <button class="btn" id="btn-ignicao">🔗 INJETAR & TESTAR Ψ</button>
-        </div>
-        <div id="status-turbina" style="font-size:9px; text-align:center; margin-top:8px; color:#050;">FUSÃO DE DADOS EFÊMERA ATIVA</div>
     </div>
+
+    <div class="main-display">
+        <span class="label">ASSERTIVIDADE DE FLUXO</span>
+        <span class="vibrante" id="pct">0%</span>
+        <div style="display:flex; justify-content:space-between; margin-top:10px;">
+            <div><span class="label">AÇÃO Ψ</span><br><span id="cmd" style="color:#0ff; font-weight:bold;">PRONTO</span></div>
+            <div style="text-align:right;"><span class="label">STAKE DITADA</span><br><span id="stk" style="color:#ff0; font-weight:bold;">R$ 0,00</span></div>
+        </div>
+    </div>
+
+    <div id="log-area"><div id="log-content"></div></div>
+
+    <div class="footer-ctrl">
+        <button class="btn" id="btn-trap" onclick="toggleTrap()">🪤 ARMAR ISCAS</button>
+        <button class="btn" style="background:#9d4edd; color:#fff;" onclick="window.location.reload()">⚡ RESET CACHE</button>
+        <button class="btn" id="btn-ignicao">🔗 INJETAR & TESTAR Ψ</button>
+    </div>
+    <div id="status-turbina" style="font-size:8px; text-align:center; color:#050;">FUSÃO DE DADOS EFÊMERA ATIVA</div>
 </div>
 
 <script>
@@ -76,14 +81,34 @@
     const stk = document.getElementById('stk');
     const radarDot = document.getElementById('radar-dot');
     const radarText = document.getElementById('radar-text');
-    const turbina = document.getElementById('status-turbina');
+
+    // 1. CHUVA DIGITAL (OPÇÃO 3: FLOW)
+    const canvas = document.getElementById('matrix');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const columns = Math.floor(canvas.width / 10);
+    const drops = Array(columns).fill(0).map(() => Math.random() * canvas.height);
+
+    function drawFlow() {
+        ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#0f0";
+        for (let i = 0; i < drops.length; i++) {
+            const length = Math.random() * 25 + 5;
+            ctx.fillRect(i * 10, drops[i], 1, length);
+            drops[i] += Math.random() * 15 + 5;
+            if (drops[i] > canvas.height) drops[i] = -20;
+        }
+    }
+    setInterval(drawFlow, 45);
 
     function toggleTrap() {
         trapAtiva = !trapAtiva;
         const btn = document.getElementById('btn-trap');
         if(trapAtiva) {
             btn.classList.add('active'); btn.innerText = "🪤 ISCAS ATIVAS";
-            radarText.innerText = "CONTRA-ATAQUE: RUÍDO"; radarText.style.color = "#0ff";
+            radarText.innerText = "RUÍDO ATIVO ⚡"; radarText.style.color = "#0ff";
             radarDot.style.background = "#0ff";
         } else {
             btn.classList.remove('active'); btn.innerText = "🪤 ARMAR ISCAS";
@@ -92,74 +117,38 @@
         }
     }
 
-    function disparar(e) {
-        if (e) e.preventDefault();
-        turbina.innerText = "📡 CHAMANDO ALGORITMO PARA TESTE...";
-        
-        setTimeout(() => {
-            const seed = Math.random();
-            const latenciaFisica = Math.random() * 100;
-            const id = Math.floor(seed * 9999);
-            const item = document.createElement('div');
-            item.className = 'item';
+    function disparar() {
+        const seed = Math.random();
+        const latenciaFisica = Math.random() * 100;
+        const id = Math.floor(seed * 9999);
+        const card = document.createElement('div');
+        card.className = 'card';
 
-            // 1. Identificação de Sequência e Magnitude (cite: 2026-02-13)
-            const ultimaFoiRosa = log.firstChild && log.firstChild.innerHTML.includes('ROSA');
-            let magnitude = seed + (trapAtiva ? 0.25 : 0);
-            if (ultimaFoiRosa) magnitude += 0.15;
+        let magnitude = seed + (trapAtiva ? 0.25 : 0);
+        const assert = (magnitude * 100 > 100 ? 100 : magnitude * 100).toFixed(0);
+        pct.innerText = `${assert}%`;
 
-            // 2. Lógica de Física de Reversão e Cores
-            if (latenciaFisica > 90 && magnitude > 0.8) {
-                // FALSO VÁCUO -> REVERSÃO PARA ROSA
-                pct.innerText = "99% (REVERSÃO)";
-                cmd.innerText = "ENTRA (ROSA)";
-                stk.innerText = "R$ 1,00";
-                item.innerHTML = `<span>⚡ #${id}</span> <span style="color:#ff007f; font-weight:bold;">REVERSÃO -> ROSA 💎</span>`;
-            } else if (magnitude < 0.40 && !trapAtiva) {
-                // VÁCUO REAL
-                pct.innerText = `${(magnitude*100).toFixed(0)}%`;
-                cmd.innerText = "PULA / VÁCUO";
-                stk.innerText = "R$ 0,00";
-                item.innerHTML = `<span>👁️ #${id}</span> <span style="color:#f00">VÁCUO BLOQUEADO</span>`;
-            } else {
-                // ROXA OU ROSA PADRÃO
-                const assert = (magnitude * 100 > 100 ? 100 : magnitude * 100).toFixed(0);
-                pct.innerText = `${assert}%`;
-                cmd.innerText = "ENTRA";
-                
-                // Stake Ditada (cite: 2026-01-19)
-                stk.innerText = assert > 92 ? "R$ 1,00" : (assert > 70 ? "R$ 0,20" : "R$ 0,10");
-                
-                const xCalculado = (magnitude * 10 + 1.2).toFixed(2);
-                const saidaSegura = (xCalculado * 0.5).toFixed(2); // Regra -50%
-                
-                const cor = magnitude > 0.88 ? "#ff007f" : "#9d4edd";
-                const labelVela = magnitude > 0.88 ? "ROSA" : "ROXA";
-                
-                item.innerHTML = `<span>🎯 #${id}</span> <span style="color:${cor}">${labelVela} (${saidaSegura}x)</span>`;
-            }
+        if (latenciaFisica > 90 && magnitude > 0.8) {
+            cmd.innerText = "ENTRA (ROSA)";
+            stk.innerText = "R$ 1,00";
+            card.innerHTML = `<span class="card-id">⚡ #${id}</span><span class="card-val" style="color:#ff007f;">REVERSÃO ROSA 💎</span>`;
+        } else if (magnitude < 0.40 && !trapAtiva) {
+            cmd.innerText = "PULA / VÁCUO";
+            stk.innerText = "R$ 0,00";
+            card.innerHTML = `<span class="card-id">👁️ #${id}</span><span class="card-val" style="color:#f00;">VÁCUO REAL</span>`;
+        } else {
+            cmd.innerText = "ENTRA";
+            stk.innerText = assert > 92 ? "R$ 1,00" : (assert > 70 ? "R$ 0,20" : "R$ 0,10");
+            const cor = magnitude > 0.88 ? "#ff007f" : "#9d4edd";
+            const saida = ((magnitude * 10 + 1.2) * 0.5).toFixed(2);
+            card.innerHTML = `<span class="card-id">🎯 #${id}</span><span class="card-val" style="color:${cor};">${magnitude > 0.88 ? 'ROSA' : 'ROXA'} (${saida}x)</span>`;
+        }
 
-            log.prepend(item);
-            turbina.innerText = `S.A. LOG: ${id} - FRAGMENTADO & SEGURO`;
-        }, 350);
+        log.prepend(card);
+        if (log.children.length > 8) log.removeChild(log.lastChild); // Mantém apenas os 8 últimos
     }
 
     document.getElementById('btn-ignicao').addEventListener('click', disparar);
-
-    // Matrix Background
-    const canvas = document.getElementById('matrix'); const ctx = canvas.getContext('2d');
-    canvas.width = 450; canvas.height = 820;
-    const drops = Array(Math.floor(canvas.width/14)).fill(1);
-    function draw() {
-        ctx.fillStyle = "rgba(0,0,0,0.1)"; ctx.fillRect(0,0,canvas.width,canvas.height);
-        ctx.fillStyle = "#0f0"; ctx.font = "14px monospace";
-        drops.forEach((y, i) => {
-            ctx.fillText(Math.floor(Math.random()*2), i*14, y*14);
-            if(y*14 > canvas.height && Math.random() > 0.975) drops[i] = 0;
-            drops[i]++;
-        });
-    }
-    setInterval(draw, 60);
 </script>
 </body>
 </html>
