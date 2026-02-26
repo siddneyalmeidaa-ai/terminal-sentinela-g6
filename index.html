@@ -3,94 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ψ TERMINAL SUPREMACIA - V1290</title>
+    <title>🔗 CADEIA Ψ SUPREMACIA</title>
     <style>
-        /* RESET DE SOBERANIA */
         * { -webkit-tap-highlight-color: transparent; outline: none; }
-        body { 
-            background: #000; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            min-height: 100vh; 
-            margin: 0; 
-            font-family: 'Courier New', monospace; 
-            color: #0f0; 
-            overflow: hidden; 
-            touch-action: none; 
-            user-select: none;
-        }
-
-        #terminal-box { 
-            position: relative; 
-            width: 95%; 
-            max-width: 450px; 
-            height: 680px; 
-            border: 3px solid #0f0; 
-            border-radius: 20px; 
-            overflow: hidden; 
-            box-shadow: 0 0 30px #0f0; 
-            background: #000; 
-        }
-
+        body { background: #000; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; font-family: 'Courier New', monospace; color: #0f0; overflow: hidden; touch-action: none; user-select: none; }
+        #terminal-box { position: relative; width: 95%; max-width: 450px; height: 680px; border: 3px solid #0f0; border-radius: 20px; overflow: hidden; box-shadow: 0 0 30px #0f0; background: #000; }
         canvas { position: absolute; top: 0; left: 0; z-index: 1; opacity: 0.15; pointer-events: none; }
-
-        #ui-layer { 
-            position: relative; 
-            z-index: 10; 
-            padding: 25px; 
-            height: 100%; 
-            display: flex; 
-            flex-direction: column; 
-            box-sizing: border-box; 
-        }
-
-        .header { font-size: 10px; border-bottom: 1px solid #050; padding-bottom: 10px; margin-bottom: 15px; text-transform: uppercase; color: #0a0; }
-        
-        .display { 
-            font-size: 18px; 
-            margin-bottom: 10px; 
-            background: rgba(0,20,0,0.8); 
-            padding: 15px; 
-            border-radius: 15px; 
-            border: 1px solid #0f0; 
-            box-shadow: inset 0 0 10px #0f03;
-        }
-
+        #ui-layer { position: relative; z-index: 10; padding: 25px; height: 100%; display: flex; flex-direction: column; box-sizing: border-box; }
+        .header { font-size: 10px; border-bottom: 1px solid #050; padding-bottom: 10px; margin-bottom: 15px; text-transform: uppercase; color: #0a0; line-height: 1.4; }
+        .display { font-size: 18px; margin-bottom: 10px; background: rgba(0,20,0,0.8); padding: 15px; border-radius: 15px; border: 1px solid #0f0; box-shadow: inset 0 0 10px #0f03; }
         .vibrante { color: #fff; text-shadow: 0 0 10px #0f0; font-weight: bold; }
-        
-        #log-area { 
-            flex-grow: 1; 
-            margin: 10px 0; 
-            padding: 10px; 
-            border: 1px solid #030; 
-            background: rgba(0, 5, 0, 0.9); 
-            font-size: 11px; 
-            overflow-y: auto; 
-            border-radius: 10px; 
-        }
-
+        #log-area { flex-grow: 1; margin: 10px 0; padding: 10px; border: 1px solid #030; background: rgba(0, 5, 0, 0.9); font-size: 11px; overflow-y: auto; border-radius: 10px; }
         .item { border-bottom: 1px solid #020; padding: 6px 0; display: flex; justify-content: space-between; color: #0ff; }
-
-        /* BOTÃO Ψ: PRIORIDADE MÁXIMA */
-        #btn-ignicao { 
-            position: relative;
-            z-index: 9999; 
-            background: #0f0; 
-            color: #000; 
-            border: none; 
-            padding: 25px; 
-            border-radius: 15px; 
-            font-weight: 900; 
-            font-size: 24px; 
-            cursor: pointer; 
-            text-transform: uppercase; 
-            width: 100%; 
-            touch-action: manipulation;
-            box-shadow: 0 0 20px #0f0;
-            transition: transform 0.05s;
-        }
-
+        #btn-ignicao { position: relative; z-index: 9999; background: #0f0; color: #000; border: none; padding: 25px; border-radius: 15px; font-weight: 900; font-size: 20px; cursor: pointer; text-transform: uppercase; width: 100%; touch-action: manipulation; box-shadow: 0 0 20px #0f0; }
         #btn-ignicao:active { background: #fff; transform: scale(0.96); }
     </style>
 </head>
@@ -100,9 +25,9 @@
     <canvas id="matrix"></canvas>
     <div id="ui-layer">
         <div class="header">
-            Ψ SISTEMA: SENTINELA ATIVO [V.1290]<br>
-            > FOCO: EXECUÇÃO INSTANTÂNEA<br>
-            > STATUS: OPERACIONAL
+            🔗 CADEIA DE SOBERANIA ATIVA<br>
+            👁️ [SENTINELA] ⚡ [TURBINA] 🧠 [QUANTUM]<br>
+            🎯 [PROJEÇÃO] 👻 [FANTASMA] 🔮 [SENSORIAL]
         </div>
         <div class="display">
             <p>STATUS: <span class="vibrante" id="pct">PENDENTE 0%</span></p>
@@ -111,7 +36,7 @@
         </div>
         <div id="log-area"><div id="log-content"></div></div>
         
-        <button id="btn-ignicao">Ψ IGNIÇÃO: INJETAR</button>
+        <button id="btn-ignicao">🔗 INJETAR CADEIA Ψ</button>
         
         <div style="font-size: 9px; text-align: center; margin-top: 10px; color:#0f0;" id="status-turbina">[IA-TURBINA]: AGUARDANDO COMANDO</div>
     </div>
@@ -124,13 +49,15 @@
     const stk = document.getElementById('stk');
     const turbina = document.getElementById('status-turbina');
 
-    function disparar(e) {
-        if (e) {
-            e.preventDefault(); 
-            e.stopPropagation(); 
-        }
+    // Mapeamento das 6 IAs na Cadeia
+    const simbolosIA = ["👁️", "⚡", "🧠", "🎯", "👻", "🔮"];
 
-        turbina.innerText = "[IA-TURBINA]: INJETANDO..."; 
+    function disparar(e) {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        
+        const iaDaVez = simbolosIA[Math.floor(Math.random() * simbolosIA.length)];
+        turbina.innerText = `${iaDaVez} INJETANDO DADOS...`; 
+
         const sorteio = Math.random() * 100;
         const id = Math.floor(Math.random()*999);
         const item = document.createElement('div');
@@ -140,31 +67,23 @@
             pct.innerText = "PENDENTE 12%";
             cmd.innerText = "PULA / VÁCUO";
             stk.innerText = "R$ 0,00";
-            item.innerHTML = `<span>Ψ ID: ${id}</span> <span style="color:#f00">VÁCUO BLOQUEADO</span>`;
+            item.innerHTML = `<span>👁️ ID: ${id}</span> <span style="color:#f00">VÁCUO BLOQUEADO</span>`;
         } else {
             const proj = (Math.random() * 4 + 1.2).toFixed(2);
             const saida = (proj * 0.5).toFixed(2); 
             pct.innerText = "LIBERADO 100%";
             cmd.innerText = "ENTRA";
             stk.innerText = "R$ 1,00";
-            item.innerHTML = `<span>Ψ ID: ${id}</span> <span style="color:#fff">WIN: ${saida}x</span>`;
+            item.innerHTML = `<span>🎯 ID: ${id}</span> <span style="color:#fff">WIN: ${saida}x</span>`;
         }
-        
         log.prepend(item);
-        setTimeout(() => { turbina.innerText = "[IA-TURBINA]: ESTABILIZADO"; }, 200);
+        setTimeout(() => { turbina.innerText = `🔗 CADEIA SINCRONIZADA`; }, 200);
     }
 
     const b = document.getElementById('btn-ignicao');
-    
-    // Gatilho de toque imediato
     b.addEventListener('touchstart', disparar, { passive: false });
-    
-    // Gatilho de clique para computadores
-    b.addEventListener('mousedown', (e) => {
-        if (e.button === 0) disparar(e);
-    });
+    b.addEventListener('mousedown', (e) => { if (e.button === 0) disparar(e); });
 
-    // Matrix Effect
     const canvas = document.getElementById('matrix'); const ctx = canvas.getContext('2d');
     canvas.width = 450; canvas.height = 680;
     const drops = Array(Math.floor(canvas.width/14)).fill(1);
