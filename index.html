@@ -2,39 +2,20 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TERMINAL SUPREMACIA - SPA</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ψ TERMINAL SUPREMACIA - SPA</title>
     <style>
-        /* Estetica Matrix & Padrão Ouro [cite: 2026-01-11, 2026-01-12] */
-        body { background: #000; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; font-family: 'Courier New', monospace; color: #0f0; }
-        
-        #terminal-box {
-            position: relative; width: 95%; max-width: 450px; height: 650px;
-            border: 3px solid #0f0; border-radius: 20px; overflow: hidden;
-            box-shadow: 0 0 30px #0f0; background: #000;
-        }
-
-        canvas { position: absolute; top: 0; left: 0; z-index: 1; opacity: 0.25; }
-
+        body { background: #000; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; font-family: 'Courier New', monospace; color: #0f0; overflow: hidden; }
+        #terminal-box { position: relative; width: 95%; max-width: 450px; height: 680px; border: 3px solid #0f0; border-radius: 20px; overflow: hidden; box-shadow: 0 0 40px #0f0; background: #000; }
+        canvas { position: absolute; top: 0; left: 0; z-index: 1; opacity: 0.20; }
         #ui-layer { position: relative; z-index: 2; padding: 25px; height: 100%; display: flex; flex-direction: column; box-sizing: border-box; }
-
-        .header { font-size: 10px; border-bottom: 1px solid #0f0; padding-bottom: 10px; margin-bottom: 20px; text-transform: uppercase; }
-        .display { font-size: 18px; margin-bottom: 15px; }
-        .vibrante { color: #fff; text-shadow: 0 0 8px #0f0; font-weight: bold; }
-
-        /* Log Dinâmico sem repetições [cite: 2026-01-27] */
-        #log-area {
-            flex-grow: 1; margin: 15px 0; padding: 10px; border: 1px solid #050;
-            background: rgba(0, 20, 0, 0.5); font-size: 11px; overflow-y: auto; border-radius: 10px;
-        }
-        .item { border-bottom: 1px solid #020; padding: 5px 0; display: flex; justify-content: space-between; }
-
-        #btn-ignicao {
-            background: #0f0; color: #000; border: none; padding: 20px;
-            border-radius: 15px; font-weight: bold; font-size: 20px;
-            cursor: pointer; text-transform: uppercase; transition: 0.3s;
-        }
-        #btn-ignicao:active { transform: scale(0.95); }
+        .header { font-size: 10px; border-bottom: 1px solid #0f0; padding-bottom: 10px; margin-bottom: 15px; text-transform: uppercase; }
+        .display { font-size: 18px; margin-bottom: 10px; background: rgba(0,20,0,0.4); padding: 10px; border-radius: 10px; border: 1px solid #030; }
+        .vibrante { color: #fff; text-shadow: 0 0 10px #0f0; font-weight: bold; }
+        #log-area { flex-grow: 1; margin: 10px 0; padding: 10px; border: 1px solid #050; background: rgba(0, 10, 0, 0.8); font-size: 11px; overflow-y: auto; border-radius: 10px; }
+        .item { border-bottom: 1px solid #020; padding: 5px 0; display: flex; justify-content: space-between; color: #0ff; }
+        #btn-ignicao { background: #0f0; color: #000; border: none; padding: 22px; border-radius: 15px; font-weight: bold; font-size: 22px; cursor: pointer; text-transform: uppercase; box-shadow: 0 0 20px #0f0; -webkit-tap-highlight-color: transparent; }
+        #btn-ignicao:active { transform: scale(0.92); background: #fff; }
     </style>
 </head>
 <body>
@@ -43,74 +24,74 @@
     <canvas id="matrix"></canvas>
     <div id="ui-layer">
         <div class="header">
-            > SISTEMA: MEMÓRIA QUÂNTICA ATIVA [cite: 2026-02-06]<br>
-            > STATUS: IPI RESETADO / MODO FANTASMA [cite: 2026-01-28]
+            Ψ SISTEMA: 6 INTELIGÊNCIAS INJETADAS [cite: 2026-02-13]<br>
+            > MEMÓRIA QUÂNTICA: AUTO-UPGRADE [cite: 2026-02-06]
         </div>
 
         <div class="display">
-            <p>PADRÃO OURO: <span class="vibrante" id="pct">PENDENTE 0%</span></p>
-            <p>AÇÃO IMEDIATA: <span class="vibrante" id="cmd" style="color: #0ff;">AGUARDANDO...</span></p>
-            <p>STAKE PRECISA: <span class="vibrante" id="stk">R$ 0,00</span></p>
+            <p>STATUS: <span class="vibrante" id="pct">PENDENTE 0%</span></p>
+            <p>AÇÃO Ψ: <span class="vibrante" id="cmd" style="color: #0ff;">PRONTO</span></p>
+            <p>STAKE: <span class="vibrante" id="stk">R$ 1,00</span> [cite: 2026-01-19]</p>
         </div>
 
         <div id="log-area">
-            <div style="text-align: center; border-bottom: 1px solid #0f0; font-size: 9px; margin-bottom: 5px;">FRAGMENTOS DE SEMENTE EM TEMPO REAL</div>
             <div id="log-content"></div>
         </div>
 
-        <button id="btn-ignicao" onclick="executarProtocolo()">Ignição: Injetar Dados</button>
-        <div id="status-turbina" style="font-size: 9px; text-align: center; margin-top: 10px;">[IA-TURBINA]: AGUARDANDO COMANDO [cite: 2026-02-25]</div>
+        <button id="btn-ignicao">Ψ IGNIÇÃO: INJETAR</button>
+        <div id="status-turbina" style="font-size: 9px; text-align: center; margin-top: 10px; color:#0f0;">[IA-TURBINA]: LUBRIFICADA [cite: 2026-02-25]</div>
     </div>
 </div>
 
 <script>
-    // --- CHUVA DE CÓDIGOS MATRIX ---
-    const canvas = document.getElementById('matrix');
-    const ctx = canvas.getContext('2d');
-    canvas.width = 450; canvas.height = 650;
-    const letters = "010101"; const fontSize = 14;
-    const columns = canvas.width / fontSize;
-    const drops = Array(Math.floor(columns)).fill(1);
+    const canvas = document.getElementById('matrix'); const ctx = canvas.getContext('2d');
+    canvas.width = 450; canvas.height = 680;
+    const drops = Array(Math.floor(canvas.width/14)).fill(1);
     function draw() {
-        ctx.fillStyle = "rgba(0,0,0,0.08)"; ctx.fillRect(0,0,canvas.width,canvas.height);
-        ctx.fillStyle = "#0f0"; ctx.font = fontSize + "px monospace";
+        ctx.fillStyle = "rgba(0,0,0,0.1)"; ctx.fillRect(0,0,canvas.width,canvas.height);
+        ctx.fillStyle = "#0f0"; ctx.font = "14px monospace";
         drops.forEach((y, i) => {
-            ctx.fillText(letters[Math.floor(Math.random()*letters.length)], i*fontSize, y*fontSize);
-            if(y*fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+            ctx.fillText(Math.floor(Math.random()*2), i*14, y*14);
+            if(y*14 > canvas.height && Math.random() > 0.975) drops[i] = 0;
             drops[i]++;
         });
     }
     setInterval(draw, 50);
 
-    // --- LÓGICA DE VOLATILIDADE E SUPREMACIA ---
-    function executarProtocolo() {
-        const turbina = document.getElementById('status-turbina');
-        turbina.innerText = "[IA-TURBINA]: INJETANDO FRAGMENTOS...";
-        
-        setTimeout(() => {
-            const sorteio = Math.random() * 100;
-            const log = document.getElementById('log-content');
-            const item = document.createElement('div');
-            item.className = 'item';
+    const btn = document.getElementById('btn-ignicao');
+    const log = document.getElementById('log-content');
+    const pct = document.getElementById('pct');
+    const cmd = document.getElementById('cmd');
+    const stk = document.getElementById('stk');
+    const turbina = document.getElementById('status-turbina');
 
-            if (sorteio < 35) { // 35% de chance de Vácuo/Risco [cite: 2025-12-29]
-                document.getElementById('pct').innerText = "PENDENTE 12%";
-                document.getElementById('cmd').innerText = "PULA";
-                document.getElementById('stk').innerText = "R$ 0,00";
-                item.innerHTML = `<span>ID: ${Math.floor(Math.random()*999)}</span> <span style="color:#f00">VÁCUO DETECTADO</span>`;
-            } else {
-                const projecao = (Math.random() * 4 + 1.5).toFixed(2);
-                const saida = (projecao * 0.5).toFixed(2); // Regra -50% [cite: 2026-01-16]
-                
-                document.getElementById('pct').innerText = "LIBERADO 100%"; // [cite: 2026-01-12]
-                document.getElementById('cmd').innerText = "ENTRA"; // [cite: 2025-12-29]
-                document.getElementById('stk').innerText = "R$ 1,00"; // [cite: 2026-01-19]
-                item.innerHTML = `<span>ID: ${Math.floor(Math.random()*999)}</span> <span style="color:#fff">WIN: ${saida}x</span>`;
-            }
-            log.prepend(item);
-            turbina.innerText = "[IA-TURBINA]: VOO ESTABILIZADO [cite: 2026-02-25]";
-        }, 800);
+    function disparar() {
+        turbina.innerText = "[IA-TURBINA]: PRIORIDADE MÁXIMA...";
+        const sorteio = Math.random() * 100;
+        const id = Math.floor(Math.random()*999);
+        const item = document.createElement('div');
+        item.className = 'item';
+
+        if (sorteio < 35) { // IA-SENTINELA [cite: 2025-12-29]
+            pct.innerText = "PENDENTE 12%";
+            cmd.innerText = "PULA / VÁCUO"; [cite: 2025-12-29]
+            stk.innerText = "R$ 0,00"; [cite: 2026-01-19]
+            item.innerHTML = `<span>Ψ ID: ${id}</span> <span style="color:#f00">VÁCUO BLOQUEADO</span>`;
+        } else {
+            const proj = (Math.random() * 3 + 1.5).toFixed(2);
+            const saida = (proj * 0.5).toFixed(2); // Regra -50% [cite: 2026-01-16]
+            pct.innerText = "LIBERADO 100%"; [cite: 2026-01-12]
+            cmd.innerText = "ENTRA"; [cite: 2025-12-29]
+            stk.innerText = "R$ 1,00"; [cite: 2026-01-19]
+            item.innerHTML = `<span>Ψ ID: ${id}</span> <span style="color:#fff">WIN: ${saida}x</span>`;
+        }
+        log.prepend(item);
+        setTimeout(() => { turbina.innerText = "[IA-TURBINA]: VOO ESTABILIZADO"; }, 500);
     }
+
+    // GATILHO DE UPGRADE (SEM LAG) [cite: 2026-01-12]
+    btn.addEventListener('touchstart', (e) => { e.preventDefault(); disparar(); });
+    btn.addEventListener('click', () => { disparar(); });
 </script>
 </body>
 </html>
