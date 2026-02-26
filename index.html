@@ -3,118 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SISTEMA SUPREMACIA - SPA [cite: 2026-01-11]</title>
+    <title>TERMINAL SUPREMACIA - SPA [cite: 2026-01-11]</title>
     <style>
-        body { background: #000; color: #0f0; font-family: 'Courier New', monospace; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; overflow-x: hidden; }
-        #main-frame { position: relative; width: 95%; max-width: 500px; height: 750px; border: 3px solid #0f0; border-radius: 20px; background: #000; overflow: hidden; box-shadow: 0 0 40px #0f0; display: flex; flex-direction: column; }
-        canvas { position: absolute; top: 0; left: 0; z-index: 1; opacity: 0.2; }
-        #content { position: relative; z-index: 2; padding: 20px; display: flex; flex-direction: column; height: 100%; box-sizing: border-box; }
-        
-        /* Estilo dos Módulos Institucionais */
-        .panel { background: rgba(0, 30, 0, 0.7); border: 1px solid #050; border-radius: 10px; padding: 10px; margin-bottom: 10px; font-size: 11px; }
+        body { background: #000; color: #0f0; font-family: 'Courier New', monospace; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        #frame { width: 95%; max-width: 450px; height: 680px; border: 3px solid #0f0; border-radius: 20px; background: #000; position: relative; overflow: hidden; box-shadow: 0 0 40px #0f0; display: flex; flex-direction: column; }
+        canvas { position: absolute; top: 0; left: 0; z-index: 1; opacity: 0.15; }
+        #ui { position: relative; z-index: 2; padding: 25px; display: flex; flex-direction: column; height: 100%; box-sizing: border-box; }
+        .panel { background: rgba(0, 30, 0, 0.7); border: 1px solid #050; border-radius: 10px; padding: 12px; margin-bottom: 12px; }
         .vibrante { color: #fff; text-shadow: 0 0 10px #0f0; font-weight: bold; }
-        input { background: #000; border: 1px solid #0f0; color: #0f0; width: 100%; padding: 8px; margin-top: 5px; border-radius: 5px; box-sizing: border-box; }
-        
-        #btn-ignicao { background: #0f0; color: #000; border: none; padding: 18px; border-radius: 12px; font-weight: bold; font-size: 18px; cursor: pointer; text-transform: uppercase; width: 100%; transition: 0.3s; }
-        #btn-ignicao:disabled { background: #030; color: #080; cursor: not-allowed; }
-        
-        #auditoria { height: 100px; overflow-y: auto; font-size: 9px; color: #0ff; border-top: 1px solid #0f0; margin-top: 10px; padding-top: 5px; }
+        input { background: #000; border: 1px solid #0f0; color: #0f0; width: 100%; padding: 12px; margin-top: 8px; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+        #btn-ignicao { background: #0f0; color: #000; border: none; padding: 20px; border-radius: 15px; font-weight: bold; font-size: 20px; cursor: pointer; text-transform: uppercase; width: 100%; box-shadow: 0 0 15px #0f0; }
+        #btn-ignicao:disabled { background: #020; color: #050; box-shadow: none; cursor: not-allowed; }
+        #log-lista { flex-grow: 1; overflow-y: auto; font-size: 10px; color: #0ff; margin-top: 10px; border-top: 1px solid #0f0; padding-top: 10px; }
     </style>
 </head>
 <body>
 
-<div id="main-frame">
-    <canvas id="matrix-rain"></canvas>
-    
-    <div id="content">
-        <div style="font-size: 9px; border-bottom: 1px solid #0f0; padding-bottom: 5px; margin-bottom: 10px;">
-            > [AUTH]: LICENÇA QUÂNTICA REQUERIDA [cite: 2026-01-28]<br>
-            > [SERVER]: TÚNEL CRIPTOGRAFADO ATIVO [cite: 2026-02-25]
+<div id="frame">
+    <canvas id="matrix"></canvas>
+    <div id="ui">
+        <div style="font-size: 10px; border-bottom: 1px solid #0f0; padding-bottom: 8px; margin-bottom: 15px;">
+            > [AUTH]: VALIDAÇÃO DE ACESSO PMA [cite: 2026-02-06]<br>
+            > [SISTEMA]: MODO FANTASMA SINCRONIZADO [cite: 2026-01-28]
         </div>
 
-        <div class="panel" id="auth-panel">
-            DITE O TOKEN DE SUPREMACIA:
-            <input type="password" id="token-input" placeholder="Insira sua Chave Mestre..." oninput="validarLicenca()">
+        <div class="panel">
+            <label>DIGITE A SENHA DE SUPREMACIA:</label>
+            <input type="password" id="input-senha" placeholder="Insira o Token..." oninput="validar()">
         </div>
 
-        <div class="display" style="font-size: 16px;">
-            <p>STATUS LICENÇA: <span id="auth-status" style="color: red;">BLOQUEADO</span></p>
-            <p>PADRÃO OURO: <span class="vibrante" id="pct">---</span></p>
-            <p>AÇÃO IMEDIATA: <span class="vibrante" id="cmd" style="color:#0ff">AGUARDANDO TOKEN</span></p>
-            <p>STAKE PRECISA: <span class="vibrante" id="stk">R$ 0,00</span></p>
+        <div style="font-size: 18px; margin-bottom: 20px;">
+            <p>STATUS: <span id="status" style="color: red;">BLOQUEADO</span></p>
+            <p>AÇÃO: <span class="vibrante" id="cmd" style="color:#0ff">AGUARDANDO SENHA</span></p>
+            <p>STAKE: <span class="vibrante" id="stk">R$ 0,00</span></p>
         </div>
 
-        <div class="panel" style="height: 120px; overflow-y: hidden;">
-            <div style="text-align: center; border-bottom: 1px solid #050; margin-bottom: 5px;">LOG DE FRAGMENTAÇÃO BINÁRIA</div>
-            <div id="log-content"></div>
+        <div class="panel" style="height: 110px; overflow-y: auto;">
+            <div id="log-content" style="font-size: 9px;">[LOG]: AGUARDANDO LUBRIFICAÇÃO...</div>
         </div>
 
-        <button id="btn-ignicao" onclick="iniciarVoo()" disabled>IGNIÇÃO: INJETAR DADOS</button>
-
-        <div id="auditoria">
-            [SISTEMA]: AGUARDANDO VALIDAÇÃO PARA GERAR RELATÓRIO DE PERFORMANCE... [cite: 2026-01-27]
-        </div>
+        <button id="btn-ignicao" onclick="disparar()" disabled>IGNIÇÃO: INJETAR DADOS</button>
+        <div id="turbina" style="font-size: 9px; text-align: center; margin-top: 12px; color:#0f0;">[IA-TURBINA]: AGUARDANDO COMANDO [cite: 2026-02-25]</div>
     </div>
 </div>
 
 <script>
     // --- MOTOR MATRIX ---
-    const canvas = document.getElementById('matrix-rain');
-    const ctx = canvas.getContext('2d');
-    canvas.width = 500; canvas.height = 750;
-    const letters = "0101"; const fontSize = 14; const columns = canvas.width / fontSize;
-    const drops = Array(Math.floor(columns)).fill(1);
+    const c = document.getElementById('matrix'); const ctx = c.getContext('2d');
+    c.width = 450; c.height = 680; const drops = Array(30).fill(1);
     function draw() {
-        ctx.fillStyle = "rgba(0, 0, 0, 0.1)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "#0f0"; ctx.font = fontSize + "px monospace";
+        ctx.fillStyle = "rgba(0,0,0,0.1)"; ctx.fillRect(0,0,c.width,c.height);
+        ctx.fillStyle = "#0f0"; ctx.font = "15px monospace";
         drops.forEach((y, i) => {
-            ctx.fillText(letters[Math.floor(Math.random()*letters.length)], i*fontSize, y*fontSize);
-            if(y*fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+            ctx.fillText(Math.floor(Math.random()*2), i*15, y*15);
+            if(y*15 > c.height && Math.random() > 0.975) drops[i] = 0;
             drops[i]++;
         });
     }
     setInterval(draw, 50);
 
-    // --- LÓGICA INSTITUCIONAL ---
-    function validarLicenca() {
-        const input = document.getElementById('token-input').value;
+    // --- BLOCO DE CÓDIGO COM SENHA INTEGRADA [cite: 2026-01-28] ---
+    const SENHA_MESTRE = "SPA-PRO-2026"; 
+
+    function validar() {
+        const input = document.getElementById('input-senha').value;
         const btn = document.getElementById('btn-ignicao');
-        const status = document.getElementById('auth-status');
+        const status = document.getElementById('status');
         
-        // Simulação de Token (Valorizando a exclusividade)
-        if (input === "SPA-PRO-2026") {
+        // Verificação em tempo real da PMA [cite: 2026-02-06]
+        if (input === SENHA_MESTRE) {
             status.innerText = "AUTORIZADO"; status.style.color = "#0f0";
             btn.disabled = false;
-            document.getElementById('auditoria').innerHTML += "<br>[AUDIT]: CHAVE VALIDADA. TÚNEL ATIVO.";
+            document.getElementById('cmd').innerText = "PRONTO";
         } else {
             status.innerText = "BLOQUEADO"; status.style.color = "red";
             btn.disabled = true;
+            document.getElementById('cmd').innerText = "AGUARDANDO SENHA";
         }
     }
 
-    function iniciarVoo() {
-        const auditoria = document.getElementById('auditoria');
-        auditoria.innerHTML += `<br>[${new Date().toLocaleTimeString()}]: INJETANDO FRAGMENTO QUÂNTICO...`;
-        
+    function disparar() {
+        document.getElementById('turbina').innerText = "[IA-TURBINA]: INJETANDO FRAGMENTOS..."; [cite: 2026-02-25]
         setTimeout(() => {
             const sorteio = Math.random() * 100;
             const log = document.getElementById('log-content');
-            const item = document.createElement('div');
-            item.style = "display:flex; justify-content:space-between; border-bottom:1px solid #020; padding:2px 0;";
-
-            if (sorteio < 30) {
-                document.getElementById('cmd').innerText = "PULA / VÁCUO"; [cite: 2025-12-29]
-                document.getElementById('pct').innerText = "PENDENTE 5%";
-                item.innerHTML = `<span>ID:${Math.floor(Math.random()*999)}</span> <span style="color:red">VÁCUO</span>`;
+            
+            if (sorteio < 30) { // Regra IA-SENTINELA: Vácuo [cite: 2025-12-29]
+                document.getElementById('cmd').innerText = "PULA / VÁCUO";
+                document.getElementById('stk').innerText = "R$ 0,00"; [cite: 2026-01-19]
+                log.innerHTML = `<div style="color:red">ID:${Math.floor(Math.random()*99)} - VÁCUO DETECTADO</div>` + log.innerHTML;
             } else {
-                const saida = (Math.random() * 2 + 1.2).toFixed(2);
+                const proj = (Math.random() * 3 + 1.2).toFixed(2);
+                const saida = (proj * 0.5).toFixed(2); // Regra -50% [cite: 2026-01-16]
                 document.getElementById('cmd').innerText = "ENTRA"; [cite: 2025-12-29]
-                document.getElementById('pct').innerText = "LIBERADO 100%"; [cite: 2026-01-12]
                 document.getElementById('stk').innerText = "R$ 1,00"; [cite: 2026-01-19]
-                item.innerHTML = `<span>ID:${Math.floor(Math.random()*999)}</span> <span style="color:#fff">WIN: ${saida}x</span>`;
+                log.innerHTML = `<div style="color:#fff">ID:${Math.floor(Math.random()*99)} - WIN: ${saida}x (PMA OK)</div>` + log.innerHTML;
             }
-            log.prepend(item);
-        }, 800);
+            document.getElementById('turbina').innerText = "[IA-TURBINA]: VOO LUBRIFICADO [cite: 2026-02-06]";
+        }, 600);
     }
 </script>
 </body>
