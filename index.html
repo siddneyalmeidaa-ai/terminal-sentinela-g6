@@ -8,36 +8,36 @@
         * { -webkit-tap-highlight-color: transparent; outline: none; box-sizing: border-box; }
         body { background: #000; margin: 0; font-family: 'Courier New', monospace; color: #0f0; overflow: hidden; height: 100vh; position: relative; }
         
-        /* CHUVA DIGITAL - CAMADA DE FUNDO FORÇADA */
-        #matrix { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; opacity: 0.3; }
+        /* CAMADA 1: FLOW DIGITAL */
+        #matrix { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; opacity: 0.28; }
 
-        /* INTERFACE - CAMADA SUPERIOR */
-        #ui-layer { 
-            position: relative; 
-            z-index: 10; 
-            height: 100vh; 
-            display: flex; 
-            flex-direction: column; 
-            padding: 15px;
-            background: rgba(0,0,0,0.2); 
-        }
+        /* CAMADA 2: INTERFACE */
+        #ui-layer { position: relative; z-index: 10; height: 100vh; display: flex; flex-direction: column; padding: 15px; background: rgba(0,0,0,0.25); }
 
-        .header { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #050; }
-        .main-display { background: rgba(0,30,0,0.9); padding: 15px; border-radius: 15px; border: 1px solid #0f0; margin: 15px 0; box-shadow: 0 0 15px #0f03; }
+        .header { display: flex; justify-content: space-between; padding-bottom: 12px; border-bottom: 1px solid #050; }
         
-        /* HISTÓRICO EM GRID - OCUPA O ESPAÇO CENTRAL */
-        #log-area { flex: 1; overflow-y: auto; margin-bottom: 20px; padding-right: 5px; }
+        /* SÍMBOLOS DAS IAs */
+        .ia-symbols { font-size: 14px; letter-spacing: 5px; margin-bottom: 4px; display: block; filter: drop-shadow(0 0 5px #0f0); }
+
+        .radar-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; background: #0f0; box-shadow: 0 0 10px #0f0; transition: 0.3s; animation: pulse 1.5s infinite; }
+
+        .main-display { background: rgba(0,35,0,0.9); padding: 15px; border-radius: 15px; border: 1px solid #0f0; margin: 15px 0; box-shadow: 0 0 15px rgba(0,255,0,0.15); }
+        .vibrante { color: #fff; text-shadow: 0 0 10px #0f0; font-weight: bold; font-size: 30px; display: block; }
+
+        /* GRID DE CARDS */
+        #log-area { flex: 1; overflow-y: auto; margin-bottom: 15px; scrollbar-width: none; }
         #log-content { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .card { background: rgba(0,40,0,0.7); border: 1px solid #0a0; border-radius: 10px; padding: 10px; animation: slideIn 0.3s ease; }
+        .card { background: rgba(0,45,0,0.75); border: 1px solid #0a0; border-radius: 10px; padding: 10px; animation: slideIn 0.3s ease; border-left: 3px solid #0f0; }
         .card-val { font-weight: bold; font-size: 13px; color: #fff; display: block; margin-top: 5px; }
 
-        /* PAINEL DE COMANDO - TRAVADO NA BASE */
-        .footer-ctrl { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding-bottom: 40px; }
-        .btn { padding: 18px; border-radius: 15px; font-weight: 900; border: none; cursor: pointer; text-transform: uppercase; font-size: 11px; z-index: 100; }
+        /* RODAPÉ BLINDADO (BOTÃO FIXO) */
+        .footer-ctrl { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding-bottom: 45px; }
+        .btn { padding: 18px; border-radius: 15px; font-weight: 900; border: none; cursor: pointer; text-transform: uppercase; font-size: 11px; }
         #btn-trap { background: #1a1a1a; color: #fff; border: 1px solid #444; }
-        #btn-trap.active { background: #f00; box-shadow: 0 0 15px #f00; }
+        #btn-trap.active { background: #f00; box-shadow: 0 0 15px #f00; border-color: #fff; }
         #btn-ignicao { background: #0f0; color: #000; font-size: 18px; grid-column: span 2; box-shadow: 0 0 25px #0f0; }
 
+        @keyframes pulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.85); } 100% { opacity: 1; transform: scale(1); } }
         @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
     </style>
 </head>
@@ -47,13 +47,22 @@
 
 <div id="ui-layer">
     <div class="header">
-        <div style="font-size: 10px;">🔗 SOBERANIA Ψ V.2202<br><span style="color:#fff; background:#050; padding:2px 5px; border-radius:3px;">🥷 OPERADOR: S.A.</span></div>
-        <div style="text-align:right;"><span id="radar-text" style="font-size:9px; color:#0f0; font-weight:bold;">VIGILÂNCIA: LIMPO</span><br><div style="width:10px; height:10px; background:#0f0; border-radius:50%; display:inline-block;" id="radar-dot"></div></div>
+        <div>
+            <span class="ia-symbols">👁️ ⚡ 🧠 🎯 👻 🔮</span>
+            <div style="font-size: 10px; color: #0a0; margin-top: 2px;">🔗 CADEIA Ψ V.2205</div>
+            <span style="color:#fff; background:#050; padding:2px 6px; border-radius:4px; font-weight:bold; font-size: 11px;">
+                🥷 OPERADOR: S.A.
+            </span>
+        </div>
+        <div style="text-align:right;">
+            <span id="radar-text" style="font-size:9px; color:#0f0; font-weight:bold;">VIGILÂNCIA: LIMPO</span><br>
+            <div class="radar-dot" id="radar-dot"></div>
+        </div>
     </div>
 
     <div class="main-display">
         <span style="font-size: 10px; color: #0a0;">ASSERTIVIDADE DE FLUXO</span>
-        <span style="color:#fff; text-shadow:0 0 10px #0f0; font-size:30px; font-weight:bold; display:block;" id="pct">0%</span>
+        <span class="vibrante" id="pct">0%</span>
         <div style="display:flex; justify-content:space-between; margin-top:10px;">
             <div><span style="font-size: 9px; color:#0a0;">AÇÃO Ψ</span><br><span id="cmd" style="color:#0ff; font-weight:bold; font-size:18px;">PRONTO</span></div>
             <div style="text-align:right;"><span style="font-size: 9px; color:#0a0;">STAKE DITADA</span><br><span id="stk" style="color:#ff0; font-weight:bold; font-size:18px;">R$ 0,00</span></div>
@@ -75,54 +84,61 @@
     const pct = document.getElementById('pct');
     const cmd = document.getElementById('cmd');
     const stk = document.getElementById('stk');
+    const radarDot = document.getElementById('radar-dot');
+    const radarText = document.getElementById('radar-text');
 
-    // FIX: ANIMAÇÃO DE FLUXO (OPÇÃO 3) RE-SINCRONIZADA
+    // FLOW DIGITAL
     const canvas = document.getElementById('matrix');
     const ctx = canvas.getContext('2d');
     function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
     window.onresize = resize; resize();
-
     const columns = Math.floor(canvas.width / 10);
     const drops = Array(columns).fill(0).map(() => Math.random() * canvas.height);
 
     function draw() {
-        ctx.fillStyle = "rgba(0, 0, 0, 0.1)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "rgba(0, 0, 0, 0.12)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = "#0f0";
         for (let i = 0; i < drops.length; i++) {
-            ctx.fillRect(i * 10, drops[i], 1, Math.random() * 20 + 5);
-            drops[i] += Math.random() * 10 + 5;
+            ctx.fillRect(i * 10, drops[i], 1, Math.random() * 25 + 5);
+            drops[i] += Math.random() * 12 + 5;
             if (drops[i] > canvas.height) drops[i] = -20;
         }
     }
     setInterval(draw, 40);
 
+    // SINCRONIZAÇÃO LUZINHA + RADAR
     function toggleTrap() {
         trapAtiva = !trapAtiva;
         const btn = document.getElementById('btn-trap');
-        btn.classList.toggle('active');
-        btn.innerText = trapAtiva ? "🪤 ISCAS ATIVAS" : "🪤 ARMAR ISCAS";
+        if(trapAtiva) {
+            btn.classList.add('active'); btn.innerText = "🪤 ISCAS ATIVAS";
+            radarText.innerText = "CONTRA-ATAQUE: RUÍDO"; radarText.style.color = "#0ff";
+            radarDot.style.background = "#0ff"; radarDot.style.boxShadow = "0 0 15px #0ff";
+        } else {
+            btn.classList.remove('active'); btn.innerText = "🪤 ARMAR ISCAS";
+            radarText.innerText = "VIGILÂNCIA: LIMPO"; radarText.style.color = "#0f0";
+            radarDot.style.background = "#0f0"; radarDot.style.boxShadow = "0 0 10px #0f0";
+        }
     }
 
+    // DISPARO SOBERANO
     function disparar() {
         const seed = Math.random();
         const id = Math.floor(seed * 9999);
         const card = document.createElement('div'); card.className = 'card';
-        
-        let magnitude = seed + (trapAtiva ? 0.2 : 0);
+        let magnitude = seed + (trapAtiva ? 0.22 : 0);
         const assert = (magnitude * 100 > 100 ? 100 : magnitude * 100).toFixed(0);
         pct.innerText = `${assert}%`;
-        
-        // Lógica de Saída -50% incorporada [cite: 2026-01-16]
-        const xCalculado = (magnitude * 8 + 1.2).toFixed(2);
-        const saidaSegura = (xCalculado * 0.5).toFixed(2);
+        const xCalc = (magnitude * 8 + 1.2).toFixed(2);
+        const saidaSegura = (xCalc * 0.5).toFixed(2); // Regra -50% [cite: 2026-01-16]
 
-        if (magnitude < 0.4) {
+        if (magnitude < 0.42 && !trapAtiva) {
             cmd.innerText = "PULA"; stk.innerText = "R$ 0,00";
             card.innerHTML = `<span style="font-size:8px;">#${id}</span><span class="card-val" style="color:#f00;">VÁCUO</span>`;
         } else {
-            cmd.innerText = "ENTRA"; stk.innerText = assert > 90 ? "R$ 1,00" : "R$ 0,20";
-            const cor = magnitude > 0.85 ? "#ff007f" : "#9d4edd";
-            card.innerHTML = `<span style="font-size:8px;">#${id}</span><span class="card-val" style="color:${cor};">${magnitude > 0.85 ? 'ROSA' : 'ROXA'} (${saidaSegura}x)</span>`;
+            cmd.innerText = "ENTRA"; stk.innerText = assert > 92 ? "R$ 1,00" : (assert > 75 ? "R$ 0,20" : "R$ 0,10");
+            const cor = magnitude > 0.86 ? "#ff007f" : "#9d4edd";
+            card.innerHTML = `<span style="font-size:8px;">#${id}</span><span class="card-val" style="color:${cor};">${magnitude > 0.86 ? 'ROSA' : 'ROXA'} (${saidaSegura}x)</span>`;
         }
         log.prepend(card);
         if (log.children.length > 8) log.removeChild(log.lastChild);
