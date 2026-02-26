@@ -6,38 +6,38 @@
     <title>🔗 CADEIA Ψ SOBERANIA - OPERADOR S.A.</title>
     <style>
         * { -webkit-tap-highlight-color: transparent; outline: none; box-sizing: border-box; }
-        body { background: #000; margin: 0; font-family: 'Courier New', monospace; color: #0f0; overflow: hidden; height: 100dvh; position: relative; }
+        body { background: #000; margin: 0; font-family: 'Courier New', monospace; color: #0f0; overflow: hidden; height: 100vh; position: relative; transition: 0.5s; }
         
-        canvas#matrix { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; opacity: 0.3; will-change: transform; transform: translateZ(0); }
+        canvas#matrix { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; opacity: 0.25; }
 
-        #ui-layer { position: relative; z-index: 10; height: 100dvh; display: flex; flex-direction: column; padding: 10px; background: rgba(0,0,0,0.4); }
+        #ui-layer { position: relative; z-index: 10; height: 100vh; display: flex; flex-direction: column; padding: 15px; background: rgba(0,0,0,0.2); }
 
-        /* CABEÇALHO REESTRUTURADO EM DUAS CAMADAS */
-        .status-header { flex-shrink: 0; border-bottom: 1px solid #050; padding-bottom: 8px; margin-bottom: 5px; }
-        .header-row-1 { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-        .header-row-2 { display: flex; justify-content: space-between; gap: 4px; }
+        .header { display: flex; justify-content: space-between; padding-bottom: 12px; border-bottom: 1px solid #050; }
+        .ia-symbols { font-size: 14px; letter-spacing: 5px; filter: drop-shadow(0 0 5px #0f0); }
+        .radar-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; background: #0f0; box-shadow: 0 0 10px #0f0; transition: 0.3s; animation: pulse 1.5s infinite; }
+
+        .main-display { background: rgba(0,35,0,0.92); padding: 15px; border-radius: 15px; border: 1px solid #0f0; margin: 15px 0; position: relative; }
+        .vibrante { color: #fff; text-shadow: 0 0 10px #0f0; font-weight: bold; font-size: 30px; display: block; }
         
-        .ia-symbols { font-size: 14px; letter-spacing: 3px; filter: drop-shadow(0 0 5px #0f0); }
-        .mini-tag { font-size: 7px; padding: 2px 5px; border-radius: 4px; background: rgba(0,0,0,0.6); border: 1px solid #0f0; font-weight: bold; white-space: nowrap; }
+        /* MINI INDICADORES V.2209 */
+        .stats-bar { display: flex; gap: 10px; margin-top: 5px; }
+        .stat-tag { font-size: 8px; padding: 2px 5px; border-radius: 3px; background: rgba(0,0,0,0.5); border: 1px solid #0a0; }
 
-        .main-display { background: rgba(0,25,0,0.96); padding: 12px; border-radius: 12px; border: 1px solid #0f0; margin-bottom: 8px; flex-shrink: 0; }
-        .vibrante { color: #fff; text-shadow: 0 0 10px #0f0; font-weight: bold; font-size: 28px; display: block; }
-        
-        #log-area { flex: 1; overflow-y: auto; margin-bottom: 8px; scrollbar-width: none; }
-        #log-content { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .card { background: rgba(0,40,0,0.9); border: 1px solid #0a0; border-radius: 8px; padding: 8px; border-left: 3px solid #0f0; animation: slideIn 0.3s ease; }
-        .card-val { font-weight: bold; font-size: 11px; color: #fff; display: block; }
+        #log-area { flex: 1; overflow-y: auto; margin-bottom: 15px; scrollbar-width: none; }
+        #log-content { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .card { background: rgba(0,45,0,0.8); border: 1px solid #0a0; border-radius: 10px; padding: 10px; border-left: 3px solid #0f0; animation: slideIn 0.3s ease; }
+        .card-val { font-weight: bold; font-size: 13px; color: #fff; display: block; margin-top: 5px; }
 
-        .sovereignty-footer { background: rgba(0,60,0,0.5); border-top: 1px solid #0f0; padding: 6px; margin: 0 -10px; display: flex; justify-content: space-around; font-size: 8px; color: #fff; flex-shrink: 0; font-weight: bold; }
-
-        .footer-ctrl { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding-top: 5px; flex-shrink: 0; }
-        .btn { padding: 15px; border-radius: 12px; font-weight: 900; border: none; cursor: pointer; text-transform: uppercase; font-size: 10px; transition: 0.2s; }
+        .footer-ctrl { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding-bottom: 45px; }
+        .btn { padding: 18px; border-radius: 15px; font-weight: 900; border: none; cursor: pointer; text-transform: uppercase; font-size: 10px; transition: 0.2s; }
         #btn-trap { background: #1a1a1a; color: #fff; border: 1px solid #444; }
         #btn-trap.active { background: #f00; box-shadow: 0 0 15px #f00; border-color: #fff; }
         #btn-rota { background: #003366; color: #fff; border: 1px solid #00f; }
-        #btn-ignicao { background: #0f0; color: #000; font-size: 16px; grid-column: span 2; box-shadow: 0 0 20px #0f0; height: 55px; }
+        #btn-ignicao { background: #0f0; color: #000; font-size: 18px; grid-column: span 2; box-shadow: 0 0 25px #0f0; margin-top: 5px; }
+        #btn-ignicao:disabled { background: #333; color: #666; box-shadow: none; cursor: not-allowed; }
 
-        @keyframes slideIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; } }
+        @keyframes pulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1); } }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
     </style>
 </head>
 <body>
@@ -45,126 +45,176 @@
 <canvas id="matrix"></canvas>
 
 <div id="ui-layer">
-    <div class="status-header">
-        <div class="header-row-1">
-            <span class="ia-symbols">👁️ ⚡ 🧠 🎯 👻 🔮</span>
-            <span id="timer-display" style="font-size:10px; color:#ff0; font-weight:bold;">SESSÃO: 15:00</span>
+    <div class="header">
+        <div>
+            <span class="ia-symbols">👁️ ⚡ 🧠 🎯 👻 🔮</span><br>
+            <span style="color:#fff; background:#050; padding:2px 6px; border-radius:4px; font-weight:bold; font-size: 10px;">🥷 OPERADOR: S.A.</span>
         </div>
-        <div class="header-row-2">
-            <span class="mini-tag" id="heatmap" style="color:#0f0; border-color:#0f0;">CALOR: FRIO</span>
-            <span class="mini-tag" id="vacuo-tag" style="color:#0ff; border-color:#0ff;">VÁCUO: 0%</span>
-            <span class="mini-tag" style="color:#fff; background:#050;">SYNC: OK</span>
+        <div style="text-align:right;">
+            <span id="timer-display" style="font-size:11px; color:#ff0; font-weight:bold;">SESSÃO: 15:00</span><br>
+            <span id="radar-text" style="font-size:9px; color:#0f0; font-weight:bold;">ROTA: ALPHA</span>
         </div>
     </div>
 
     <div class="main-display">
-        <span style="font-size: 8px; color: #0a0;">ASSERTIVIDADE Ψ S.A.</span>
+        <div class="stats-bar">
+            <span class="stat-tag" id="density-tag">DENSIDADE VÁCUO: 0%</span>
+            <span class="stat-tag" id="doctor-tag" style="border-color:#0ff">DR. SINCRONIZADO</span>
+        </div>
         <span class="vibrante" id="pct">0%</span>
-        <div style="display:flex; justify-content:space-between; margin-top:5px;">
-            <div><span style="font-size: 8px; color:#0a0;">AÇÃO</span><br><span id="cmd" style="color:#0ff; font-weight:bold; font-size:14px;">READY</span></div>
-            <div style="text-align:right;"><span style="font-size: 8px; color:#0a0;">STAKE</span><br><span id="stk" style="color:#ff0; font-weight:bold; font-size:14px;">R$ 0,00</span></div>
+        <div style="display:flex; justify-content:space-between; margin-top:10px;">
+            <div><span style="font-size: 9px; color:#0a0;">AÇÃO Ψ</span><br><span id="cmd" style="color:#0ff; font-weight:bold; font-size:18px;">AGUARDANDO</span></div>
+            <div style="text-align:right;"><span style="font-size: 9px; color:#0a0;">STAKE STEALTH</span><br><span id="stk" style="color:#ff0; font-weight:bold; font-size:18px;">R$ 0,00</span></div>
         </div>
     </div>
 
     <div id="log-area"><div id="log-content"></div></div>
 
-    <div class="sovereignty-footer">
-        <span>ECONOMIA: <span id="saved" style="color:#0f0;">R$ 0,00</span></span>
-        <span>DOUTOR: <span id="rota-txt" style="color:#0f0;">ALPHA</span></span>
-    </div>
-
     <div class="footer-ctrl">
         <button class="btn" id="btn-trap" onclick="toggleTrap()">🪤 ISCAS</button>
-        <button class="btn" id="btn-rota" onclick="alternar()">🔄 ROTA</button>
-        <button class="btn" id="btn-ignicao" onclick="disparar()">🔗 INJETAR Ψ</button>
+        <button class="btn" id="btn-rota" onclick="alternarRota()">🔄 MUDAR ROTA</button>
+        <button class="btn" id="btn-ignicao" onclick="disparar()">🔗 INJETAR & TESTAR Ψ</button>
     </div>
 </div>
 
 <script>
-    let trapAtiva = false; let rota = 0; let totalSaved = 0; let seconds = 900; let history = [];
+    let trapAtiva = false;
+    let vacuoCount = 0;
+    let history = []; // Histórico para cálculo de densidade
+    let rotaAtual = 0;
+    let secondsLeft = 900; // 15 minutos
+    
     const rotas = [
-        {n: "ALPHA", c: "#0f0", x: 1.50},
-        {n: "BETA", c: "#00f", x: 2.50},
-        {n: "GAMMA", c: "#9d4edd", x: 1.20}
+        {nome: "ALPHA (ESTÁVEL)", cor: "#0f0", bg: "rgba(0,35,0,0.92)"},
+        {nome: "BETA (AGRESSIVA)", cor: "#00f", bg: "rgba(0,0,35,0.92)"},
+        {nome: "GAMMA (SIGILO)", cor: "#9d4edd", bg: "rgba(25,0,35,0.92)"}
     ];
 
+    const log = document.getElementById('log-content');
+    const pct = document.getElementById('pct');
+    const cmd = document.getElementById('cmd');
+    const stk = document.getElementById('stk');
+    const radarText = document.getElementById('radar-text');
+    const timerDisplay = document.getElementById('timer-display');
+    const densityTag = document.getElementById('density-tag');
+    const btnIgnicao = document.getElementById('btn-ignicao');
+    const display = document.querySelector('.main-display');
+
+    // 1. SESSION TIMER
+    setInterval(() => {
+        if (secondsLeft > 0) {
+            secondsLeft--;
+            let mins = Math.floor(secondsLeft / 60);
+            let secs = secondsLeft % 60;
+            timerDisplay.innerText = `SESSÃO: ${mins}:${secs < 10 ? '0'+secs : secs}`;
+            if (secondsLeft < 180) timerDisplay.style.color = "#f00";
+        } else {
+            timerDisplay.innerText = "FADIGA DETECTADA!";
+            vibrar('VACUO');
+        }
+    }, 1000);
+
+    // 2. FLOW DIGITAL
     const canvas = document.getElementById('matrix');
     const ctx = canvas.getContext('2d');
     function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
     window.onresize = resize; resize();
-    const columns = Math.floor(canvas.width / 12);
-    const drops = Array(columns).fill(0).map(() => Math.random() * -100);
+    const columns = Math.floor(canvas.width / 10);
+    const drops = Array(columns).fill(0).map(() => Math.random() * canvas.height);
 
     function draw() {
-        ctx.fillStyle = "rgba(0, 0, 0, 0.15)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = rotas[rota].c;
-        ctx.font = "12px monospace";
+        ctx.fillStyle = "rgba(0, 0, 0, 0.12)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = rotas[rotaAtual].cor;
         for (let i = 0; i < drops.length; i++) {
-            const text = String.fromCharCode(Math.random() * 128);
-            ctx.fillText(text, i * 12, drops[i]);
-            drops[i] += 15;
-            if (drops[i] > canvas.height && Math.random() > 0.98) drops[i] = 0;
+            ctx.fillRect(i * 10, drops[i], 1, Math.random() * 25 + 5);
+            drops[i] += Math.random() * 12 + 5;
+            if (drops[i] > canvas.height) drops[i] = -20;
         }
     }
-    setInterval(draw, 50);
+    setInterval(draw, 40);
 
-    setInterval(() => {
-        if(seconds > 0) {
-            seconds--;
-            let m = Math.floor(seconds/60); let s = seconds%60;
-            document.getElementById('timer-display').innerText = `SESSÃO: ${m}:${s<10?'0'+s:s}`;
-        }
-    }, 1000);
+    function alternarRota() {
+        rotaAtual = (rotaAtual + 1) % rotas.length;
+        radarText.innerText = `ROTA: ${rotas[rotaAtual].nome}`;
+        radarText.style.color = rotas[rotaAtual].cor;
+        display.style.borderColor = rotas[rotaAtual].cor;
+        vibrar('NORMAL');
+        history = []; // Reset densidade ao mudar rota
+        densityTag.innerText = "DENSIDADE VÁCUO: 0%";
+        log.innerHTML = ''; 
+    }
 
-    function alternar() {
-        rota = (rota + 1) % 3;
-        document.getElementById('rota-txt').innerText = rotas[rota].n;
-        document.getElementById('rota-txt').style.color = rotas[rota].c;
-        document.querySelector('.main-display').style.borderColor = rotas[rota].c;
-        document.getElementById('log-content').innerHTML = '';
-        history = []; document.getElementById('vacuo-tag').innerText = "VÁCUO: 0%";
+    function vibrar(tipo) {
+        if (!("vibrate" in navigator)) return;
+        if (tipo === 'ROSA') navigator.vibrate([100, 50, 100]);
+        if (tipo === 'VACUO') navigator.vibrate(400);
+        if (tipo === 'NORMAL') navigator.vibrate(20);
+    }
+
+    function camuflarStake(base) {
+        if (base === 0) return "R$ 0,00";
+        const centavos = (Math.random() * 0.08).toFixed(2);
+        return "R$ " + (parseFloat(base) + parseFloat(centavos)).toFixed(2);
     }
 
     function toggleTrap() {
         trapAtiva = !trapAtiva;
         document.getElementById('btn-trap').classList.toggle('active');
+        vibrar('NORMAL');
     }
 
     function disparar() {
         const seed = Math.random();
-        const magnitude = seed + (trapAtiva ? 0.22 : 0);
-        document.getElementById('pct').innerText = `${(magnitude*100 > 100 ? 100 : magnitude*100).toFixed(0)}%`;
+        const id = Math.floor(seed * 9999);
+        const card = document.createElement('div'); card.className = 'card';
+        card.style.borderColor = rotas[rotaAtual].cor;
         
+        let magnitude = seed + (trapAtiva ? 0.22 : 0);
+        const assert = (magnitude * 100 > 100 ? 100 : magnitude * 100).toFixed(0);
+        pct.innerText = `${assert}%`;
+        
+        const xCalc = (magnitude * 8 + 1.2).toFixed(2);
+        const saidaSegura = (xCalc * 0.5).toFixed(2); 
+
+        // Cálculo de Densidade (últimos 10)
         let isVacuo = (magnitude < 0.42 && !trapAtiva);
         history.push(isVacuo ? 1 : 0);
         if(history.length > 10) history.shift();
         let density = (history.reduce((a, b) => a + b, 0) / history.length * 100).toFixed(0);
-        
-        document.getElementById('vacuo-tag').innerText = `VÁCUO: ${density}%`;
-        const heat = document.getElementById('heatmap');
-        if(density > 40) {
-            heat.innerText = "CALOR: QUENTE"; heat.style.color = "#f00"; heat.style.borderColor = "#f00";
-        } else {
-            heat.innerText = "CALOR: FRIO"; heat.style.color = "#0f0"; heat.style.borderColor = "#0f0";
-        }
-
-        const card = document.createElement('div'); card.className = 'card';
-        card.style.borderColor = rotas[rota].c;
+        densityTag.innerText = `DENSIDADE VÁCUO: ${density}%`;
+        densityTag.style.color = density > 50 ? "#f00" : "#0f0";
 
         if (isVacuo) {
-            document.getElementById('cmd').innerText = "PULA";
-            document.getElementById('stk').innerText = "R$ 0,00";
-            card.innerHTML = `<span class="card-val" style="color:#f00;">VÁCUO EVITADO</span>`;
-            totalSaved += 0.20;
-            document.getElementById('saved').innerText = `R$ ${totalSaved.toFixed(2)}`;
+            vacuoCount++;
+            cmd.innerText = "PULA"; stk.innerText = "R$ 0,00";
+            card.innerHTML = `<span style="font-size:8px;">#${id}</span><span class="card-val" style="color:#f00;">VÁCUO</span>`;
+            vibrar('VACUO');
+
+            if(vacuoCount >= 3 || density > 70) {
+                btnIgnicao.disabled = true;
+                let timeLeft = 60;
+                const timer = setInterval(() => {
+                    btnIgnicao.innerText = `RECALIBRANDO: ${timeLeft}s`;
+                    timeLeft--;
+                    if(timeLeft < 0) {
+                        clearInterval(timer);
+                        btnIgnicao.disabled = false;
+                        btnIgnicao.innerText = "🔗 INJETAR & TESTAR Ψ";
+                        vacuoCount = 0;
+                    }
+                }, 1000);
+            }
         } else {
-            document.getElementById('cmd').innerText = "ENTRA";
-            document.getElementById('stk').innerText = `R$ ${(0.10 + Math.random()*0.09).toFixed(2)}`;
+            vacuoCount = 0;
+            cmd.innerText = "ENTRA"; 
+            const baseStake = assert > 92 ? 1.00 : (assert > 75 ? 0.20 : 0.10);
+            stk.innerText = camuflarStake(baseStake);
             const cor = magnitude > 0.86 ? "#ff007f" : "#9d4edd";
-            card.innerHTML = `<span class="card-val" style="color:${cor};">ALVO: ${rotas[rota].x.toFixed(2)}x</span>`;
+            if(magnitude > 0.86) vibrar('ROSA'); else vibrar('NORMAL');
+            card.innerHTML = `<span style="font-size:8px;">#${id}</span><span class="card-val" style="color:${cor};">${magnitude > 0.86 ? 'ROSA' : 'ROXA'} (${saidaSegura}x)</span>`;
         }
-        document.getElementById('log-content').prepend(card);
-        if (document.getElementById('log-content').children.length > 6) document.getElementById('log-content').removeChild(document.getElementById('log-content').lastChild);
+        log.prepend(card);
+        if (log.children.length > 8) log.removeChild(log.lastChild);
     }
 </script>
 </body>
