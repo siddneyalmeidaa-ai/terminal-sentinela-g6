@@ -6,7 +6,7 @@
     <title>🔗 CADEIA Ψ SOBERANIA - OPERADOR S.A.</title>
     <style>
         * { -webkit-tap-highlight-color: transparent; outline: none; box-sizing: border-box; }
-        body { background: #000; margin: 0; font-family: 'Courier New', monospace; color: #0f0; overflow: hidden; height: 100vh; position: relative; }
+        body { background: #000; margin: 0; font-family: 'Courier New', monospace; color: #0f0; overflow: hidden; height: 100vh; position: relative; transition: 0.5s; }
         
         canvas#matrix { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; opacity: 0.25; }
 
@@ -16,8 +16,12 @@
         .ia-symbols { font-size: 14px; letter-spacing: 5px; filter: drop-shadow(0 0 5px #0f0); }
         .radar-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; background: #0f0; box-shadow: 0 0 10px #0f0; transition: 0.3s; animation: pulse 1.5s infinite; }
 
-        .main-display { background: rgba(0,35,0,0.92); padding: 15px; border-radius: 15px; border: 1px solid #0f0; margin: 15px 0; box-shadow: 0 0 20px rgba(0,255,0,0.1); }
+        .main-display { background: rgba(0,35,0,0.92); padding: 15px; border-radius: 15px; border: 1px solid #0f0; margin: 15px 0; position: relative; }
         .vibrante { color: #fff; text-shadow: 0 0 10px #0f0; font-weight: bold; font-size: 30px; display: block; }
+        
+        /* MINI INDICADORES V.2209 */
+        .stats-bar { display: flex; gap: 10px; margin-top: 5px; }
+        .stat-tag { font-size: 8px; padding: 2px 5px; border-radius: 3px; background: rgba(0,0,0,0.5); border: 1px solid #0a0; }
 
         #log-area { flex: 1; overflow-y: auto; margin-bottom: 15px; scrollbar-width: none; }
         #log-content { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -25,10 +29,11 @@
         .card-val { font-weight: bold; font-size: 13px; color: #fff; display: block; margin-top: 5px; }
 
         .footer-ctrl { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding-bottom: 45px; }
-        .btn { padding: 18px; border-radius: 15px; font-weight: 900; border: none; cursor: pointer; text-transform: uppercase; font-size: 11px; transition: 0.1s; }
+        .btn { padding: 18px; border-radius: 15px; font-weight: 900; border: none; cursor: pointer; text-transform: uppercase; font-size: 10px; transition: 0.2s; }
         #btn-trap { background: #1a1a1a; color: #fff; border: 1px solid #444; }
         #btn-trap.active { background: #f00; box-shadow: 0 0 15px #f00; border-color: #fff; }
-        #btn-ignicao { background: #0f0; color: #000; font-size: 18px; grid-column: span 2; box-shadow: 0 0 25px #0f0; }
+        #btn-rota { background: #003366; color: #fff; border: 1px solid #00f; }
+        #btn-ignicao { background: #0f0; color: #000; font-size: 18px; grid-column: span 2; box-shadow: 0 0 25px #0f0; margin-top: 5px; }
         #btn-ignicao:disabled { background: #333; color: #666; box-shadow: none; cursor: not-allowed; }
 
         @keyframes pulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1); } }
@@ -46,16 +51,19 @@
             <span style="color:#fff; background:#050; padding:2px 6px; border-radius:4px; font-weight:bold; font-size: 10px;">🥷 OPERADOR: S.A.</span>
         </div>
         <div style="text-align:right;">
-            <span id="radar-text" style="font-size:9px; color:#0f0; font-weight:bold;">VIGILÂNCIA: LIMPO</span><br>
-            <div class="radar-dot" id="radar-dot"></div>
+            <span id="timer-display" style="font-size:11px; color:#ff0; font-weight:bold;">SESSÃO: 15:00</span><br>
+            <span id="radar-text" style="font-size:9px; color:#0f0; font-weight:bold;">ROTA: ALPHA</span>
         </div>
     </div>
 
     <div class="main-display">
-        <span style="font-size: 10px; color: #0a0;">ASSERTIVIDADE DE FLUXO</span>
+        <div class="stats-bar">
+            <span class="stat-tag" id="density-tag">DENSIDADE VÁCUO: 0%</span>
+            <span class="stat-tag" id="doctor-tag" style="border-color:#0ff">DR. SINCRONIZADO</span>
+        </div>
         <span class="vibrante" id="pct">0%</span>
         <div style="display:flex; justify-content:space-between; margin-top:10px;">
-            <div><span style="font-size: 9px; color:#0a0;">AÇÃO Ψ</span><br><span id="cmd" style="color:#0ff; font-weight:bold; font-size:18px;">PRONTO</span></div>
+            <div><span style="font-size: 9px; color:#0a0;">AÇÃO Ψ</span><br><span id="cmd" style="color:#0ff; font-weight:bold; font-size:18px;">AGUARDANDO</span></div>
             <div style="text-align:right;"><span style="font-size: 9px; color:#0a0;">STAKE STEALTH</span><br><span id="stk" style="color:#ff0; font-weight:bold; font-size:18px;">R$ 0,00</span></div>
         </div>
     </div>
@@ -63,8 +71,8 @@
     <div id="log-area"><div id="log-content"></div></div>
 
     <div class="footer-ctrl">
-        <button class="btn" id="btn-trap" onclick="toggleTrap()">🪤 ARMAR ISCAS</button>
-        <button class="btn" style="background:#9d4edd; color:#fff;" onclick="window.location.reload()">⚡ RESET CACHE</button>
+        <button class="btn" id="btn-trap" onclick="toggleTrap()">🪤 ISCAS</button>
+        <button class="btn" id="btn-rota" onclick="alternarRota()">🔄 MUDAR ROTA</button>
         <button class="btn" id="btn-ignicao" onclick="disparar()">🔗 INJETAR & TESTAR Ψ</button>
     </div>
 </div>
@@ -72,15 +80,41 @@
 <script>
     let trapAtiva = false;
     let vacuoCount = 0;
+    let history = []; // Histórico para cálculo de densidade
+    let rotaAtual = 0;
+    let secondsLeft = 900; // 15 minutos
+    
+    const rotas = [
+        {nome: "ALPHA (ESTÁVEL)", cor: "#0f0", bg: "rgba(0,35,0,0.92)"},
+        {nome: "BETA (AGRESSIVA)", cor: "#00f", bg: "rgba(0,0,35,0.92)"},
+        {nome: "GAMMA (SIGILO)", cor: "#9d4edd", bg: "rgba(25,0,35,0.92)"}
+    ];
+
     const log = document.getElementById('log-content');
     const pct = document.getElementById('pct');
     const cmd = document.getElementById('cmd');
     const stk = document.getElementById('stk');
-    const radarDot = document.getElementById('radar-dot');
     const radarText = document.getElementById('radar-text');
+    const timerDisplay = document.getElementById('timer-display');
+    const densityTag = document.getElementById('density-tag');
     const btnIgnicao = document.getElementById('btn-ignicao');
+    const display = document.querySelector('.main-display');
 
-    // FLOW DIGITAL (CANVAS)
+    // 1. SESSION TIMER
+    setInterval(() => {
+        if (secondsLeft > 0) {
+            secondsLeft--;
+            let mins = Math.floor(secondsLeft / 60);
+            let secs = secondsLeft % 60;
+            timerDisplay.innerText = `SESSÃO: ${mins}:${secs < 10 ? '0'+secs : secs}`;
+            if (secondsLeft < 180) timerDisplay.style.color = "#f00";
+        } else {
+            timerDisplay.innerText = "FADIGA DETECTADA!";
+            vibrar('VACUO');
+        }
+    }, 1000);
+
+    // 2. FLOW DIGITAL
     const canvas = document.getElementById('matrix');
     const ctx = canvas.getContext('2d');
     function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
@@ -90,7 +124,7 @@
 
     function draw() {
         ctx.fillStyle = "rgba(0, 0, 0, 0.12)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "#0f0";
+        ctx.fillStyle = rotas[rotaAtual].cor;
         for (let i = 0; i < drops.length; i++) {
             ctx.fillRect(i * 10, drops[i], 1, Math.random() * 25 + 5);
             drops[i] += Math.random() * 12 + 5;
@@ -99,7 +133,17 @@
     }
     setInterval(draw, 40);
 
-    // FUNÇÕES SENSORIAIS E CAMUFLAGEM
+    function alternarRota() {
+        rotaAtual = (rotaAtual + 1) % rotas.length;
+        radarText.innerText = `ROTA: ${rotas[rotaAtual].nome}`;
+        radarText.style.color = rotas[rotaAtual].cor;
+        display.style.borderColor = rotas[rotaAtual].cor;
+        vibrar('NORMAL');
+        history = []; // Reset densidade ao mudar rota
+        densityTag.innerText = "DENSIDADE VÁCUO: 0%";
+        log.innerHTML = ''; 
+    }
+
     function vibrar(tipo) {
         if (!("vibrate" in navigator)) return;
         if (tipo === 'ROSA') navigator.vibrate([100, 50, 100]);
@@ -109,47 +153,48 @@
 
     function camuflarStake(base) {
         if (base === 0) return "R$ 0,00";
-        const centavos = (Math.random() * 0.08).toFixed(2); // Injeção de centavos aleatórios
+        const centavos = (Math.random() * 0.08).toFixed(2);
         return "R$ " + (parseFloat(base) + parseFloat(centavos)).toFixed(2);
     }
 
     function toggleTrap() {
         trapAtiva = !trapAtiva;
-        const btn = document.getElementById('btn-trap');
-        if(trapAtiva) {
-            btn.classList.add('active'); btn.innerText = "🪤 ISCAS ATIVAS";
-            radarText.innerText = "CONTRA-ATAQUE: RUÍDO"; radarText.style.color = "#0ff";
-            radarDot.style.background = "#0ff"; radarDot.style.boxShadow = "0 0 15px #0ff";
-            vibrar('NORMAL');
-        } else {
-            btn.classList.remove('active'); btn.innerText = "🪤 ARMAR ISCAS";
-            radarText.innerText = "VIGILÂNCIA: LIMPO"; radarText.style.color = "#0f0";
-            radarDot.style.background = "#0f0"; radarDot.style.boxShadow = "0 0 10px #0f0";
-        }
+        document.getElementById('btn-trap').classList.toggle('active');
+        vibrar('NORMAL');
     }
 
     function disparar() {
         const seed = Math.random();
         const id = Math.floor(seed * 9999);
         const card = document.createElement('div'); card.className = 'card';
+        card.style.borderColor = rotas[rotaAtual].cor;
+        
         let magnitude = seed + (trapAtiva ? 0.22 : 0);
         const assert = (magnitude * 100 > 100 ? 100 : magnitude * 100).toFixed(0);
-        
         pct.innerText = `${assert}%`;
+        
         const xCalc = (magnitude * 8 + 1.2).toFixed(2);
-        const saidaSegura = (xCalc * 0.5).toFixed(2); // Regra -50% [cite: 2026-01-16]
+        const saidaSegura = (xCalc * 0.5).toFixed(2); 
 
-        if (magnitude < 0.42 && !trapAtiva) {
+        // Cálculo de Densidade (últimos 10)
+        let isVacuo = (magnitude < 0.42 && !trapAtiva);
+        history.push(isVacuo ? 1 : 0);
+        if(history.length > 10) history.shift();
+        let density = (history.reduce((a, b) => a + b, 0) / history.length * 100).toFixed(0);
+        densityTag.innerText = `DENSIDADE VÁCUO: ${density}%`;
+        densityTag.style.color = density > 50 ? "#f00" : "#0f0";
+
+        if (isVacuo) {
             vacuoCount++;
             cmd.innerText = "PULA"; stk.innerText = "R$ 0,00";
             card.innerHTML = `<span style="font-size:8px;">#${id}</span><span class="card-val" style="color:#f00;">VÁCUO</span>`;
             vibrar('VACUO');
 
-            if(vacuoCount >= 3) {
+            if(vacuoCount >= 3 || density > 70) {
                 btnIgnicao.disabled = true;
                 let timeLeft = 60;
                 const timer = setInterval(() => {
-                    btnIgnicao.innerText = `COOLDOWN: ${timeLeft}s`;
+                    btnIgnicao.innerText = `RECALIBRANDO: ${timeLeft}s`;
                     timeLeft--;
                     if(timeLeft < 0) {
                         clearInterval(timer);
@@ -164,10 +209,8 @@
             cmd.innerText = "ENTRA"; 
             const baseStake = assert > 92 ? 1.00 : (assert > 75 ? 0.20 : 0.10);
             stk.innerText = camuflarStake(baseStake);
-            
             const cor = magnitude > 0.86 ? "#ff007f" : "#9d4edd";
             if(magnitude > 0.86) vibrar('ROSA'); else vibrar('NORMAL');
-            
             card.innerHTML = `<span style="font-size:8px;">#${id}</span><span class="card-val" style="color:${cor};">${magnitude > 0.86 ? 'ROSA' : 'ROXA'} (${saidaSegura}x)</span>`;
         }
         log.prepend(card);
