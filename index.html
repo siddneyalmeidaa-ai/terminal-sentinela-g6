@@ -5,32 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TERMINAL SUPREMACIA - SPA</title>
     <style>
-        /* [cite: 2026-01-12] - Otimizado para celular sem erro de acento */
-        body { background: #000; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; font-family: monospace; }
+        /* Estilização Padrão Ouro Matrix */
+        body { background: #000; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; font-family: 'Courier New', monospace; overflow-y: auto; }
         
         #terminal-box {
-            position: relative; width: 90%; max-width: 450px; height: 550px;
+            position: relative; width: 90%; max-width: 450px; min-height: 600px;
             border: 3px solid #0f0; border-radius: 20px; overflow: hidden;
-            box-shadow: 0 0 25px #0f0; background: #000;
+            box-shadow: 0 0 30px #0f0; background: #000; margin: 20px 0;
         }
 
-        /* Camada da Chuva de Códigos (Matrix) Atrás da Interface */
-        #matrix-bg { position: absolute; top: 0; left: 0; z-index: 1; opacity: 0.3; }
+        #matrix-bg { position: absolute; top: 0; left: 0; z-index: 1; opacity: 0.25; }
 
-        /* Camada de Dados e Interface (Frontal) */
-        #ui-layer {
-            position: relative; z-index: 2; padding: 25px; color: #0f0;
-            display: flex; flex-direction: column; height: 100%; box-sizing: border-box;
+        #ui-layer { position: relative; z-index: 2; padding: 20px; color: #0f0; display: flex; flex-direction: column; height: 100%; }
+
+        .status-header { font-size: 11px; border-bottom: 1px solid #0f0; padding-bottom: 10px; margin-bottom: 15px; }
+        .main-display { font-size: 19px; line-height: 1.6; }
+        .vibrante { color: #fff; text-shadow: 0 0 12px #0f0; font-weight: bold; }
+        
+        /* Novo Bloco: Histórico Fragmentado */
+        #historico-container {
+            margin-top: 20px; padding: 10px; border: 1px solid #050; border-radius: 10px;
+            background: rgba(0, 20, 0, 0.6); font-size: 12px; height: 100px; overflow-y: hidden;
         }
-
-        .status-header { font-size: 10px; border-bottom: 1px solid #0f0; padding-bottom: 10px; }
-        .main-display { flex-grow: 1; margin-top: 20px; font-size: 18px; }
-        .liberado { color: #fff; text-shadow: 0 0 10px #0f0; }
+        .hist-item { border-bottom: 1px solid #020; padding: 3px 0; display: flex; justify-content: space-between; }
 
         #btn-ignicao {
-            background: #0f0; color: #000; border: none; padding: 20px;
+            background: #0f0; color: #000; border: none; padding: 18px;
             border-radius: 15px; font-weight: bold; font-size: 20px;
-            cursor: pointer; text-transform: uppercase; margin-top: auto;
+            cursor: pointer; text-transform: uppercase; margin-top: 15px;
+            box-shadow: 0 0 15px #0f0; transition: 0.3s;
         }
     </style>
 </head>
@@ -41,35 +44,41 @@
     
     <div id="ui-layer">
         <div class="status-header">
-            > [SISTEMA]: MEMÓRIA QUÂNTICA SINCRONIZADA [cite: 2026-02-06]<br>
-            > [STATUS]: IPI RESETADO E PROTEGIDO [cite: 2026-01-28]
+            > [SISTEMA]: MEMÓRIA QUÂNTICA SINCRONIZADA<br>
+            > [STATUS]: IPI RESETADO / MODO FANTASMA
         </div>
 
         <div class="main-display">
-            <p>PADRÃO OURO: <span class="liberado" id="pct">PENDENTE 0%</span></p>
-            <p>AÇÃO IMEDIATA: <span id="cmd">AGUARDANDO...</span></p>
-            <p>STAKE PRECISA: <span id="stk">R$ 0,00</span></p>
-            <br>
-            <small id="turbina-info" style="font-size: 12px; color: #0ff;">
-                IA-TURBINA: AGUARDANDO IGNIÇÃO...
-            </small>
+            <p>PADRÃO OURO: <span class="vibrante" id="pct">PENDENTE 0%</span></p>
+            <p>AÇÃO IMEDIATA: <span class="vibrante" id="cmd" style="color:#0ff">AGUARDANDO...</span></p>
+            <p>STAKE PRECISA: <span class="vibrante" id="stk">R$ 0,00</span></p>
         </div>
 
-        <button id="btn-ignicao" onclick="iniciarInjecao()">Ignição: Injetar Dados</button>
+        <div id="historico-container">
+            <div style="color: #0f0; text-align: center; border-bottom: 1px solid #0f0; margin-bottom: 5px;">HISTÓRICO DE FRAGMENTAÇÃO</div>
+            <div id="lista-hist">
+                <div class="hist-item"><span>Semente: 7f8...</span> <span>Saída: --</span></div>
+            </div>
+        </div>
+
+        <button id="btn-ignicao" onclick="executarIgnicao()">IGNIÇÃO: INJETAR DADOS</button>
+        
+        <div id="turbina-log" style="font-size: 9px; margin-top: 10px; text-align: center; color: #0f0;">
+            [IA-TURBINA]: AGUARDANDO SINCRONISMO SENSORIAL...
+        </div>
     </div>
 </div>
 
 <script>
-    // --- MOTOR MATRIX INTEGRADO (Atrás da UI) ---
+    // --- MOTOR MATRIX INTEGRADO ---
     const canvas = document.getElementById('matrix-bg');
     const ctx = canvas.getContext('2d');
     const box = document.getElementById('terminal-box');
     canvas.width = box.offsetWidth; canvas.height = box.offsetHeight;
-    const letters = "0101010101010101"; // Focado em fragmentação binária
-    const fontSize = 14; const columns = canvas.width / fontSize;
+    const letters = "01010101"; const fontSize = 14; const columns = canvas.width / fontSize;
     const drops = Array(Math.floor(columns)).fill(1);
 
-    function drawMatrix() {
+    function draw() {
         ctx.fillStyle = "rgba(0, 0, 0, 0.1)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = "#0f0"; ctx.font = fontSize + "px monospace";
         drops.forEach((y, i) => {
@@ -79,20 +88,29 @@
             drops[i]++;
         });
     }
-    setInterval(drawMatrix, 50);
+    setInterval(draw, 50);
 
-    // --- LÓGICA DE INJEÇÃO E FRAGMENTAÇÃO ---
-    function iniciarInjecao() {
-        // [cite: 2026-02-25] - IA-TURBINA assume o controle do fluxo
-        document.getElementById('turbina-info').innerText = "IA-TURBINA: INJETANDO FRAGMENTOS...";
+    // --- LÓGICA DE IGNIÇÃO E HISTÓRICO ---
+    function executarIgnicao() {
+        const log = document.getElementById('turbina-log');
+        log.innerText = "[IA-TURBINA]: INJETANDO FRAGMENTOS EM TEMPO REAL...";
         
         setTimeout(() => {
-            document.getElementById('pct').innerText = "LIBERADO 100%"; // [cite: 2026-01-12]
-            document.getElementById('cmd').innerText = "ENTRA"; // [cite: 2025-12-29]
-            document.getElementById('stk').innerText = "R$ 1,00"; // [cite: 2026-01-19]
+            // Atualização de Valores
+            document.getElementById('pct').innerText = "LIBERADO 100%";
+            document.getElementById('cmd').innerText = "ENTRA";
+            document.getElementById('stk').innerText = "R$ 1,00";
+            
+            // Adicionar ao Histórico
+            const lista = document.getElementById('lista-hist');
+            const novoItem = document.createElement('div');
+            novoItem.className = 'hist-item';
+            novoItem.innerHTML = `<span>ID: ${Math.floor(Math.random()*999)}...</span> <span style="color:#fff">WIN: 2.00x (-50%)</span>`;
+            lista.prepend(novoItem);
+            
             document.getElementById('btn-ignicao').innerText = "OPERANDO EM MODO FANTASMA";
-            document.getElementById('btn-ignicao').style.background = "#00ff00";
-        }, 1200);
+            document.getElementById('btn-ignicao').style.boxShadow = "0 0 40px #0f0";
+        }, 1100);
     }
 </script>
 </body>
