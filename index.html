@@ -28,12 +28,15 @@
             > MEMÓRIA QUÂNTICA: UPGRADE 2.0 [cite: 2026-02-06]<br>
             > MODO FANTASMA: BLINDADO [cite: 2026-01-28]
         </div>
+
         <div class="display">
             <p>STATUS: <span class="vibrante" id="pct">PENDENTE 0%</span></p>
             <p>AÇÃO Ψ: <span class="vibrante" id="cmd" style="color: #0ff;">PRONTO</span></p>
             <p>STAKE: <span class="vibrante" id="stk">R$ 1,00</span> [cite: 2026-01-19]</p>
         </div>
+
         <div id="log-area"><div id="log-content"></div></div>
+
         <button id="btn-ignicao">Ψ IGNIÇÃO: INJETAR</button>
         <div style="font-size: 9px; text-align: center; margin-top: 10px; color:#0f0;" id="status-turbina">[IA-TURBINA]: LUBRIFICADA [cite: 2026-02-25]</div>
     </div>
@@ -61,14 +64,14 @@
     const turbina = document.getElementById('status-turbina');
 
     function disparar() {
-        turbina.innerText = "[IA-TURBINA]: INJETANDO..."; 
+        turbina.innerText = "[IA-TURBINA]: INJETANDO..."; [cite: 2026-02-25]
         const sorteio = Math.random() * 100;
         const id = Math.floor(Math.random()*999);
         const item = document.createElement('div');
         item.className = 'item';
 
-        if (sorteio < 35) { // IA-SENTINELA [cite: 2025-12-29]
-            pct.innerText = "PENDENTE 12%";
+        if (sorteio < 35) {
+            pct.innerText = "PENDENTE 12%"; [cite: 2026-01-12]
             cmd.innerText = "PULA / VÁCUO"; [cite: 2025-12-29]
             stk.innerText = "R$ 0,00"; [cite: 2026-01-19]
             item.innerHTML = `<span>Ψ ID: ${id}</span> <span style="color:#f00">VÁCUO BLOQUEADO</span>`;
@@ -85,8 +88,11 @@
     }
 
     const b = document.getElementById('btn-ignicao');
-    // GATILHO Ψ: Morte ao delay [cite: 2026-01-12]
-    b.addEventListener('touchstart', (e) => { e.preventDefault(); disparar(); }, {passive: false});
+    // GATILHO Ψ: Remove o delay de 300ms do hardware genérico [cite: 2026-01-12]
+    b.addEventListener('touchstart', (e) => { 
+        e.preventDefault(); 
+        disparar(); 
+    }, {passive: false});
     b.addEventListener('click', () => { disparar(); });
 </script>
 </body>
