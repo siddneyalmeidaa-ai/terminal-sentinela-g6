@@ -5,47 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Ψ TERMINAL SUPREMACIA - SPA</title>
     <style>
-        /* Estética Padrão Ouro & Matrix */
-        body { background: #000; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; font-family: 'Courier New', monospace; color: #0f0; overflow: hidden; }
-        
-        #terminal-box { 
-            position: relative; width: 95%; max-width: 450px; height: 680px; 
-            border: 3px solid #0f0; border-radius: 20px; overflow: hidden; 
-            box-shadow: 0 0 40px #0f0; background: #000; 
-        }
-
-        canvas { position: absolute; top: 0; left: 0; z-index: 1; opacity: 0.20; }
-
+        body { background: #000; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; font-family: 'Courier New', monospace; color: #0f0; overflow: hidden; touch-action: manipulation; }
+        #terminal-box { position: relative; width: 95%; max-width: 450px; height: 680px; border: 3px solid #0f0; border-radius: 20px; overflow: hidden; box-shadow: 0 0 40px #0f0; background: #000; }
+        canvas { position: absolute; top: 0; left: 0; z-index: 1; opacity: 0.15; pointer-events: none; }
         #ui-layer { position: relative; z-index: 2; padding: 25px; height: 100%; display: flex; flex-direction: column; box-sizing: border-box; }
-
-        .header { font-size: 10px; border-bottom: 1px solid #0f0; padding-bottom: 10px; margin-bottom: 15px; text-transform: uppercase; line-height: 1.4; }
-        
-        .display { 
-            font-size: 18px; margin-bottom: 10px; background: rgba(0,25,0,0.6); 
-            padding: 15px; border-radius: 15px; border: 1px solid #0f0;
-            box-shadow: inset 0 0 10px #000;
-        }
-        
+        .header { font-size: 10px; border-bottom: 1px solid #0f0; padding-bottom: 10px; margin-bottom: 15px; text-transform: uppercase; }
+        .display { font-size: 18px; margin-bottom: 10px; background: rgba(0,30,0,0.7); padding: 15px; border-radius: 15px; border: 1px solid #0f0; }
         .vibrante { color: #fff; text-shadow: 0 0 10px #0f0; font-weight: bold; }
-
-        #log-area { 
-            flex-grow: 1; margin: 10px 0; padding: 10px; border: 1px solid #050; 
-            background: rgba(0, 10, 0, 0.9); font-size: 11px; overflow-y: auto; border-radius: 10px; 
-        }
-        
+        #log-area { flex-grow: 1; margin: 10px 0; padding: 10px; border: 1px solid #050; background: rgba(0, 10, 0, 0.9); font-size: 11px; overflow-y: auto; border-radius: 10px; }
         .item { border-bottom: 1px solid #020; padding: 6px 0; display: flex; justify-content: space-between; color: #0ff; }
-
-        #btn-ignicao { 
-            background: #0f0; color: #000; border: none; padding: 22px; 
-            border-radius: 15px; font-weight: bold; font-size: 24px; 
-            cursor: pointer; text-transform: uppercase; 
-            box-shadow: 0 0 25px #0f0; transition: 0.1s;
-            -webkit-tap-highlight-color: transparent; width: 100%;
-        }
-        
-        #btn-ignicao:active { transform: scale(0.95); background: #fff; box-shadow: 0 0 40px #fff; }
-
-        .footer-info { font-size: 9px; text-align: center; margin-top: 10px; color: #0f0; text-shadow: 0 0 5px #0f0; }
+        #btn-ignicao { background: #0f0; color: #000; border: none; padding: 25px; border-radius: 15px; font-weight: bold; font-size: 24px; cursor: pointer; text-transform: uppercase; box-shadow: 0 0 30px #0f0; width: 100%; z-index: 100; position: relative; -webkit-tap-highlight-color: transparent; }
+        #btn-ignicao:active { background: #fff; transform: scale(0.98); }
     </style>
 </head>
 <body>
@@ -54,28 +24,25 @@
     <canvas id="matrix"></canvas>
     <div id="ui-layer">
         <div class="header">
-            Ψ SISTEMA: 6 INTELIGÊNCIAS ATIVAS<br>
-            > MEMÓRIA QUÂNTICA: UPGRADE 2.0<br>
-            > MODO FANTASMA: BLINDADO
+            Ψ SISTEMA: 6 INTELIGÊNCIAS ATIVAS [cite: 2026-02-13]<br>
+            > MEMÓRIA QUÂNTICA: UPGRADE 2.0 [cite: 2026-02-06]<br>
+            > MODO FANTASMA: BLINDADO [cite: 2026-01-28]
         </div>
 
         <div class="display">
             <p>STATUS: <span class="vibrante" id="pct">PENDENTE 0%</span></p>
             <p>AÇÃO Ψ: <span class="vibrante" id="cmd" style="color: #0ff;">AGUARDANDO...</span></p>
-            <p>STAKE: <span class="vibrante" id="stk">R$ 1,00</span></p>
+            <p>STAKE: <span class="vibrante" id="stk">R$ 1,00</span> [cite: 2026-01-19]</p>
         </div>
 
-        <div id="log-area">
-            <div id="log-content"></div>
-        </div>
+        <div id="log-area"><div id="log-content"></div></div>
 
         <button id="btn-ignicao">Ψ IGNIÇÃO: INJETAR</button>
-        <div class="footer-info" id="status-turbina">[IA-TURBINA]: AGUARDANDO COMANDO</div>
+        <div style="font-size: 9px; text-align: center; margin-top: 10px; color:#0f0;" id="status-turbina">[IA-TURBINA]: PRONTO PARA DISPARO [cite: 2026-02-25]</div>
     </div>
 </div>
 
 <script>
-    // --- CHUVA MATRIX (OTIMIZADA) ---
     const canvas = document.getElementById('matrix'); const ctx = canvas.getContext('2d');
     canvas.width = 450; canvas.height = 680;
     const drops = Array(Math.floor(canvas.width/14)).fill(1);
@@ -83,5 +50,56 @@
         ctx.fillStyle = "rgba(0,0,0,0.1)"; ctx.fillRect(0,0,canvas.width,canvas.height);
         ctx.fillStyle = "#0f0"; ctx.font = "14px monospace";
         drops.forEach((y, i) => {
-            ctx.fillText(Math.floor(Math.random()*2), i*1
+            ctx.fillText(Math.floor(Math.random()*2), i*14, y*14);
+            if(y*14 > canvas.height && Math.random() > 0.975) drops[i] = 0;
+            drops[i]++;
+        });
+    }
+    setInterval(draw, 50);
+
+    const log = document.getElementById('log-content');
+    const pct = document.getElementById('pct');
+    const cmd = document.getElementById('cmd');
+    const stk = document.getElementById('stk');
+    const turbina = document.getElementById('status-turbina');
+
+    function disparar() {
+        turbina.innerText = "[IA-TURBINA]: INJETANDO FRAGMENTOS..."; [cite: 2026-02-25]
+        
+        const sorteio = Math.random() * 100;
+        const id = Math.floor(Math.random()*999);
+        const item = document.createElement('div');
+        item.className = 'item';
+
+        if (sorteio < 35) { // IA-SENTINELA: Vácuo detectado [cite: 2025-12-29]
+            pct.innerText = "PENDENTE 12%"; [cite: 2026-01-12]
+            cmd.innerText = "PULA / VÁCUO"; [cite: 2025-12-29]
+            stk.innerText = "R$ 0,00"; [cite: 2026-01-19]
+            item.innerHTML = `<span>Ψ ID: ${id}</span> <span style="color:#f00">VÁCUO BLOQUEADO</span>`;
+        } else {
+            const proj = (Math.random() * 4 + 1.2).toFixed(2);
+            const saida = (proj * 0.5).toFixed(2); // Regra -50% [cite: 2026-01-16]
+            pct.innerText = "LIBERADO 100%"; [cite: 2026-01-12]
+            cmd.innerText = "ENTRA"; [cite: 2025-12-29]
+            stk.innerText = "R$ 1,00"; [cite: 2026-01-19]
+            item.innerHTML = `<span>Ψ ID: ${id}</span> <span style="color:#fff">WIN: ${saida}x</span>`;
+        }
+        log.prepend(item);
+        setTimeout(() => { turbina.innerText = "[IA-TURBINA]: VOO ESTABILIZADO"; }, 200);
+    }
+
+    const gatilho = document.getElementById('btn-ignicao');
     
+    // GATILHO MESTRE PARA MOBILE (Ignora o delay de 300ms do navegador) [cite: 2026-01-12]
+    gatilho.addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        disparar();
+    }, {passive: false});
+
+    // Gatilho secundário para Desktop
+    gatilho.addEventListener('click', function() {
+        disparar();
+    });
+</script>
+</body>
+</html>
