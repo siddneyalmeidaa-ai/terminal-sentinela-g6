@@ -1,24 +1,95 @@
-<div id="terminal-spa" style="background: #000; color: #0f0; font-family: 'Courier New', monospace; padding: 20px; border: 2px solid #0f0; border-radius: 10px;">
-    <p>> [SISTEMA]: MEMÓRIA QUÂNTICA SINCRONIZADA... [cite: 2026-02-06]</p>
-    <p>> [STATUS]: IPI RESETADO E PROTEGIDO [cite: 2026-01-28]</p>
-    <hr style="border: 0.5px solid #0f0;">
-    
-    <div id="display-operacional">
-        <h2 style="color: #fff;">PADRÃO OURO: <span id="percent-liberado">PENDENTE 0%</span></h2>
-        <p>AÇÃO IMEDIATA: <b id="acao-texto">AGUARDANDO...</b></p>
-        <p>STAKE PRECISA: <b id="stake-valor">R$ 0,00</b></p>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TERMINAL SUPREMACIA - SPA</title>
+    <style>
+        body { background: black; margin: 0; overflow: hidden; font-family: 'Courier New', monospace; }
+        canvas { display: block; }
+        
+        #terminal-container {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 90%; max-width: 500px; background: rgba(0, 0, 0, 0.85);
+            border: 2px solid #0f0; border-radius: 15px; padding: 20px;
+            box-shadow: 0 0 20px #0f0; z-index: 10;
+        }
+
+        .header { color: #0f0; font-size: 12px; border-bottom: 1px solid #0f0; padding-bottom: 10px; }
+        .display { color: #fff; margin: 20px 0; }
+        .liberado { color: #0f0; font-weight: bold; }
+        .acao { color: #0ff; font-weight: bold; }
+        
+        #ignicao-btn {
+            width: 100%; padding: 15px; background: #000; color: #0f0;
+            border: 2px solid #0f0; font-size: 18px; cursor: pointer;
+            border-radius: 10px; text-transform: uppercase; transition: 0.3s;
+        }
+        #ignicao-btn:hover { background: #0f0; color: #000; box-shadow: 0 0 30px #0f0; }
+    </style>
+</head>
+<body>
+
+<canvas id="matrix"></canvas>
+
+<div id="terminal-container">
+    <div class="header">
+        > [SISTEMA]: MEMÓRIA QUÂNTICA SINCRONIZADA...<br>
+        > [STATUS]: IPI PROTEGIDO E FRAGMENTADO
     </div>
 
-    <div id="ia-turbina-monitor" style="border: 1px solid #555; padding: 10px; margin-top: 10px;">
-        <p style="color: #0ff;">IA-TURBINA: <span id="sustentacao-voo">ESTABILIZANDO FRAGMENTOS...</span></p>
+    <div class="display">
+        <p>PADRÃO OURO: <span class="liberado" id="pct">PENDENTE 0%</span></p>
+        <p>AÇÃO IMEDIATA: <span class="acao" id="cmd">AGUARDANDO IGNIÇÃO</span></p>
+        <p>STAKE PRECISA: <span id="stk">R$ 0,00</span></p>
     </div>
+
+    <div id="turbina-log" style="color: #0f0; font-size: 10px; margin-bottom: 10px; height: 30px;">
+        IA-TURBINA: AGUARDANDO COMANDO DE VOO...
+    </div>
+
+    <button id="ignicao-btn" onclick="iniciarInjecao()">IGNIÇÃO: INJETAR DADOS</button>
 </div>
 
 <script>
-    // Lógica de Fragmentação da IA-TURBINA [cite: 2026-02-25]
-    function atualizarPainel(percent, acao, stake) {
-        document.getElementById('percent-liberado').innerText = "LIBERADO " + percent + "%"; // [cite: 2026-01-12]
-        document.getElementById('acao-texto').innerText = acao; // [cite: 2025-12-29]
-        document.getElementById('stake-valor').innerText = "R$ " + stake; // [cite: 2026-01-19]
+    // --- FUNDO MATRIX ---
+    const canvas = document.getElementById('matrix');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    const fontSize = 16;
+    const columns = canvas.width / fontSize;
+    const drops = Array(Math.floor(columns)).fill(1);
+
+    function draw() {
+        ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#0f0";
+        ctx.font = fontSize + "px arial";
+        drops.forEach((y, i) => {
+            const text = letters[Math.floor(random() * letters.length)];
+            ctx.fillText(text, i * fontSize, y * fontSize);
+            if (y * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+            drops[i]++;
+        });
+    }
+    setInterval(draw, 33);
+
+    // --- LÓGICA DE IGNIÇÃO (FRAGMENTAÇÃO TURBINA) ---
+    function iniciarInjecao() {
+        let btn = document.getElementById('ignicao-btn');
+        btn.innerText = "INJETANDO FRAGMENTOS...";
+        
+        // Simulação de Injeção de Dados (6 Sentidos)
+        setTimeout(() => {
+            document.getElementById('pct').innerText = "LIBERADO 100%"; //
+            document.getElementById('cmd').innerText = "ENTRA"; //
+            document.getElementById('stk').innerText = "R$ 1,00"; //
+            document.getElementById('turbina-log').innerText = "IA-TURBINA: VOO ESTABILIZADO - FRAGMENTAÇÃO ATIVA";
+            btn.innerText = "OPERANDO EM MODO FANTASMA";
+        }, 1500);
     }
 </script>
+</body>
+</html>
