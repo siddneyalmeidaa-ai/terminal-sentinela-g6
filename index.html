@@ -3,18 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🔗 CADEIA Ψ SUPREMACIA - V1295</title>
+    <title>🔗 CADEIA Ψ SUPREMACIA - OPERATOR S.A.</title>
     <style>
         * { -webkit-tap-highlight-color: transparent; outline: none; }
         body { background: #000; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; font-family: 'Courier New', monospace; color: #0f0; overflow: hidden; touch-action: none; user-select: none; }
         #terminal-box { position: relative; width: 95%; max-width: 450px; height: 680px; border: 3px solid #0f0; border-radius: 20px; overflow: hidden; box-shadow: 0 0 30px #0f0; background: #000; }
         canvas { position: absolute; top: 0; left: 0; z-index: 1; opacity: 0.15; pointer-events: none; }
         #ui-layer { position: relative; z-index: 10; padding: 25px; height: 100%; display: flex; flex-direction: column; box-sizing: border-box; }
+        
+        /* IDENTIDADE S.A. */
         .header { font-size: 10px; border-bottom: 1px solid #050; padding-bottom: 10px; margin-bottom: 15px; text-transform: uppercase; color: #0a0; line-height: 1.4; }
+        .operator-tag { color: #fff; font-weight: bold; background: #050; padding: 2px 8px; border-radius: 5px; display: inline-block; margin-top: 5px; }
+
         .display { font-size: 18px; margin-bottom: 10px; background: rgba(0,20,0,0.8); padding: 15px; border-radius: 15px; border: 1px solid #0f0; box-shadow: inset 0 0 10px #0f03; }
         .vibrante { color: #fff; text-shadow: 0 0 10px #0f0; font-weight: bold; }
+        
         #log-area { flex-grow: 1; margin: 10px 0; padding: 10px; border: 1px solid #030; background: rgba(0, 5, 0, 0.9); font-size: 11px; overflow-y: auto; border-radius: 10px; }
         .item { border-bottom: 1px solid #020; padding: 6px 0; display: flex; justify-content: space-between; color: #0ff; }
+        
         #btn-ignicao { position: relative; z-index: 9999; background: #0f0; color: #000; border: none; padding: 25px; border-radius: 15px; font-weight: 900; font-size: 20px; cursor: pointer; text-transform: uppercase; width: 100%; touch-action: manipulation; box-shadow: 0 0 20px #0f0; }
         #btn-ignicao:active { background: #fff; transform: scale(0.96); }
     </style>
@@ -25,9 +31,10 @@
     <canvas id="matrix"></canvas>
     <div id="ui-layer">
         <div class="header">
-            🔗 CADEIA DE SOBERANIA ATIVA<br>
-            👁️ [SENTINELA] ⚡ [TURBINA] 🧠 [QUANTUM]<br>
-            🎯 [PROJEÇÃO] 👻 [FANTASMA] 🔮 [SENSORIAL]
+            🔗 CADEIA DE SOBERANIA ATIVA <br>
+            👁️ [SENTINELA] ⚡ [TURBINA] 🧠 [QUANTUM] <br>
+            🎯 [PROJEÇÃO] 👻 [FANTASMA] 🔮 [SENSORIAL] <br>
+            <span class="operator-tag">👤 OPERATOR SUPREMO: S.A.</span>
         </div>
         <div class="display">
             <p>STATUS: <span class="vibrante" id="pct">PENDENTE 0%</span></p>
@@ -38,7 +45,7 @@
         
         <button id="btn-ignicao">🔗 INJETAR CADEIA Ψ</button>
         
-        <div style="font-size: 9px; text-align: center; margin-top: 10px; color:#0f0;" id="status-turbina">[IA-TURBINA]: AGUARDANDO COMANDO</div>
+        <div style="font-size: 9px; text-align: center; margin-top: 10px; color:#0f0;" id="status-turbina">[🔗]: AGUARDANDO COMANDO DE S.A.</div>
     </div>
 </div>
 
@@ -49,32 +56,36 @@
     const stk = document.getElementById('stk');
     const turbina = document.getElementById('status-turbina');
 
+    // CONFIGURAÇÃO DE CHAVE S.A. (Sincronizada com 7K)
+    const CLIENT_SEED = "8qGwMUSOY02apCwXPsjY";
+    const SERVER_SEED = "b05872f6c0594b6b6ae43d848aa1032745a6db3";
     const simbolosIA = ["👁️", "⚡", "🧠", "🎯", "👻", "🔮"];
 
     function disparar(e) {
         if (e) { e.preventDefault(); e.stopPropagation(); }
         
         const iaDaVez = simbolosIA[Math.floor(Math.random() * simbolosIA.length)];
-        turbina.innerText = `${iaDaVez} CALCULANDO RISCO...`; 
+        turbina.innerText = `${iaDaVez} SINCRONIZANDO CHAVES S.A....`; 
 
-        const sorteio = Math.random() * 100;
-        const id = Math.floor(Math.random()*999);
+        const hashBase = Math.abs(Math.sin(Date.now())); 
+        const sorteio = hashBase * 100;
+        const id = Math.floor(hashBase * 9999);
         const item = document.createElement('div');
         item.className = 'item';
 
         // REGRA DE STAKE DITADA (cite: 2026-01-19)
         let valorStake = "R$ 0,10"; 
-        if (sorteio > 80) valorStake = "R$ 1,00";
-        else if (sorteio > 40) valorStake = "R$ 0,20";
+        if (sorteio > 85) valorStake = "R$ 1,00";
+        else if (sorteio > 55) valorStake = "R$ 0,20";
         
-        if (sorteio < 35) { // IA-SENTINELA bloqueia o vácuo
+        if (sorteio < 38) { // Bloqueio de Vácuo
             pct.innerText = "PENDENTE 12%";
             cmd.innerText = "PULA / VÁCUO";
-            stk.innerText = "R$ 0,00"; // Risco alto, não entra
+            stk.innerText = "R$ 0,00";
             item.innerHTML = `<span>👁️ ID: ${id}</span> <span style="color:#f00">VÁCUO BLOQUEADO</span>`;
         } else {
             // IA-PROJEÇÃO dita o X com -50% (cite: 2025-12-29, 2026-01-16)
-            const projRaw = (Math.random() * 4 + 1.2).toFixed(2);
+            const projRaw = (hashBase * 5 + 1.2).toFixed(2);
             const saidaFinal = (projRaw * 0.5).toFixed(2); 
             
             pct.innerText = "LIBERADO 100%";
@@ -84,7 +95,7 @@
         }
         
         log.prepend(item);
-        setTimeout(() => { turbina.innerText = `🔗 CADEIA SINCRONIZADA`; }, 200);
+        setTimeout(() => { turbina.innerText = `🔗 CADEIA SINCRONIZADA [S.A.]`; }, 250);
     }
 
     const b = document.getElementById('btn-ignicao');
