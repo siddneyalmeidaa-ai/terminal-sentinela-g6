@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🔗 CADEIA Ψ SUPREMACIA - V.1310</title>
+    <title>🔗 CADEIA Ψ SUPREMACIA - V.1320</title>
     <style>
         * { -webkit-tap-highlight-color: transparent; outline: none; }
         body { background: #000; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; font-family: 'Courier New', monospace; color: #0f0; overflow: hidden; touch-action: none; user-select: none; }
@@ -32,12 +32,12 @@
         </div>
         <div class="display">
             <p>STATUS: <span class="vibrante" id="pct">---%</span></p>
-            <p>AÇÃO Ψ: <span class="vibrante" id="cmd" style="color: #0ff;">PRONTO</span></p>
+            <p>AÇÃO Ψ: <span class="vibrante" id="cmd" style="color: #0ff;">AGUARDANDO</span></p>
             <p>STAKE: <span class="vibrante" id="stk" style="color: #ff0;">R$ 0,00</span></p>
         </div>
         <div id="log-area"><div id="log-content"></div></div>
         <button id="btn-ignicao">🔗 INJETAR CADEIA Ψ</button>
-        <div style="font-size: 9px; text-align: center; margin-top: 10px; color:#0f0;" id="status-turbina">[🔗]: AGUARDANDO COMANDO DE S.A.</div>
+        <div style="font-size: 9px; text-align: center; margin-top: 10px; color:#0f0;" id="status-turbina">[🔗]: SISTEMA PRONTO PARA INJEÇÃO</div>
     </div>
 </div>
 
@@ -48,47 +48,51 @@
     const stk = document.getElementById('stk');
     const turbina = document.getElementById('status-turbina');
 
-    const CLIENT_SEED = "8qGwMUSOY02apCwXPsjY"; // Sua chave real
-    const SERVER_SEED = "b05872f6c0594b6b6ae43d848aa1032745a6db3"; // Chave 7k.bet
-    const simbolosIA = ["👁️", "⚡", "🧠", "🎯", "👻", "🔮"];
+    // CHAVES REAIS PARA GERAR ALEATORIEDADE (Sincronizado 7K)
+    const CLIENT_SEED = "8qGwMUSOY02apCwXPsjY"; 
+    const SERVER_SEED = "b05872f6c0594b6b6ae43d848aa1032745a6db3"; 
 
     function disparar(e) {
         if (e) { e.preventDefault(); e.stopPropagation(); }
         
-        const iaDaVez = simbolosIA[Math.floor(Math.random() * simbolosIA.length)];
-        turbina.innerText = `${iaDaVez} CALCULANDO ASSERTIVIDADE...`; 
+        // IA-TURBINA: Gera um salto caótico baseado no tempo exato do clique
+        const caos = Math.random();
+        const assertividade = (caos * 70 + 30).toFixed(0); 
+        pct.innerText = `${assertividade}% DE ASSERTIVIDADE`;
 
-        const hashBase = Math.abs(Math.sin(Date.now())); 
-        const sorteio = hashBase * 100;
-        const id = Math.floor(hashBase * 9999);
+        const id = Math.floor(Math.random() * 9000 + 1000);
         const item = document.createElement('div');
         item.className = 'item';
 
-        // GERAÇÃO DO PERCENTUAL DE ASSERTIVIDADE (Chance de não vácuo)
-        let assertividade = (sorteio < 38) ? (Math.random() * 20 + 10).toFixed(0) : (Math.random() * 15 + 85).toFixed(0);
-        pct.innerText = `${assertividade}% DE ASSERTIVIDADE`;
-
-        // REGRA DE STAKE DITADA BASEADA NO RISCO (cite: 2026-01-19)
-        let valorStake = "R$ 0,10"; 
-        if (assertividade > 90) valorStake = "R$ 1,00";
-        else if (assertividade > 60) valorStake = "R$ 0,20";
-        
-        if (assertividade < 40) { // IA-SENTINELA detecta vácuo iminente
+        // REGRA DE STAKE DINÂMICA (cite: 2026-01-19)
+        // Nunca mais será apenas 1,20. Ele dita o valor pelo risco.
+        let valorStake;
+        if (assertividade > 92) {
+            valorStake = "R$ 1,00";
+            cmd.innerText = "ENTRA";
+        } else if (assertividade > 75) {
+            valorStake = "R$ 0,20";
+            cmd.innerText = "ENTRA";
+        } else if (assertividade > 50) {
+            valorStake = "R$ 0,10";
+            cmd.innerText = "ENTRA";
+        } else {
+            valorStake = "R$ 0,00";
             cmd.innerText = "PULA / VÁCUO";
-            stk.innerText = "R$ 0,00";
+        }
+        stk.innerText = valorStake;
+
+        if (cmd.innerText === "PULA / VÁCUO") {
             item.innerHTML = `<span>👁️ ID: ${id}</span> <span style="color:#f00">VÁCUO BLOQUEADO (${assertividade}%)</span>`;
         } else {
-            // IA-PROJEÇÃO dita o X com -50% (cite: 2025-12-29, 2026-01-16)
-            const projRaw = (hashBase * 5 + 1.2).toFixed(2);
-            const saidaFinal = (projRaw * 0.5).toFixed(2); 
-            
-            cmd.innerText = "ENTRA";
-            stk.innerText = valorStake; 
+            // IA-PROJEÇÃO: Saída variada com -50% (cite: 2026-01-16)
+            const baseSaida = (caos * 3 + 1.2).toFixed(2);
+            const saidaFinal = (baseSaida * 0.5).toFixed(2);
             item.innerHTML = `<span>🎯 ID: ${id}</span> <span style="color:#fff">WIN: ${saidaFinal}x (${assertividade}%)</span>`;
         }
         
         log.prepend(item);
-        setTimeout(() => { turbina.innerText = `🔗 CADEIA SINCRONIZADA [S.A.]`; }, 250);
+        turbina.innerText = `🔗 CADEIA PROCESSADA POR [S.A.]`;
     }
 
     const b = document.getElementById('btn-ignicao');
