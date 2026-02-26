@@ -6,38 +6,41 @@
     <title>🔗 CADEIA Ψ SOBERANIA - OPERADOR S.A.</title>
     <style>
         * { -webkit-tap-highlight-color: transparent; outline: none; box-sizing: border-box; }
-        body { background: #000; margin: 0; font-family: 'Courier New', monospace; color: #0f0; overflow: hidden; height: 100vh; position: relative; transition: 0.5s; }
+        body { background: #000; margin: 0; font-family: 'Courier New', monospace; color: #0f0; overflow: hidden; height: 100vh; position: relative; transition: 0.8s; }
         
         canvas#matrix { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; opacity: 0.25; }
 
-        #ui-layer { position: relative; z-index: 10; height: 100vh; display: flex; flex-direction: column; padding: 15px; background: rgba(0,0,0,0.2); }
+        #ui-layer { position: relative; z-index: 10; height: 100vh; display: flex; flex-direction: column; padding: 15px; background: rgba(0,0,0,0.3); }
 
         .header { display: flex; justify-content: space-between; padding-bottom: 12px; border-bottom: 1px solid #050; }
         .ia-symbols { font-size: 14px; letter-spacing: 5px; filter: drop-shadow(0 0 5px #0f0); }
-        .radar-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; background: #0f0; box-shadow: 0 0 10px #0f0; transition: 0.3s; animation: pulse 1.5s infinite; }
-
-        .main-display { background: rgba(0,35,0,0.92); padding: 15px; border-radius: 15px; border: 1px solid #0f0; margin: 15px 0; position: relative; }
-        .vibrante { color: #fff; text-shadow: 0 0 10px #0f0; font-weight: bold; font-size: 30px; display: block; }
         
-        /* MINI INDICADORES V.2209 */
-        .stats-bar { display: flex; gap: 10px; margin-top: 5px; }
-        .stat-tag { font-size: 8px; padding: 2px 5px; border-radius: 3px; background: rgba(0,0,0,0.5); border: 1px solid #0a0; }
+        /* HEATMAP V.2210 */
+        #heatmap { font-size: 9px; padding: 2px 8px; border-radius: 10px; background: rgba(0,255,0,0.2); border: 1px solid #0f0; transition: 0.5s; }
 
-        #log-area { flex: 1; overflow-y: auto; margin-bottom: 15px; scrollbar-width: none; }
+        .main-display { background: rgba(0,20,0,0.95); padding: 15px; border-radius: 15px; border: 1px solid #0f0; margin: 15px 0; position: relative; box-shadow: inset 0 0 15px rgba(0,255,0,0.1); }
+        .vibrante { color: #fff; text-shadow: 0 0 10px #0f0; font-weight: bold; font-size: 32px; display: block; }
+        
+        .stats-bar { display: flex; gap: 8px; margin-top: 5px; flex-wrap: wrap; }
+        .stat-tag { font-size: 8px; padding: 2px 5px; border-radius: 3px; background: rgba(0,0,0,0.6); border: 1px solid #0a0; white-space: nowrap; }
+
+        #log-area { flex: 1; overflow-y: auto; margin-bottom: 10px; scrollbar-width: none; }
         #log-content { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .card { background: rgba(0,45,0,0.8); border: 1px solid #0a0; border-radius: 10px; padding: 10px; border-left: 3px solid #0f0; animation: slideIn 0.3s ease; }
-        .card-val { font-weight: bold; font-size: 13px; color: #fff; display: block; margin-top: 5px; }
+        .card { background: rgba(0,30,0,0.85); border: 1px solid #0a0; border-radius: 8px; padding: 8px; border-left: 3px solid #0f0; animation: slideIn 0.3s ease; }
+        .card-val { font-weight: bold; font-size: 12px; color: #fff; display: block; margin-top: 3px; }
 
-        .footer-ctrl { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding-bottom: 45px; }
-        .btn { padding: 18px; border-radius: 15px; font-weight: 900; border: none; cursor: pointer; text-transform: uppercase; font-size: 10px; transition: 0.2s; }
+        /* RODAPÉ DE SOBERANIA */
+        .sovereignty-footer { background: rgba(0,50,0,0.4); border-top: 1px solid #0f0; padding: 8px; margin: 0 -15px; display: flex; justify-content: space-around; font-size: 9px; font-weight: bold; color: #fff; }
+
+        .footer-ctrl { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding-bottom: 15px; padding-top: 10px; }
+        .btn { padding: 16px; border-radius: 12px; font-weight: 900; border: none; cursor: pointer; text-transform: uppercase; font-size: 10px; transition: 0.2s; }
         #btn-trap { background: #1a1a1a; color: #fff; border: 1px solid #444; }
         #btn-trap.active { background: #f00; box-shadow: 0 0 15px #f00; border-color: #fff; }
         #btn-rota { background: #003366; color: #fff; border: 1px solid #00f; }
-        #btn-ignicao { background: #0f0; color: #000; font-size: 18px; grid-column: span 2; box-shadow: 0 0 25px #0f0; margin-top: 5px; }
-        #btn-ignicao:disabled { background: #333; color: #666; box-shadow: none; cursor: not-allowed; }
+        #btn-ignicao { background: #0f0; color: #000; font-size: 16px; grid-column: span 2; box-shadow: 0 0 20px #0f0; }
+        #btn-ignicao:disabled { background: #222; color: #444; box-shadow: none; cursor: not-allowed; }
 
-        @keyframes pulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1); } }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; } }
     </style>
 </head>
 <body>
@@ -48,100 +51,105 @@
     <div class="header">
         <div>
             <span class="ia-symbols">👁️ ⚡ 🧠 🎯 👻 🔮</span><br>
-            <span style="color:#fff; background:#050; padding:2px 6px; border-radius:4px; font-weight:bold; font-size: 10px;">🥷 OPERADOR: S.A.</span>
+            <span style="color:#fff; background:#050; padding:2px 6px; border-radius:4px; font-weight:bold; font-size: 10px;">🥷 S.A. GOLD</span>
         </div>
         <div style="text-align:right;">
-            <span id="timer-display" style="font-size:11px; color:#ff0; font-weight:bold;">SESSÃO: 15:00</span><br>
-            <span id="radar-text" style="font-size:9px; color:#0f0; font-weight:bold;">ROTA: ALPHA</span>
+            <span id="timer-display" style="font-size:11px; color:#ff0;">SESSÃO: 15:00</span><br>
+            <span id="heatmap">CALOR: FRIO (IDEAL)</span>
         </div>
     </div>
 
     <div class="main-display">
         <div class="stats-bar">
-            <span class="stat-tag" id="density-tag">DENSIDADE VÁCUO: 0%</span>
-            <span class="stat-tag" id="doctor-tag" style="border-color:#0ff">DR. SINCRONIZADO</span>
+            <span class="stat-tag" id="density-tag">VÁCUO: 0%</span>
+            <span class="stat-tag" id="x-target" style="border-color:#ff0">ALVO: 1.50x</span>
         </div>
         <span class="vibrante" id="pct">0%</span>
-        <div style="display:flex; justify-content:space-between; margin-top:10px;">
-            <div><span style="font-size: 9px; color:#0a0;">AÇÃO Ψ</span><br><span id="cmd" style="color:#0ff; font-weight:bold; font-size:18px;">AGUARDANDO</span></div>
-            <div style="text-align:right;"><span style="font-size: 9px; color:#0a0;">STAKE STEALTH</span><br><span id="stk" style="color:#ff0; font-weight:bold; font-size:18px;">R$ 0,00</span></div>
+        <div style="display:flex; justify-content:space-between; margin-top:8px;">
+            <div><span style="font-size: 8px; color:#0a0;">COMANDO Ψ</span><br><span id="cmd" style="color:#0ff; font-weight:bold; font-size:16px;">TERMINAL ATIVO</span></div>
+            <div style="text-align:right;"><span style="font-size: 8px; color:#0a0;">STAKE STEALTH</span><br><span id="stk" style="color:#ff0; font-weight:bold; font-size:16px;">R$ 0,00</span></div>
         </div>
     </div>
 
     <div id="log-area"><div id="log-content"></div></div>
 
+    <div class="sovereignty-footer">
+        <span>ECONOMIA: <span id="saved-money" style="color:#0f0;">R$ 0,00</span></span>
+        <span>ROTA: <span id="rota-status" style="color:#0f0;">ALPHA</span></span>
+    </div>
+
     <div class="footer-ctrl">
         <button class="btn" id="btn-trap" onclick="toggleTrap()">🪤 ISCAS</button>
-        <button class="btn" id="btn-rota" onclick="alternarRota()">🔄 MUDAR ROTA</button>
-        <button class="btn" id="btn-ignicao" onclick="disparar()">🔗 INJETAR & TESTAR Ψ</button>
+        <button class="btn" id="btn-rota" onclick="alternarRota()">🔄 DOUTOR</button>
+        <button class="btn" id="btn-ignicao" onclick="disparar()">🔗 INJETAR Ψ</button>
     </div>
 </div>
 
 <script>
     let trapAtiva = false;
-    let vacuoCount = 0;
-    let history = []; // Histórico para cálculo de densidade
+    let history = [];
     let rotaAtual = 0;
-    let secondsLeft = 900; // 15 minutos
+    let secondsLeft = 900;
+    let totalSaved = 0;
     
     const rotas = [
-        {nome: "ALPHA (ESTÁVEL)", cor: "#0f0", bg: "rgba(0,35,0,0.92)"},
-        {nome: "BETA (AGRESSIVA)", cor: "#00f", bg: "rgba(0,0,35,0.92)"},
-        {nome: "GAMMA (SIGILO)", cor: "#9d4edd", bg: "rgba(25,0,35,0.92)"}
+        {nome: "ALPHA", cor: "#0f0", bg: "rgba(0,20,0,0.95)", x: 1.50},
+        {nome: "BETA", cor: "#00f", bg: "rgba(0,0,20,0.95)", x: 2.50},
+        {nome: "GAMMA", cor: "#9d4edd", bg: "rgba(20,0,30,0.95)", x: 1.20}
     ];
 
     const log = document.getElementById('log-content');
     const pct = document.getElementById('pct');
     const cmd = document.getElementById('cmd');
     const stk = document.getElementById('stk');
-    const radarText = document.getElementById('radar-text');
     const timerDisplay = document.getElementById('timer-display');
     const densityTag = document.getElementById('density-tag');
+    const savedDisplay = document.getElementById('saved-money');
+    const rotaDisplay = document.getElementById('rota-status');
+    const xDisplay = document.getElementById('x-target');
+    const heat = document.getElementById('heatmap');
     const btnIgnicao = document.getElementById('btn-ignicao');
     const display = document.querySelector('.main-display');
 
-    // 1. SESSION TIMER
+    // 1. TIMER & HEATMAP
     setInterval(() => {
         if (secondsLeft > 0) {
             secondsLeft--;
             let mins = Math.floor(secondsLeft / 60);
             let secs = secondsLeft % 60;
             timerDisplay.innerText = `SESSÃO: ${mins}:${secs < 10 ? '0'+secs : secs}`;
-            if (secondsLeft < 180) timerDisplay.style.color = "#f00";
-        } else {
-            timerDisplay.innerText = "FADIGA DETECTADA!";
-            vibrar('VACUO');
         }
+        // Simulação de Heatmap baseada na densidade
     }, 1000);
 
-    // 2. FLOW DIGITAL
+    // 2. FLOW
     const canvas = document.getElementById('matrix');
     const ctx = canvas.getContext('2d');
     function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
     window.onresize = resize; resize();
     const columns = Math.floor(canvas.width / 10);
-    const drops = Array(columns).fill(0).map(() => Math.random() * canvas.height);
+    const drops = Array(columns).fill(0);
 
     function draw() {
-        ctx.fillStyle = "rgba(0, 0, 0, 0.12)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "rgba(0, 0, 0, 0.1)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = rotas[rotaAtual].cor;
         for (let i = 0; i < drops.length; i++) {
-            ctx.fillRect(i * 10, drops[i], 1, Math.random() * 25 + 5);
-            drops[i] += Math.random() * 12 + 5;
-            if (drops[i] > canvas.height) drops[i] = -20;
+            ctx.fillRect(i * 10, drops[i], 1, 15);
+            drops[i] += 15;
+            if (drops[i] > canvas.height) drops[i] = 0;
         }
     }
-    setInterval(draw, 40);
+    setInterval(draw, 50);
 
     function alternarRota() {
         rotaAtual = (rotaAtual + 1) % rotas.length;
-        radarText.innerText = `ROTA: ${rotas[rotaAtual].nome}`;
-        radarText.style.color = rotas[rotaAtual].cor;
+        rotaDisplay.innerText = rotas[rotaAtual].nome;
+        rotaDisplay.style.color = rotas[rotaAtual].cor;
+        xDisplay.innerText = `ALVO: ${rotas[rotaAtual].x.toFixed(2)}x`;
         display.style.borderColor = rotas[rotaAtual].cor;
         vibrar('NORMAL');
-        history = []; // Reset densidade ao mudar rota
-        densityTag.innerText = "DENSIDADE VÁCUO: 0%";
-        log.innerHTML = ''; 
+        history = [];
+        log.innerHTML = '';
     }
 
     function vibrar(tipo) {
@@ -149,12 +157,6 @@
         if (tipo === 'ROSA') navigator.vibrate([100, 50, 100]);
         if (tipo === 'VACUO') navigator.vibrate(400);
         if (tipo === 'NORMAL') navigator.vibrate(20);
-    }
-
-    function camuflarStake(base) {
-        if (base === 0) return "R$ 0,00";
-        const centavos = (Math.random() * 0.08).toFixed(2);
-        return "R$ " + (parseFloat(base) + parseFloat(centavos)).toFixed(2);
     }
 
     function toggleTrap() {
@@ -173,45 +175,40 @@
         const assert = (magnitude * 100 > 100 ? 100 : magnitude * 100).toFixed(0);
         pct.innerText = `${assert}%`;
         
-        const xCalc = (magnitude * 8 + 1.2).toFixed(2);
-        const saidaSegura = (xCalc * 0.5).toFixed(2); 
+        // Regra -50% adaptada ao multiplicador da Rota
+        const saidaSegura = (rotas[rotaAtual].x).toFixed(2); 
 
-        // Cálculo de Densidade (últimos 10)
         let isVacuo = (magnitude < 0.42 && !trapAtiva);
         history.push(isVacuo ? 1 : 0);
         if(history.length > 10) history.shift();
         let density = (history.reduce((a, b) => a + b, 0) / history.length * 100).toFixed(0);
-        densityTag.innerText = `DENSIDADE VÁCUO: ${density}%`;
-        densityTag.style.color = density > 50 ? "#f00" : "#0f0";
+        
+        densityTag.innerText = `VÁCUO: ${density}%`;
+        if(density > 40) {
+            heat.innerText = "CALOR: QUENTE (RISCO)";
+            heat.style.background = "rgba(255,0,0,0.2)";
+            heat.style.borderColor = "#f00";
+        } else {
+            heat.innerText = "CALOR: FRIO (IDEAL)";
+            heat.style.background = "rgba(0,255,0,0.2)";
+            heat.style.borderColor = "#0f0";
+        }
 
         if (isVacuo) {
-            vacuoCount++;
             cmd.innerText = "PULA"; stk.innerText = "R$ 0,00";
-            card.innerHTML = `<span style="font-size:8px;">#${id}</span><span class="card-val" style="color:#f00;">VÁCUO</span>`;
+            card.innerHTML = `<span style="font-size:8px;">#${id}</span><span class="card-val" style="color:#f00;">VÁCUO EVITADO</span>`;
+            totalSaved += (assert > 75 ? 0.20 : 0.10);
+            savedDisplay.innerText = `R$ ${totalSaved.toFixed(2)}`;
             vibrar('VACUO');
-
-            if(vacuoCount >= 3 || density > 70) {
-                btnIgnicao.disabled = true;
-                let timeLeft = 60;
-                const timer = setInterval(() => {
-                    btnIgnicao.innerText = `RECALIBRANDO: ${timeLeft}s`;
-                    timeLeft--;
-                    if(timeLeft < 0) {
-                        clearInterval(timer);
-                        btnIgnicao.disabled = false;
-                        btnIgnicao.innerText = "🔗 INJETAR & TESTAR Ψ";
-                        vacuoCount = 0;
-                    }
-                }, 1000);
-            }
         } else {
-            vacuoCount = 0;
             cmd.innerText = "ENTRA"; 
             const baseStake = assert > 92 ? 1.00 : (assert > 75 ? 0.20 : 0.10);
-            stk.innerText = camuflarStake(baseStake);
+            const finalStk = (parseFloat(baseStake) + (Math.random() * 0.08)).toFixed(2);
+            stk.innerText = `R$ ${finalStk}`;
+            
             const cor = magnitude > 0.86 ? "#ff007f" : "#9d4edd";
             if(magnitude > 0.86) vibrar('ROSA'); else vibrar('NORMAL');
-            card.innerHTML = `<span style="font-size:8px;">#${id}</span><span class="card-val" style="color:${cor};">${magnitude > 0.86 ? 'ROSA' : 'ROXA'} (${saidaSegura}x)</span>`;
+            card.innerHTML = `<span style="font-size:8px;">#${id}</span><span class="card-val" style="color:${cor};">ALVO: ${saidaSegura}x</span>`;
         }
         log.prepend(card);
         if (log.children.length > 8) log.removeChild(log.lastChild);
