@@ -3,17 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SUPREMACIA SPA - ACESSO TOTAL</title>
+    <title>SUPREMACIA SPA - IGNICAO DIRETA</title>
     <style>
         body { background: #000; color: #0f0; font-family: 'Courier New', monospace; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        #frame { width: 95%; max-width: 450px; height: 650px; border: 3px solid #0f0; border-radius: 20px; background: #000; position: relative; overflow: hidden; box-shadow: 0 0 40px #0f0; display: flex; flex-direction: column; }
+        #frame { width: 95%; max-width: 450px; height: 680px; border: 3px solid #0f0; border-radius: 20px; background: #000; position: relative; overflow: hidden; box-shadow: 0 0 40px #0f0; display: flex; flex-direction: column; }
         canvas { position: absolute; top: 0; left: 0; z-index: 1; opacity: 0.15; }
         #ui { position: relative; z-index: 2; padding: 25px; display: flex; flex-direction: column; height: 100%; box-sizing: border-box; }
-        .panel { background: rgba(0, 30, 0, 0.7); border: 1px solid #050; border-radius: 10px; padding: 12px; margin-bottom: 12px; }
         .vibrante { color: #fff; text-shadow: 0 0 10px #0f0; font-weight: bold; }
-        #btn-ignicao { background: #0f0; color: #000; border: none; padding: 20px; border-radius: 15px; font-weight: bold; font-size: 20px; cursor: pointer; text-transform: uppercase; width: 100%; box-shadow: 0 0 15px #0f0; }
-        #btn-ignicao:active { transform: scale(0.98); }
-        #log-area { flex-grow: 1; overflow-y: auto; font-size: 10px; color: #0ff; margin-top: 10px; border-top: 1px solid #0f0; padding-top: 10px; }
+        #btn-ignicao { background: #0f0; color: #000; border: none; padding: 20px; border-radius: 15px; font-weight: bold; font-size: 20px; cursor: pointer; text-transform: uppercase; width: 100%; box-shadow: 0 0 15px #0f0; z-index: 10; }
+        #btn-ignicao:active { background: #fff; transform: scale(0.95); }
+        #log-box { flex-grow: 1; background: rgba(0, 20, 0, 0.8); border: 1px solid #050; border-radius: 10px; padding: 10px; margin: 15px 0; overflow-y: auto; font-size: 11px; }
     </style>
 </head>
 <body>
@@ -22,29 +21,29 @@
     <canvas id="matrix"></canvas>
     <div id="ui">
         <div style="font-size: 10px; border-bottom: 1px solid #0f0; padding-bottom: 8px; margin-bottom: 15px;">
-            > [SISTEMA]: MEMÓRIA QUÂNTICA ATIVA [cite: 2026-02-06]<br>
+            > [SISTEMA]: MEMÓRIA QUÂNTICA SINCRONIZADA [cite: 2026-02-06]<br>
             > [STATUS]: ACESSO IRRESTRITO / MODO FANTASMA [cite: 2026-01-28]
         </div>
 
-        <div style="font-size: 18px; margin-bottom: 20px;">
-            <p>PADRÃO OURO: <span class="vibrante" id="pct">LIBERADO 100%</span></p>
-            <p>AÇÃO IMEDIATA: <span class="vibrante" id="cmd" style="color:#0ff">PRONTO PARA VOO</span></p>
-            <p>STAKE PRECISA: <span class="vibrante" id="stk">R$ 1,00</span></p>
+        <div style="font-size: 18px; margin-bottom: 5px;">
+            <p>PADRÃO OURO: <span class="vibrante">LIBERADO 100%</span> [cite: 2026-01-12]</p>
+            <p>AÇÃO IMEDIATA: <span class="vibrante" id="cmd" style="color:#0ff">PRONTO PARA VOO</span> [cite: 2025-12-29]</p>
+            <p>STAKE PRECISA: <span class="vibrante" id="stk">R$ 1,00</span> [cite: 2026-01-19]</p>
         </div>
 
-        <div class="panel" style="height: 150px; overflow-y: auto;">
-            <div id="log-content" style="font-size: 9px;">[PMA]: LUBRIFICAÇÃO CONCLUÍDA...</div>
+        <div id="log-box">
+            <div id="log-content" style="color:#0f0;">[PMA]: LUBRIFICAÇÃO CONCLUÍDA... [cite: 2026-02-06]</div>
         </div>
 
         <button id="btn-ignicao" onclick="disparar()">IGNIÇÃO: INJETAR DADOS</button>
-        <div id="turbina" style="font-size: 9px; text-align: center; margin-top: 12px; color:#0f0;">[IA-TURBINA]: VOO ESTABILIZADO [cite: 2026-02-25]</div>
+        <div id="turbina" style="font-size: 9px; text-align: center; margin-top: 15px; color:#0f0;">[IA-TURBINA]: VOO ESTABILIZADO [cite: 2026-02-25]</div>
     </div>
 </div>
 
 <script>
-    // --- MOTOR MATRIX ---
+    // --- MATRIX BG ---
     const c = document.getElementById('matrix'); const ctx = c.getContext('2d');
-    c.width = 450; c.height = 650; const drops = Array(30).fill(1);
+    c.width = 450; c.height = 680; const drops = Array(30).fill(1);
     function draw() {
         ctx.fillStyle = "rgba(0,0,0,0.1)"; ctx.fillRect(0,0,c.width,c.height);
         ctx.fillStyle = "#0f0"; ctx.font = "15px monospace";
@@ -56,28 +55,32 @@
     }
     setInterval(draw, 50);
 
-    // --- LOGICA DE OPERAÇÃO SEM TRAVA ---
+    // --- FUNÇÃO DE IGNIÇÃO CORRIGIDA ---
     function disparar() {
-        document.getElementById('turbina').innerText = "[IA-TURBINA]: INJETANDO FRAGMENTOS..."; [cite: 2026-02-25]
+        console.log("Ignicao disparada");
+        const cmd = document.getElementById('cmd');
+        const stk = document.getElementById('stk');
+        const log = document.getElementById('log-content');
+        const turbina = document.getElementById('turbina');
+
+        turbina.innerText = "[IA-TURBINA]: INJETANDO FRAGMENTOS..."; [cite: 2026-02-25]
+        
         setTimeout(() => {
             const sorteio = Math.random() * 100;
-            const log = document.getElementById('log-content');
+            const id = Math.floor(Math.random() * 999);
             
-            if (sorteio < 30) { // Regra IA-SENTINELA: Vácuo [cite: 2025-12-29]
-                document.getElementById('cmd').innerText = "PULA / VÁCUO";
-                document.getElementById('pct').innerText = "PENDENTE 5%"; [cite: 2026-01-12]
-                document.getElementById('stk').innerText = "R$ 0,00"; [cite: 2026-01-19]
-                log.innerHTML = `<div style="color:red">ID:${Math.floor(Math.random()*99)} - VÁCUO DETECTADO</div>` + log.innerHTML;
+            if (sorteio < 30) { // IA-SENTINELA detecta vácuo [cite: 2025-12-29]
+                cmd.innerText = "PULA / VÁCUO";
+                stk.innerText = "R$ 0,00"; [cite: 2026-01-19]
+                log.innerHTML = `<div style="color:red; border-bottom:1px solid #300;">ID: ${id} - VÁCUO DETECTADO [cite: 2025-12-29]</div>` + log.innerHTML;
             } else {
-                const proj = (Math.random() * 3 + 1.2).toFixed(2);
-                const saida = (proj * 0.5).toFixed(2); // Regra -50% [cite: 2026-01-16]
-                document.getElementById('cmd').innerText = "ENTRA"; [cite: 2025-12-29]
-                document.getElementById('pct').innerText = "LIBERADO 100%"; [cite: 2026-01-12]
-                document.getElementById('stk').innerText = "R$ 1,00"; [cite: 2026-01-19]
-                log.innerHTML = `<div style="color:#fff">ID:${Math.floor(Math.random()*99)} - WIN: ${saida}x</div>` + log.innerHTML;
+                const saida = (Math.random() * 2 + 1.1).toFixed(2);
+                cmd.innerText = "ENTRA"; [cite: 2025-12-29]
+                stk.innerText = "R$ 1,00"; [cite: 2026-01-19]
+                log.innerHTML = `<div style="color:#fff; border-bottom:1px solid #030;">ID: ${id} - WIN: ${saida}x (SAÍDA -50%) [cite: 2026-01-16]</div>` + log.innerHTML;
             }
-            document.getElementById('turbina').innerText = "[IA-TURBINA]: VOO LUBRIFICADO [cite: 2026-02-06]";
-        }, 500);
+            turbina.innerText = "[IA-TURBINA]: VOO LUBRIFICADO (PMA) [cite: 2026-02-06]";
+        }, 400);
     }
 </script>
 </body>
