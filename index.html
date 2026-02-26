@@ -16,12 +16,8 @@
         .ia-symbols { font-size: 14px; letter-spacing: 5px; filter: drop-shadow(0 0 5px #0f0); }
         .radar-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; background: #0f0; box-shadow: 0 0 10px #0f0; transition: 0.3s; animation: pulse 1.5s infinite; }
 
-        .main-display { background: rgba(0,35,0,0.92); padding: 15px; border-radius: 15px; border: 1px solid #0f0; margin: 15px 0; position: relative; }
+        .main-display { background: rgba(0,35,0,0.92); padding: 15px; border-radius: 15px; border: 1px solid #0f0; margin: 15px 0; box-shadow: 0 0 20px rgba(0,255,0,0.1); }
         .vibrante { color: #fff; text-shadow: 0 0 10px #0f0; font-weight: bold; font-size: 30px; display: block; }
-        
-        /* MINI INDICADORES V.2209 */
-        .stats-bar { display: flex; gap: 10px; margin-top: 5px; }
-        .stat-tag { font-size: 8px; padding: 2px 5px; border-radius: 3px; background: rgba(0,0,0,0.5); border: 1px solid #0a0; }
 
         #log-area { flex: 1; overflow-y: auto; margin-bottom: 15px; scrollbar-width: none; }
         #log-content { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -32,7 +28,10 @@
         .btn { padding: 18px; border-radius: 15px; font-weight: 900; border: none; cursor: pointer; text-transform: uppercase; font-size: 10px; transition: 0.2s; }
         #btn-trap { background: #1a1a1a; color: #fff; border: 1px solid #444; }
         #btn-trap.active { background: #f00; box-shadow: 0 0 15px #f00; border-color: #fff; }
+        
+        /* BOTÃO DOUTOR / ROTA */
         #btn-rota { background: #003366; color: #fff; border: 1px solid #00f; }
+        
         #btn-ignicao { background: #0f0; color: #000; font-size: 18px; grid-column: span 2; box-shadow: 0 0 25px #0f0; margin-top: 5px; }
         #btn-ignicao:disabled { background: #333; color: #666; box-shadow: none; cursor: not-allowed; }
 
@@ -51,19 +50,16 @@
             <span style="color:#fff; background:#050; padding:2px 6px; border-radius:4px; font-weight:bold; font-size: 10px;">🥷 OPERADOR: S.A.</span>
         </div>
         <div style="text-align:right;">
-            <span id="timer-display" style="font-size:11px; color:#ff0; font-weight:bold;">SESSÃO: 15:00</span><br>
-            <span id="radar-text" style="font-size:9px; color:#0f0; font-weight:bold;">ROTA: ALPHA</span>
+            <span id="radar-text" style="font-size:9px; color:#0f0; font-weight:bold;">ROTA: ALPHA (ESTÁVEL)</span><br>
+            <div class="radar-dot" id="radar-dot"></div>
         </div>
     </div>
 
     <div class="main-display">
-        <div class="stats-bar">
-            <span class="stat-tag" id="density-tag">DENSIDADE VÁCUO: 0%</span>
-            <span class="stat-tag" id="doctor-tag" style="border-color:#0ff">DR. SINCRONIZADO</span>
-        </div>
+        <span style="font-size: 10px; color: #0a0;">ASSERTIVIDADE DE FLUXO</span>
         <span class="vibrante" id="pct">0%</span>
         <div style="display:flex; justify-content:space-between; margin-top:10px;">
-            <div><span style="font-size: 9px; color:#0a0;">AÇÃO Ψ</span><br><span id="cmd" style="color:#0ff; font-weight:bold; font-size:18px;">AGUARDANDO</span></div>
+            <div><span style="font-size: 9px; color:#0a0;">AÇÃO Ψ</span><br><span id="cmd" style="color:#0ff; font-weight:bold; font-size:18px;">PRONTO</span></div>
             <div style="text-align:right;"><span style="font-size: 9px; color:#0a0;">STAKE STEALTH</span><br><span id="stk" style="color:#ff0; font-weight:bold; font-size:18px;">R$ 0,00</span></div>
         </div>
     </div>
@@ -72,7 +68,7 @@
 
     <div class="footer-ctrl">
         <button class="btn" id="btn-trap" onclick="toggleTrap()">🪤 ISCAS</button>
-        <button class="btn" id="btn-rota" onclick="alternarRota()">🔄 MUDAR ROTA</button>
+        <button class="btn" id="btn-rota" onclick="alternarRota()">🔄 MUDAR DOUTOR</button>
         <button class="btn" id="btn-ignicao" onclick="disparar()">🔗 INJETAR & TESTAR Ψ</button>
     </div>
 </div>
@@ -80,10 +76,7 @@
 <script>
     let trapAtiva = false;
     let vacuoCount = 0;
-    let history = []; // Histórico para cálculo de densidade
-    let rotaAtual = 0;
-    let secondsLeft = 900; // 15 minutos
-    
+    let rotaAtual = 0; // 0: Alpha, 1: Beta, 2: Gamma
     const rotas = [
         {nome: "ALPHA (ESTÁVEL)", cor: "#0f0", bg: "rgba(0,35,0,0.92)"},
         {nome: "BETA (AGRESSIVA)", cor: "#00f", bg: "rgba(0,0,35,0.92)"},
@@ -94,27 +87,12 @@
     const pct = document.getElementById('pct');
     const cmd = document.getElementById('cmd');
     const stk = document.getElementById('stk');
+    const radarDot = document.getElementById('radar-dot');
     const radarText = document.getElementById('radar-text');
-    const timerDisplay = document.getElementById('timer-display');
-    const densityTag = document.getElementById('density-tag');
     const btnIgnicao = document.getElementById('btn-ignicao');
     const display = document.querySelector('.main-display');
 
-    // 1. SESSION TIMER
-    setInterval(() => {
-        if (secondsLeft > 0) {
-            secondsLeft--;
-            let mins = Math.floor(secondsLeft / 60);
-            let secs = secondsLeft % 60;
-            timerDisplay.innerText = `SESSÃO: ${mins}:${secs < 10 ? '0'+secs : secs}`;
-            if (secondsLeft < 180) timerDisplay.style.color = "#f00";
-        } else {
-            timerDisplay.innerText = "FADIGA DETECTADA!";
-            vibrar('VACUO');
-        }
-    }, 1000);
-
-    // 2. FLOW DIGITAL
+    // FLOW DIGITAL
     const canvas = document.getElementById('matrix');
     const ctx = canvas.getContext('2d');
     function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
@@ -137,11 +115,12 @@
         rotaAtual = (rotaAtual + 1) % rotas.length;
         radarText.innerText = `ROTA: ${rotas[rotaAtual].nome}`;
         radarText.style.color = rotas[rotaAtual].cor;
+        radarDot.style.background = rotas[rotaAtual].cor;
+        radarDot.style.boxShadow = `0 0 10px ${rotas[rotaAtual].cor}`;
+        display.style.background = rotas[rotaAtual].bg;
         display.style.borderColor = rotas[rotaAtual].cor;
         vibrar('NORMAL');
-        history = []; // Reset densidade ao mudar rota
-        densityTag.innerText = "DENSIDADE VÁCUO: 0%";
-        log.innerHTML = ''; 
+        log.innerHTML = ''; // Limpa logs ao trocar de servidor para segurança
     }
 
     function vibrar(tipo) {
@@ -159,8 +138,13 @@
 
     function toggleTrap() {
         trapAtiva = !trapAtiva;
-        document.getElementById('btn-trap').classList.toggle('active');
-        vibrar('NORMAL');
+        const btn = document.getElementById('btn-trap');
+        if(trapAtiva) {
+            btn.classList.add('active'); btn.innerText = "🪤 ISCAS ATIVAS";
+            vibrar('NORMAL');
+        } else {
+            btn.classList.remove('active'); btn.innerText = "🪤 ISCAS";
+        }
     }
 
     function disparar() {
@@ -171,30 +155,22 @@
         
         let magnitude = seed + (trapAtiva ? 0.22 : 0);
         const assert = (magnitude * 100 > 100 ? 100 : magnitude * 100).toFixed(0);
-        pct.innerText = `${assert}%`;
         
+        pct.innerText = `${assert}%`;
         const xCalc = (magnitude * 8 + 1.2).toFixed(2);
         const saidaSegura = (xCalc * 0.5).toFixed(2); 
 
-        // Cálculo de Densidade (últimos 10)
-        let isVacuo = (magnitude < 0.42 && !trapAtiva);
-        history.push(isVacuo ? 1 : 0);
-        if(history.length > 10) history.shift();
-        let density = (history.reduce((a, b) => a + b, 0) / history.length * 100).toFixed(0);
-        densityTag.innerText = `DENSIDADE VÁCUO: ${density}%`;
-        densityTag.style.color = density > 50 ? "#f00" : "#0f0";
-
-        if (isVacuo) {
+        if (magnitude < 0.42 && !trapAtiva) {
             vacuoCount++;
             cmd.innerText = "PULA"; stk.innerText = "R$ 0,00";
             card.innerHTML = `<span style="font-size:8px;">#${id}</span><span class="card-val" style="color:#f00;">VÁCUO</span>`;
             vibrar('VACUO');
 
-            if(vacuoCount >= 3 || density > 70) {
+            if(vacuoCount >= 3) {
                 btnIgnicao.disabled = true;
                 let timeLeft = 60;
                 const timer = setInterval(() => {
-                    btnIgnicao.innerText = `RECALIBRANDO: ${timeLeft}s`;
+                    btnIgnicao.innerText = `COOLDOWN: ${timeLeft}s`;
                     timeLeft--;
                     if(timeLeft < 0) {
                         clearInterval(timer);
