@@ -11,7 +11,7 @@
         #ui-layer { position: relative; z-index: 10; height: 100%; display: flex; flex-direction: column; padding: 12px; background: rgba(0,0,0,0.5); }
         .header { flex-shrink: 0; border-bottom: 1px solid #050; padding-bottom: 8px; }
         .status-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-top: 8px; }
-        .mod-tag { font-size: 7px; padding: 4px; border-radius: 4px; text-align: center; border: 1px solid #0f0; font-weight: bold; background: rgba(0,20,0,0.8); transition: 0.3s; }
+        .mod-tag { font-size: 7px; padding: 4px; border-radius: 4px; text-align: center; border: 1px solid #0f0; font-weight: bold; background: rgba(0,20,0,0.8); }
         .dna-container { margin: 10px 0; padding: 8px; background: rgba(0,25,0,0.7); border-radius: 12px; border: 1px solid #0f0; }
         .dna-row { display: flex; gap: 5px; align-items: center; margin-bottom: 4px; justify-content: space-between; }
         .dna-label { font-size: 6px; color: #0f0; min-width: 50px; text-transform: uppercase; font-weight: bold; }
@@ -38,12 +38,12 @@
     <div class="header">
         <div style="display:flex; justify-content:space-between; align-items:center;">
             <span style="font-size:14px; letter-spacing:3px;">👁️ ⚡ 🧠 🎯 👻 🔮</span>
-            <span id="pulse-display" style="font-size:9px; color:#0f0;">PULSE: --ms</span>
+            <span id="pulse-display" style="font-size:9px; color:#0f0;">PULSE: 01ms</span>
         </div>
         <div class="status-grid">
             <div class="mod-tag" id="heatmap">CALOR: FRIO</div>
             <div class="mod-tag" id="vacuo-tag">VÁCUO: 0%</div>
-            <div class="mod-tag" id="sync-tag">ID: AGUARDANDO...</div>
+            <div class="mod-tag" id="sync-tag" style="color: #0ff;">ID:Ψ-INICIAL</div>
         </div>
         <div class="dna-container">
             <div class="dna-row"><span class="dna-label">ZONA VÁCUO</span><div class="dna-dots" id="row-vacuo"></div></div>
@@ -61,50 +61,24 @@
     <div id="log-area"><div id="log-content"></div></div>
     <div class="footer-ctrl">
         <button class="btn" id="btn-trap" onclick="toggleTrap()">🪤 ISCAS [OFF]</button>
-        <button class="btn" style="background:#003366; color:#fff;" onclick="resetTerminal()">🔄 FINGERPRINT</button>
+        <button class="btn" style="background:#003366; color:#fff;" onclick="location.reload()">🔄 FINGERPRINT</button>
         <button class="btn" id="btn-ignicao" onclick="prepareDisparo()">🔗 INJETAR Ψ</button>
     </div>
 </div>
 
 <script>
     // 🔱 QUANTUM MEMORY E DNA MOTO G60s [cite: 2026-02-13, 2026-02-06]
-    let quantum_db = JSON.parse(localStorage.getItem('SOBERANIA_V11_DB')) || { history: [], power_history: [] };
+    let quantum_db = { history: [], power_history: [] };
     let trapAtiva = false;
     let trapTimer = null;
 
-    // 🔱 FUNÇÃO DE ROTAÇÃO OBRIGATÓRIA (AUTO-EXEC) [cite: 2026-01-27]
+    // 🔱 ROTAÇÃO DE ID SEM TRAVAMENTO [cite: 2026-02-28]
     function rotateID() {
         const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        let newID = "Ψ-";
-        for(let i=0; i<8; i++) newID += chars.charAt(Math.floor(Math.random() * chars.length));
-        document.getElementById('sync-tag').innerText = "ID:" + newID;
-        document.getElementById('sync-tag').style.color = "#0ff";
-        return newID;
-    }
-
-    function resetTerminal() { localStorage.removeItem('SOBERANIA_V11_DB'); location.reload(); }
-
-    function updatePulse() {
-        const ms = Math.floor(Math.random() * 5) + 1;
-        document.getElementById('pulse-display').innerText = `PULSE: 0${ms}ms`;
-        setTimeout(updatePulse, 3000);
-    }
-
-    function updateDNAMapping() {
-        const vRow = document.getElementById('row-vacuo');
-        const pRow = document.getElementById('row-power');
-        if(!vRow || !pRow) return;
-        vRow.innerHTML = ''; pRow.innerHTML = '';
-        for(let i=0; i<12; i++) {
-            const hIdx = quantum_db.history.length - 12 + i;
-            const dotV = document.createElement('div');
-            dotV.className = `dot ${quantum_db.history[hIdx] === 1 ? 'v-loss' : ''}`;
-            vRow.appendChild(dotV);
-            const pIdx = quantum_db.power_history.length - 12 + i;
-            const dotP = document.createElement('div');
-            dotP.className = `dot ${quantum_db.power_history[pIdx] === 2 ? 'v-win' : (quantum_db.power_history[pIdx] === 3 ? 'v-elite' : '')}`;
-            pRow.appendChild(dotP);
-        }
+        let str = "Ψ-";
+        for(let i=0; i<8; i++) str += chars.charAt(Math.floor(Math.random() * chars.length));
+        const el = document.getElementById('sync-tag');
+        if(el) el.innerText = "ID:" + str;
     }
 
     function toggleTrap() {
@@ -120,11 +94,10 @@
         } else btn.innerText = "🪤 ISCAS [OFF]";
     }
 
+    // 🔱 DISPARO CORRIGIDO (FIM DO CONGELAMENTO)
     function prepareDisparo() {
-        rotateID(); // GERA NOVO ID NO CLIQUE [cite: 2026-02-28]
-        const btn = document.getElementById('btn-ignicao');
-        btn.style.opacity = "0.5"; btn.innerText = "SINC Ψ...";
-        setTimeout(() => { disparar(); btn.style.opacity = "1"; btn.innerText = "🔗 INJETAR Ψ"; }, 200);
+        rotateID(); 
+        disparar();
     }
 
     function disparar() {
@@ -135,26 +108,27 @@
         let pctVal = (magnitude * 100);
         document.getElementById('pct').innerText = pctVal.toFixed(0) + "%";
 
-        let isVacuo = magnitude < 0.42 && !trapAtiva; [cite: 2025-12-29]
+        let isVacuo = magnitude < 0.42 && !trapAtiva;
         let powerLevel = magnitude > 0.88 ? 3 : (magnitude > 0.60 ? 2 : 0); 
 
         quantum_db.history.push(isVacuo ? 1 : 0);
         quantum_db.power_history.push(powerLevel);
-        if(quantum_db.history.length > 50) { quantum_db.history.shift(); quantum_db.power_history.shift(); }
+        if(quantum_db.history.length > 12) { quantum_db.history.shift(); quantum_db.power_history.shift(); }
 
+        // CALOR E VÁCUO
         const calorEl = document.getElementById('heatmap');
-        const pCount = quantum_db.power_history.slice(-4).filter(p => p >= 2).length;
+        const pCount = quantum_db.power_history.filter(p => p >= 2).length;
         calorEl.innerText = pCount >= 3 ? "CALOR: BRASAS" : (pCount >= 1 ? "CALOR: QUENTE" : "CALOR: FRIO");
         calorEl.style.background = pCount >= 3 ? "#f00" : (pCount >= 1 ? "#ffae00" : "rgba(0,20,0,0.8)");
 
-        document.getElementById('vacuo-tag').innerText = `VÁCUO: ${((quantum_db.history.slice(-6).filter(v => v === 1).length / 6) * 100).toFixed(0)}%`;
+        const vCount = quantum_db.history.filter(v => v === 1).length;
+        document.getElementById('vacuo-tag').innerText = `VÁCUO: ${Math.floor((vCount/12)*100)}%`;
 
         const cmdEl = document.getElementById('cmd');
         const stkEl = document.getElementById('stk');
         const card = document.createElement('div');
         card.className = 'card';
 
-        // 🔱 REGRAS DE STAKE EXATAS [cite: 2026-01-19]
         if(isVacuo) {
             cmdEl.innerText = "PULA"; cmdEl.style.color = "#f00"; stkEl.innerText = "R$ 0,00";
             card.innerHTML = `<span style="font-size:9px; color:#f00;">🛡️ VÁCUO DETECTADO</span>`;
@@ -162,14 +136,28 @@
             cmdEl.innerText = pctVal < 55 ? "SONDAGEM" : "ENTRA";
             cmdEl.style.color = pctVal < 55 ? "#ff0" : "#0ff";
             stkEl.innerText = pctVal < 55 ? "10 centavos" : (pctVal > 85 ? "1 Real" : "20 centavos");
-            let xSaida = ((magnitude * 10) * 0.5).toFixed(2); // REDUTOR -50% [cite: 2026-01-16]
+            let xSaida = ((magnitude * 10) * 0.5).toFixed(2);
             card.innerHTML = `<span style="font-size:9px; color:#fff;">🎯 ALVO: ${xSaida}x</span>`;
         }
 
         document.getElementById('log-content').prepend(card);
         if(document.getElementById('log-content').children.length > 6) document.getElementById('log-content').lastChild.remove();
-        localStorage.setItem('SOBERANIA_V11_DB', JSON.stringify(quantum_db));
+        
         updateDNAMapping();
+    }
+
+    function updateDNAMapping() {
+        const vRow = document.getElementById('row-vacuo');
+        const pRow = document.getElementById('row-power');
+        vRow.innerHTML = ''; pRow.innerHTML = '';
+        for(let i=0; i<12; i++) {
+            const dotV = document.createElement('div');
+            dotV.className = `dot ${quantum_db.history[i] === 1 ? 'v-loss' : ''}`;
+            vRow.appendChild(dotV);
+            const dotP = document.createElement('div');
+            dotP.className = `dot ${quantum_db.power_history[i] === 2 ? 'v-win' : (quantum_db.power_history[i] === 3 ? 'v-elite' : '')}`;
+            pRow.appendChild(dotP);
+        }
     }
 
     // MATRIX BG
@@ -184,7 +172,7 @@
         drops.forEach((y, i) => { ctx.fillText(String.fromCharCode(0x30A0 + Math.random()*96), i*12, y); drops[i] = y > canvas.height ? 0 : y + 15; });
     }
     setInterval(draw, 50);
-    window.onload = () => { updatePulse(); updateDNAMapping(); rotateID(); };
+    window.onload = () => { rotateID(); updateDNAMapping(); };
 </script>
 </body>
 </html>
