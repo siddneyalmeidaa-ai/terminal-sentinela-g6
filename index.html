@@ -43,7 +43,7 @@
         <div class="status-grid">
             <div class="mod-tag" id="heatmap">CALOR: FRIO</div>
             <div class="mod-tag" id="vacuo-tag">VÁCUO: 0%</div>
-            <div class="mod-tag" id="sync-tag">SINC_DNA...</div>
+            <div class="mod-tag" id="sync-tag">ID: AGUARDANDO...</div>
         </div>
         <div class="dna-container">
             <div class="dna-row"><span class="dna-label">ZONA VÁCUO</span><div class="dna-dots" id="row-vacuo"></div></div>
@@ -61,55 +61,32 @@
     <div id="log-area"><div id="log-content"></div></div>
     <div class="footer-ctrl">
         <button class="btn" id="btn-trap" onclick="toggleTrap()">🪤 ISCAS [OFF]</button>
-        <button class="btn" style="background:#003366; color:#fff;" onclick="location.reload()">🔄 FINGERPRINT</button>
+        <button class="btn" style="background:#003366; color:#fff;" onclick="resetTerminal()">🔄 FINGERPRINT</button>
         <button class="btn" id="btn-ignicao" onclick="prepareDisparo()">🔗 INJETAR Ψ</button>
     </div>
 </div>
 
 <script>
     // 🔱 QUANTUM MEMORY E DNA MOTO G60s [cite: 2026-02-13, 2026-02-06]
-    let quantum_db = JSON.parse(localStorage.getItem('SOBERANIA_V10_DB')) || { history: [], power_history: [] };
+    let quantum_db = JSON.parse(localStorage.getItem('SOBERANIA_V11_DB')) || { history: [], power_history: [] };
     let trapAtiva = false;
     let trapTimer = null;
 
-    const DEVICE_DNA = {
-        gpu: "Mali-G76 MC4",
-        build: "S3RLS32.114-25-13",
-        screen: { w: 1080, h: 2460 }
-    };
-
-    // 🔱 GERAÇÃO DE ID DINÂMICO COM AUTO-FLUSH (CORRIGIDO)
-    function getMotoFingerprint() {
-        const salt = Math.floor(Math.random() * 999999).toString(36).toUpperCase();
-        const noise = Date.now().toString(36).slice(-4).toUpperCase();
-        const finalID = "Ψ-" + btoa(`${DEVICE_DNA.gpu}-${salt}-${noise}`).substring(2, 10).toUpperCase();
-        
-        const syncTag = document.getElementById('sync-tag');
-        if(syncTag) {
-            syncTag.style.opacity = "0";
-            setTimeout(() => {
-                syncTag.innerText = "ID:" + finalID;
-                syncTag.style.opacity = "1";
-                syncTag.style.color = "#0ff";
-                setTimeout(() => syncTag.style.color = "#0f0", 150);
-            }, 50);
-        }
-        return finalID;
+    // 🔱 FUNÇÃO DE ROTAÇÃO OBRIGATÓRIA (AUTO-EXEC) [cite: 2026-01-27]
+    function rotateID() {
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        let newID = "Ψ-";
+        for(let i=0; i<8; i++) newID += chars.charAt(Math.floor(Math.random() * chars.length));
+        document.getElementById('sync-tag').innerText = "ID:" + newID;
+        document.getElementById('sync-tag').style.color = "#0ff";
+        return newID;
     }
 
-    function touchScatter() {
-        try {
-            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            const osc = audioCtx.createOscillator();
-            osc.frequency.setValueAtTime(Math.random() * 40, audioCtx.currentTime);
-            audioCtx.close();
-        } catch(e) {}
-    }
+    function resetTerminal() { localStorage.removeItem('SOBERANIA_V11_DB'); location.reload(); }
 
     function updatePulse() {
         const ms = Math.floor(Math.random() * 5) + 1;
-        const display = document.getElementById('pulse-display');
-        if(display) { display.innerText = `PULSE: 0${ms}ms`; display.style.color = ms > 4 ? "#f00" : "#0f0"; }
+        document.getElementById('pulse-display').innerText = `PULSE: 0${ms}ms`;
         setTimeout(updatePulse, 3000);
     }
 
@@ -120,20 +97,15 @@
         vRow.innerHTML = ''; pRow.innerHTML = '';
         for(let i=0; i<12; i++) {
             const hIdx = quantum_db.history.length - 12 + i;
-            const valV = hIdx >= 0 ? quantum_db.history[hIdx] : 0;
             const dotV = document.createElement('div');
-            dotV.className = `dot ${valV === 1 ? 'v-loss' : ''}`;
+            dotV.className = `dot ${quantum_db.history[hIdx] === 1 ? 'v-loss' : ''}`;
             vRow.appendChild(dotV);
-
             const pIdx = quantum_db.power_history.length - 12 + i;
-            const valP = pIdx >= 0 ? quantum_db.power_history[pIdx] : 0;
             const dotP = document.createElement('div');
-            dotP.className = `dot ${valP === 2 ? 'v-win' : (valP === 3 ? 'v-elite' : '')}`;
+            dotP.className = `dot ${quantum_db.power_history[pIdx] === 2 ? 'v-win' : (quantum_db.power_history[pIdx] === 3 ? 'v-elite' : '')}`;
             pRow.appendChild(dotP);
         }
     }
-
-    function saveDB() { localStorage.setItem('SOBERANIA_V10_DB', JSON.stringify(quantum_db)); updateDNAMapping(); }
 
     function toggleTrap() {
         trapAtiva = !trapAtiva;
@@ -141,39 +113,29 @@
         btn.classList.toggle('active');
         if(trapAtiva) {
             let timeLeft = 15;
-            btn.innerText = `🪤 ISCA: ${timeLeft}s`;
             trapTimer = setInterval(() => {
                 timeLeft--; btn.innerText = `🪤 ISCA: ${timeLeft}s`;
                 if(timeLeft <= 0) { clearInterval(trapTimer); toggleTrap(); }
             }, 1000);
-        } else {
-            clearInterval(trapTimer); btn.innerText = "🪤 ISCAS [OFF]";
-        }
+        } else btn.innerText = "🪤 ISCAS [OFF]";
     }
 
     function prepareDisparo() {
+        rotateID(); // GERA NOVO ID NO CLIQUE [cite: 2026-02-28]
         const btn = document.getElementById('btn-ignicao');
-        touchScatter(); 
-        getMotoFingerprint(); // Força a mudança do ID no clique (FRENÉTICO)
-        
-        btn.style.opacity = "0.5";
-        btn.innerText = "SINC Ψ...";
-        setTimeout(() => {
-            disparar();
-            btn.style.opacity = "1";
-            btn.innerText = "🔗 INJETAR Ψ";
-        }, 200);
+        btn.style.opacity = "0.5"; btn.innerText = "SINC Ψ...";
+        setTimeout(() => { disparar(); btn.style.opacity = "1"; btn.innerText = "🔗 INJETAR Ψ"; }, 200);
     }
 
     function disparar() {
         const seed = Math.random();
         let magnitude = seed + (trapAtiva ? 0.25 : 0);
         if(magnitude > 1) magnitude = 1;
-
+        
         let pctVal = (magnitude * 100);
         document.getElementById('pct').innerText = pctVal.toFixed(0) + "%";
 
-        let isVacuo = magnitude < 0.42 && !trapAtiva;
+        let isVacuo = magnitude < 0.42 && !trapAtiva; [cite: 2025-12-29]
         let powerLevel = magnitude > 0.88 ? 3 : (magnitude > 0.60 ? 2 : 0); 
 
         quantum_db.history.push(isVacuo ? 1 : 0);
@@ -185,34 +147,29 @@
         calorEl.innerText = pCount >= 3 ? "CALOR: BRASAS" : (pCount >= 1 ? "CALOR: QUENTE" : "CALOR: FRIO");
         calorEl.style.background = pCount >= 3 ? "#f00" : (pCount >= 1 ? "#ffae00" : "rgba(0,20,0,0.8)");
 
-        const vPct = ((quantum_db.history.slice(-6).filter(v => v === 1).length / 6) * 100).toFixed(0);
-        document.getElementById('vacuo-tag').innerText = `VÁCUO: ${vPct}%`;
+        document.getElementById('vacuo-tag').innerText = `VÁCUO: ${((quantum_db.history.slice(-6).filter(v => v === 1).length / 6) * 100).toFixed(0)}%`;
 
         const cmdEl = document.getElementById('cmd');
         const stkEl = document.getElementById('stk');
         const card = document.createElement('div');
         card.className = 'card';
 
-        // 🔱 REGRAS DE STAKE EXATAS [cite: 2026-01-19] E REDUTOR -50% [cite: 2026-01-16]
+        // 🔱 REGRAS DE STAKE EXATAS [cite: 2026-01-19]
         if(isVacuo) {
-            cmdEl.innerText = "PULA"; cmdEl.style.color = "#f00";
-            stkEl.innerText = "R$ 0,00";
+            cmdEl.innerText = "PULA"; cmdEl.style.color = "#f00"; stkEl.innerText = "R$ 0,00";
             card.innerHTML = `<span style="font-size:9px; color:#f00;">🛡️ VÁCUO DETECTADO</span>`;
-        } else if (pctVal < 55) {
-            cmdEl.innerText = "SONDAGEM"; cmdEl.style.color = "#ff0";
-            stkEl.innerText = "10 centavos";
-            let xSaida = ((magnitude * 10) * 0.5).toFixed(2);
-            card.innerHTML = `<span style="font-size:9px; color:#ff0;">📡 SONDAGEM: ${xSaida}x</span>`;
         } else {
-            cmdEl.innerText = "ENTRA"; cmdEl.style.color = "#0ff";
-            stkEl.innerText = pctVal > 85 ? "1 Real" : "20 centavos";
-            let xSaida = ((magnitude * 10) * 0.5).toFixed(2);
+            cmdEl.innerText = pctVal < 55 ? "SONDAGEM" : "ENTRA";
+            cmdEl.style.color = pctVal < 55 ? "#ff0" : "#0ff";
+            stkEl.innerText = pctVal < 55 ? "10 centavos" : (pctVal > 85 ? "1 Real" : "20 centavos");
+            let xSaida = ((magnitude * 10) * 0.5).toFixed(2); // REDUTOR -50% [cite: 2026-01-16]
             card.innerHTML = `<span style="font-size:9px; color:#fff;">🎯 ALVO: ${xSaida}x</span>`;
         }
 
         document.getElementById('log-content').prepend(card);
         if(document.getElementById('log-content').children.length > 6) document.getElementById('log-content').lastChild.remove();
-        saveDB();
+        localStorage.setItem('SOBERANIA_V11_DB', JSON.stringify(quantum_db));
+        updateDNAMapping();
     }
 
     // MATRIX BG
@@ -224,14 +181,10 @@
     function draw() {
         ctx.fillStyle = "rgba(0, 0, 0, 0.1)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = "#0f0"; ctx.font = "12px monospace";
-        drops.forEach((y, i) => {
-            ctx.fillText(String.fromCharCode(0x30A0 + Math.random()*96), i*12, y);
-            drops[i] = y > canvas.height ? 0 : y + 15;
-        });
+        drops.forEach((y, i) => { ctx.fillText(String.fromCharCode(0x30A0 + Math.random()*96), i*12, y); drops[i] = y > canvas.height ? 0 : y + 15; });
     }
     setInterval(draw, 50);
-    window.onload = () => { updatePulse(); updateDNAMapping(); getMotoFingerprint(); };
+    window.onload = () => { updatePulse(); updateDNAMapping(); rotateID(); };
 </script>
 </body>
-    </html>
-    
+</html>
