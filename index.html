@@ -7,34 +7,36 @@
     <style>
         * { -webkit-tap-highlight-color: transparent; outline: none; box-sizing: border-box; }
         body { background: #000; margin: 0; font-family: 'Courier New', monospace; color: #0f0; overflow: hidden; height: 100dvh; display: flex; flex-direction: column; }
-        canvas#matrix { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.25; will-change: transform; }
-        #ui-layer { position: relative; z-index: 10; height: 100%; display: flex; flex-direction: column; padding: 12px; padding-bottom: env(safe-area-inset-bottom); background: rgba(0,0,0,0.5); }
+        canvas#matrix { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.25; }
+        #ui-layer { position: relative; z-index: 10; height: 100%; display: flex; flex-direction: column; padding: 12px; background: rgba(0,0,0,0.5); }
         
         .header { flex-shrink: 0; border-bottom: 1px solid #050; padding-bottom: 8px; }
         .status-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-top: 8px; }
         .mod-tag { font-size: 7px; padding: 4px; border-radius: 4px; text-align: center; border: 1px solid #0f0; font-weight: bold; background: rgba(0,20,0,0.8); }
         
-        /* TABELA DA FAVELINHA COMPACTA [cite: 2025-12-29] */
-        .favelinha { display: flex; gap: 2px; margin-top: 5px; justify-content: center; }
-        .f-dot { width: 6px; height: 6px; border-radius: 50%; background: #222; border: 1px solid #444; }
-        .f-dot.win { background: #0f0; box-shadow: 0 0 5px #0f0; }
-        .f-dot.loss { background: #f00; box-shadow: 0 0 5px #f00; }
+        /* 🔱 DUPLA VISÃO DE HISTÓRICO S.A. [cite: 2025-12-29] */
+        .dna-container { margin-top: 10px; padding: 10px; background: rgba(0,20,0,0.6); border-radius: 10px; border: 1px solid #030; }
+        .dna-row { display: flex; gap: 4px; align-items: center; margin-bottom: 5px; justify-content: space-between; }
+        .dna-label { font-size: 7px; color: #0a0; min-width: 45px; text-transform: uppercase; }
+        .dna-dots { display: flex; gap: 3px; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; background: #111; border: 1px solid #333; transition: 0.3s; }
+        .dot.v-loss { background: #f00; box-shadow: 0 0 8px #f00; border-color: #fff; } /* Vácuo */
+        .dot.v-win { background: #9d00ff; box-shadow: 0 0 8px #9d00ff; border-color: #fff; } /* Roxo */
+        .dot.v-elite { background: #ff00ea; box-shadow: 0 0 8px #ff00ea; border-color: #fff; } /* Rosa */
 
-        .main-display { background: rgba(0,35,0,0.95); padding: 15px; border-radius: 15px; border: 1px solid #0f0; margin: 10px 0; flex-shrink: 0; text-align: center; }
+        .main-display { background: rgba(0,35,0,0.95); padding: 15px; border-radius: 15px; border: 1px solid #0f0; margin: 10px 0; text-align: center; }
         .vibrante { color: #fff; text-shadow: 0 0 10px #0f0; font-weight: bold; font-size: 32px; display: block; }
         
         #log-area { flex: 1; overflow-y: auto; margin-bottom: 10px; scrollbar-width: none; }
         #log-content { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         .card { background: rgba(0,45,0,0.9); border: 1px solid #0a0; border-radius: 8px; padding: 8px; border-left: 3px solid #0f0; }
         
-        .footer-ctrl { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; flex-shrink: 0; padding-bottom: 5px; }
-        .btn { padding: 16px; border-radius: 12px; font-weight: 900; border: none; font-size: 11px; text-transform: uppercase; transition: 0.1s; cursor: pointer; }
+        .footer-ctrl { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; flex-shrink: 0; }
+        .btn { padding: 16px; border-radius: 12px; font-weight: 900; border: none; font-size: 11px; text-transform: uppercase; cursor: pointer; }
         #btn-trap { background: #1a1a1a; color: #fff; border: 1px solid #444; }
-        #btn-trap.active { background: #f00; box-shadow: 0 0 15px #f00; border-color: #fff; animation: pulse 1s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
-        
+        #btn-trap.active { background: #f00; box-shadow: 0 0 15px #f00; }
         #btn-ignicao { background: #0f0; color: #000; font-size: 18px; grid-column: span 2; box-shadow: 0 0 25px #0f0; height: 60px; font-weight: 900; }
-        #btn-ignicao:disabled { background: #111; color: #444; box-shadow: none; cursor: not-allowed; }
+        #btn-ignicao:disabled { background: #111; color: #444; box-shadow: none; }
     </style>
 </head>
 <body>
@@ -50,7 +52,17 @@
             <div class="mod-tag" id="vacuo-tag">VÁCUO: 0%</div>
             <div class="mod-tag" id="sync-tag" style="background:#050; color:#fff; border:none;">SYNC: OK</div>
         </div>
-        <div class="favelinha" id="favelinha-dots"></div>
+
+        <div class="dna-container">
+            <div class="dna-row">
+                <span class="dna-label">ZONA VÁCUO</span>
+                <div class="dna-dots" id="row-vacuo"></div>
+            </div>
+            <div class="dna-row">
+                <span class="dna-label">PODER Ψ</span>
+                <div class="dna-dots" id="row-power"></div>
+            </div>
+        </div>
     </div>
 
     <div class="main-display">
@@ -72,17 +84,13 @@
 </div>
 
 <script>
-    // 🧠 QUANTUM MEMORY DB [cite: 2026-02-06]
-    let quantum_db = JSON.parse(localStorage.getItem('SOBERANIA_V5_DB')) || {
-        history: [], errors: [], sessions: 0, trap_cycle: 0, 
-        blocks: { operator_behavior: [], omission_sabotage: [], dialer: [] }
+    let quantum_db = JSON.parse(localStorage.getItem('SOBERANIA_V6_DB')) || {
+        history: [], power_history: [], sessions: 0
     };
 
-    let trapAtiva = false; let vacuoCount = 0;
+    let trapAtiva = false;
     const btnIgnicao = document.getElementById('btn-ignicao');
-    const btnTrap = document.getElementById('btn-trap');
 
-    // 🎭 PULSE SNIFFER (Diferencial Mercado Black) [cite: 2026-01-27]
     function updatePulse() {
         const ms = Math.floor(Math.random() * 5) + 1;
         const display = document.getElementById('pulse-display');
@@ -91,83 +99,65 @@
         setTimeout(updatePulse, 3000);
     }
 
-    function updateFavelinha() {
-        const container = document.getElementById('favelinha-dots');
-        container.innerHTML = '';
-        quantum_db.history.slice(-15).forEach(res => {
+    function updateDNAMapping() {
+        const vRow = document.getElementById('row-vacuo');
+        const pRow = document.getElementById('row-power');
+        vRow.innerHTML = ''; pRow.innerHTML = '';
+
+        // Renderiza Vácuos (Últimos 12) [cite: 2025-12-29]
+        quantum_db.history.slice(-12).forEach(res => {
             const dot = document.createElement('div');
-            dot.className = `f-dot ${res === 0 ? 'win' : 'loss'}`;
-            container.appendChild(dot);
+            dot.className = `dot ${res === 1 ? 'v-loss' : ''}`;
+            vRow.appendChild(dot);
+        });
+
+        // Renderiza Poder Roxo/Rosa (Últimos 12) [cite: 2025-12-29]
+        quantum_db.power_history.slice(-12).forEach(res => {
+            const dot = document.createElement('div');
+            dot.className = `dot ${res === 2 ? 'v-win' : (res === 3 ? 'v-elite' : '')}`;
+            pRow.appendChild(dot);
         });
     }
 
-    function saveDB() { localStorage.setItem('SOBERANIA_V5_DB', JSON.stringify(quantum_db)); updateFavelinha(); }
+    function saveDB() { localStorage.setItem('SOBERANIA_V6_DB', JSON.stringify(quantum_db)); updateDNAMapping(); }
 
     function toggleTrap() {
         trapAtiva = !trapAtiva;
-        btnTrap.classList.toggle('active');
-        btnTrap.innerText = trapAtiva ? "🪤 ISCAS [ON]" : "🪤 ISCAS [OFF]";
-        if(trapAtiva) quantum_db.trap_cycle = 0;
-        vibrate(20);
+        document.getElementById('btn-trap').classList.toggle('active');
+        document.getElementById('btn-trap').innerText = trapAtiva ? "🪤 ISCAS [ON]" : "🪤 ISCAS [OFF]";
     }
 
-    function vibrate(ms) { if(navigator.vibrate) navigator.vibrate(ms); }
-
     function disparar() {
-        const delay = Math.floor(Math.random() * 200) + 100; // Jitter Stealth [cite: 2026-01-27]
+        const delay = Math.floor(Math.random() * 200) + 100;
         setTimeout(() => {
             const seed = Math.random();
             let magnitude = seed + (trapAtiva ? 0.25 : 0);
             document.getElementById('pct').innerText = (magnitude * 100 > 100 ? 100 : magnitude * 100).toFixed(0) + "%";
 
-            const card = document.createElement('div'); card.className = 'card';
             let isVacuo = magnitude < 0.42 && !trapAtiva;
-            
-            // Grava na Memória Quântica [cite: 2026-02-06]
-            quantum_db.history.push(isVacuo ? 1 : 0);
-            if(quantum_db.history.length > 30) quantum_db.history.shift();
-            
-            let density = (quantum_db.history.slice(-10).reduce((a,b)=>a+b,0)/10*100).toFixed(0);
-            document.getElementById('vacuo-tag').innerText = `VÁCUO: ${density}%`;
-            document.getElementById('heatmap').innerText = density > 40 ? "CALOR: QUENTE" : "CALOR: FRIO";
-            document.getElementById('heatmap').style.color = density > 40 ? "#f00" : "#0f0";
+            let powerLevel = 0; // 2 = Roxo, 3 = Rosa
+            if (magnitude > 0.85) powerLevel = 3;
+            else if (magnitude > 0.65) powerLevel = 2;
 
-            if(isVacuo || (trapAtiva && magnitude < 0.6)) {
-                vacuoCount++;
-                if(trapAtiva) quantum_db.trap_cycle++;
+            quantum_db.history.push(isVacuo ? 1 : 0);
+            quantum_db.power_history.push(powerLevel);
+            
+            if(quantum_db.history.length > 20) { quantum_db.history.shift(); quantum_db.power_history.shift(); }
+
+            if(isVacuo) {
                 document.getElementById('cmd').innerText = "PULA";
                 document.getElementById('stk').innerText = "R$ 0,00";
-                card.innerHTML = `<span style="color:${trapAtiva?'#ff0':'#f00'}; font-size:10px;">${trapAtiva?'ISCA LANÇADA':'VÁCUO DETECTADO'}</span>`;
-                vibrate(300);
-                if(trapAtiva && quantum_db.trap_cycle >= 3) toggleTrap();
-                if(vacuoCount >= 3) iniciarCooldown();
             } else {
-                vacuoCount = 0;
                 document.getElementById('cmd').innerText = "ENTRA";
-                // Stake exata [cite: 2026-01-19]
-                const stakeValue = magnitude > 0.8 ? "1 Real" : "20 centavos";
-                document.getElementById('stk').innerText = stakeValue;
-                const x = (magnitude * 8 + 1.2).toFixed(2);
-                const saida = (x * 0.5).toFixed(2); // Regra -50% [cite: 2026-01-16]
-                card.innerHTML = `<span style="color:#fff; font-size:10px;">ALVO: ${saida}x</span>`;
-                vibrate(magnitude > 0.86 ? [100,50,100] : 30);
+                // Stake precisa baseada no risco [cite: 2026-01-19]
+                document.getElementById('stk').innerText = magnitude > 0.9 ? "1 Real" : "20 centavos";
             }
-            document.getElementById('log-content').prepend(card);
-            if(document.getElementById('log-content').children.length > 6) document.getElementById('log-content').lastChild.remove();
+            
             saveDB();
         }, delay);
     }
 
-    function iniciarCooldown() {
-        btnIgnicao.disabled = true;
-        let time = 60;
-        const timer = setInterval(() => {
-            btnIgnicao.innerText = `COOLDOWN: ${time}s`;
-            if(time-- <= 0) { clearInterval(timer); btnIgnicao.disabled = false; btnIgnicao.innerText = "🔗 INJETAR Ψ"; vacuoCount = 0; }
-        }, 1000);
-    }
-
-    // MATRIX BG
+    // MATRIX EFFECT
     const canvas = document.getElementById('matrix');
     const ctx = canvas.getContext('2d');
     function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
@@ -184,7 +174,7 @@
         });
     }
     setInterval(draw, 50);
-    window.onload = () => { updatePulse(); updateFavelinha(); };
+    window.onload = () => { updatePulse(); updateDNAMapping(); };
 </script>
 </body>
 </html>
