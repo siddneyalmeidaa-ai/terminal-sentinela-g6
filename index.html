@@ -68,7 +68,7 @@
 
 <script>
     // 🔱 QUANTUM MEMORY E DNA MOTO G60s [cite: 2026-02-13, 2026-02-06]
-    let quantum_db = JSON.parse(localStorage.getItem('SOBERANIA_V9_DB')) || { history: [], power_history: [] };
+    let quantum_db = JSON.parse(localStorage.getItem('SOBERANIA_V10_DB')) || { history: [], power_history: [] };
     let trapAtiva = false;
     let trapTimer = null;
 
@@ -78,20 +78,21 @@
         screen: { w: 1080, h: 2460 }
     };
 
-    // 🔱 GERAÇÃO DE ID DINÂMICO COM FEEDBACK VISUAL
+    // 🔱 GERAÇÃO DE ID DINÂMICO COM AUTO-FLUSH (CORRIGIDO)
     function getMotoFingerprint() {
-        const salt = Date.now().toString(36).toUpperCase();
-        const noise = Math.random().toString(36).substring(5).toUpperCase();
-        const finalID = btoa(`${DEVICE_DNA.gpu}-${salt}-${noise}`).substring(0, 10).toUpperCase();
+        const salt = Math.floor(Math.random() * 999999).toString(36).toUpperCase();
+        const noise = Date.now().toString(36).slice(-4).toUpperCase();
+        const finalID = "Ψ-" + btoa(`${DEVICE_DNA.gpu}-${salt}-${noise}`).substring(2, 10).toUpperCase();
         
         const syncTag = document.getElementById('sync-tag');
         if(syncTag) {
-            syncTag.innerText = ""; // Limpa buffer visual
+            syncTag.style.opacity = "0";
             setTimeout(() => {
                 syncTag.innerText = "ID:" + finalID;
-                syncTag.style.color = "#0ff"; // Pisca cor de injeção
+                syncTag.style.opacity = "1";
+                syncTag.style.color = "#0ff";
                 setTimeout(() => syncTag.style.color = "#0f0", 150);
-            }, 10);
+            }, 50);
         }
         return finalID;
     }
@@ -132,7 +133,7 @@
         }
     }
 
-    function saveDB() { localStorage.setItem('SOBERANIA_V9_DB', JSON.stringify(quantum_db)); updateDNAMapping(); }
+    function saveDB() { localStorage.setItem('SOBERANIA_V10_DB', JSON.stringify(quantum_db)); updateDNAMapping(); }
 
     function toggleTrap() {
         trapAtiva = !trapAtiva;
@@ -153,7 +154,7 @@
     function prepareDisparo() {
         const btn = document.getElementById('btn-ignicao');
         touchScatter(); 
-        getMotoFingerprint(); // Força a mudança do ID no clique
+        getMotoFingerprint(); // Força a mudança do ID no clique (FRENÉTICO)
         
         btn.style.opacity = "0.5";
         btn.innerText = "SINC Ψ...";
@@ -179,7 +180,6 @@
         quantum_db.power_history.push(powerLevel);
         if(quantum_db.history.length > 50) { quantum_db.history.shift(); quantum_db.power_history.shift(); }
 
-        // CALOR E VÁCUO
         const calorEl = document.getElementById('heatmap');
         const pCount = quantum_db.power_history.slice(-4).filter(p => p >= 2).length;
         calorEl.innerText = pCount >= 3 ? "CALOR: BRASAS" : (pCount >= 1 ? "CALOR: QUENTE" : "CALOR: FRIO");
@@ -188,12 +188,12 @@
         const vPct = ((quantum_db.history.slice(-6).filter(v => v === 1).length / 6) * 100).toFixed(0);
         document.getElementById('vacuo-tag').innerText = `VÁCUO: ${vPct}%`;
 
-        // 🔱 TABELA DA FAVELINHA E AÇÃO IMEDIATA [cite: 2025-12-28, 2026-01-19]
         const cmdEl = document.getElementById('cmd');
         const stkEl = document.getElementById('stk');
         const card = document.createElement('div');
         card.className = 'card';
 
+        // 🔱 REGRAS DE STAKE EXATAS [cite: 2026-01-19] E REDUTOR -50% [cite: 2026-01-16]
         if(isVacuo) {
             cmdEl.innerText = "PULA"; cmdEl.style.color = "#f00";
             stkEl.innerText = "R$ 0,00";
@@ -233,4 +233,5 @@
     window.onload = () => { updatePulse(); updateDNAMapping(); getMotoFingerprint(); };
 </script>
 </body>
-</html>
+    </html>
+    
