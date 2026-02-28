@@ -14,17 +14,17 @@
         .status-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-top: 8px; }
         .mod-tag { font-size: 7px; padding: 4px; border-radius: 4px; text-align: center; border: 1px solid #0f0; font-weight: bold; background: rgba(0,20,0,0.8); }
         
-        /* 🔱 DUPLA VISÃO DE HISTÓRICO S.A. [cite: 2025-12-29] */
-        .dna-container { margin-top: 10px; padding: 10px; background: rgba(0,20,0,0.6); border-radius: 10px; border: 1px solid #030; }
-        .dna-row { display: flex; gap: 4px; align-items: center; margin-bottom: 5px; justify-content: space-between; }
-        .dna-label { font-size: 7px; color: #0a0; min-width: 45px; text-transform: uppercase; }
+        /* 🔱 DUPLA VISÃO DE HISTÓRICO S.A. [cite: 2025-12-28, 2025-12-29] */
+        .dna-container { margin: 10px 0; padding: 8px; background: rgba(0,25,0,0.7); border-radius: 12px; border: 1px solid #0f0; }
+        .dna-row { display: flex; gap: 5px; align-items: center; margin-bottom: 4px; justify-content: space-between; }
+        .dna-label { font-size: 6px; color: #0f0; min-width: 50px; text-transform: uppercase; font-weight: bold; }
         .dna-dots { display: flex; gap: 3px; }
         .dot { width: 8px; height: 8px; border-radius: 50%; background: #111; border: 1px solid #333; transition: 0.3s; }
-        .dot.v-loss { background: #f00; box-shadow: 0 0 8px #f00; border-color: #fff; } /* Vácuo */
-        .dot.v-win { background: #9d00ff; box-shadow: 0 0 8px #9d00ff; border-color: #fff; } /* Roxo */
-        .dot.v-elite { background: #ff00ea; box-shadow: 0 0 8px #ff00ea; border-color: #fff; } /* Rosa */
+        .dot.v-loss { background: #f00; box-shadow: 0 0 8px #f00; border-color: #fff; } /* Vácuo Detectado */
+        .dot.v-win { background: #9d00ff; box-shadow: 0 0 8px #9d00ff; border-color: #fff; } /* Poder Roxo */
+        .dot.v-elite { background: #ff00ea; box-shadow: 0 0 8px #ff00ea; border-color: #fff; } /* Poder Rosa */
 
-        .main-display { background: rgba(0,35,0,0.95); padding: 15px; border-radius: 15px; border: 1px solid #0f0; margin: 10px 0; text-align: center; }
+        .main-display { background: rgba(0,35,0,0.95); padding: 15px; border-radius: 15px; border: 1px solid #0f0; margin: 5px 0; text-align: center; }
         .vibrante { color: #fff; text-shadow: 0 0 10px #0f0; font-weight: bold; font-size: 32px; display: block; }
         
         #log-area { flex: 1; overflow-y: auto; margin-bottom: 10px; scrollbar-width: none; }
@@ -34,7 +34,7 @@
         .footer-ctrl { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; flex-shrink: 0; }
         .btn { padding: 16px; border-radius: 12px; font-weight: 900; border: none; font-size: 11px; text-transform: uppercase; cursor: pointer; }
         #btn-trap { background: #1a1a1a; color: #fff; border: 1px solid #444; }
-        #btn-trap.active { background: #f00; box-shadow: 0 0 15px #f00; }
+        #btn-trap.active { background: #f00; box-shadow: 0 0 15px #f00; border-color: #fff; }
         #btn-ignicao { background: #0f0; color: #000; font-size: 18px; grid-column: span 2; box-shadow: 0 0 25px #0f0; height: 60px; font-weight: 900; }
         #btn-ignicao:disabled { background: #111; color: #444; box-shadow: none; }
     </style>
@@ -84,6 +84,7 @@
 </div>
 
 <script>
+    // 🧠 QUANTUM MEMORY [cite: 2026-02-06]
     let quantum_db = JSON.parse(localStorage.getItem('SOBERANIA_V6_DB')) || {
         history: [], power_history: [], sessions: 0
     };
@@ -104,19 +105,21 @@
         const pRow = document.getElementById('row-power');
         vRow.innerHTML = ''; pRow.innerHTML = '';
 
-        // Renderiza Vácuos (Últimos 12) [cite: 2025-12-29]
-        quantum_db.history.slice(-12).forEach(res => {
+        // Renderiza 12 visões de Vácuo
+        for(let i=0; i<12; i++) {
+            const val = quantum_db.history[quantum_db.history.length - 12 + i];
             const dot = document.createElement('div');
-            dot.className = `dot ${res === 1 ? 'v-loss' : ''}`;
+            dot.className = `dot ${val === 1 ? 'v-loss' : ''}`;
             vRow.appendChild(dot);
-        });
+        }
 
-        // Renderiza Poder Roxo/Rosa (Últimos 12) [cite: 2025-12-29]
-        quantum_db.power_history.slice(-12).forEach(res => {
+        // Renderiza 12 visões de Poder (Roxo/Rosa)
+        for(let i=0; i<12; i++) {
+            const val = quantum_db.power_history[quantum_db.power_history.length - 12 + i];
             const dot = document.createElement('div');
-            dot.className = `dot ${res === 2 ? 'v-win' : (res === 3 ? 'v-elite' : '')}`;
+            dot.className = `dot ${val === 2 ? 'v-win' : (val === 3 ? 'v-elite' : '')}`;
             pRow.appendChild(dot);
-        });
+        }
     }
 
     function saveDB() { localStorage.setItem('SOBERANIA_V6_DB', JSON.stringify(quantum_db)); updateDNAMapping(); }
@@ -135,21 +138,21 @@
             document.getElementById('pct').innerText = (magnitude * 100 > 100 ? 100 : magnitude * 100).toFixed(0) + "%";
 
             let isVacuo = magnitude < 0.42 && !trapAtiva;
-            let powerLevel = 0; // 2 = Roxo, 3 = Rosa
-            if (magnitude > 0.85) powerLevel = 3;
-            else if (magnitude > 0.65) powerLevel = 2;
+            let powerLevel = 0; 
+            if (magnitude > 0.88) powerLevel = 3; // ROSA
+            else if (magnitude > 0.60) powerLevel = 2; // ROXO
 
             quantum_db.history.push(isVacuo ? 1 : 0);
             quantum_db.power_history.push(powerLevel);
             
-            if(quantum_db.history.length > 20) { quantum_db.history.shift(); quantum_db.power_history.shift(); }
+            if(quantum_db.history.length > 50) { quantum_db.history.shift(); quantum_db.power_history.shift(); }
 
             if(isVacuo) {
-                document.getElementById('cmd').innerText = "PULA";
+                document.getElementById('cmd').innerText = "PULA"; [cite: 2025-12-29]
                 document.getElementById('stk').innerText = "R$ 0,00";
             } else {
                 document.getElementById('cmd').innerText = "ENTRA";
-                // Stake precisa baseada no risco [cite: 2026-01-19]
+                // Stake precisa [cite: 2026-01-19]
                 document.getElementById('stk').innerText = magnitude > 0.9 ? "1 Real" : "20 centavos";
             }
             
