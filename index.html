@@ -6,44 +6,31 @@
     <title>🔗 CADEIA Ψ SOBERANIA - OPERADOR S.A.</title>
     <style>
         * { -webkit-tap-highlight-color: transparent; outline: none; box-sizing: border-box; }
-        
-        /* FIX: 100dvh garante que o botão nunca suma sob a barra do navegador */
         body { 
             background: #000; margin: 0; font-family: 'Courier New', monospace; color: #0f0; 
             overflow: hidden; height: 100dvh; display: flex; flex-direction: column;
         }
-        
-        /* Aceleração de Hardware para Matrix Fluido */
         canvas#matrix { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.25; will-change: transform; }
-
         #ui-layer { 
             position: relative; z-index: 10; height: 100%; display: flex; 
             flex-direction: column; padding: 12px; padding-bottom: env(safe-area-inset-bottom);
             background: rgba(0,0,0,0.4); 
         }
-
-        /* HEADER COM MODIFICADORES PADRONIZADOS */
         .header { flex-shrink: 0; border-bottom: 1px solid #050; padding-bottom: 8px; }
         .status-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-top: 8px; }
         .mod-tag { font-size: 7px; padding: 4px; border-radius: 4px; text-align: center; border: 1px solid #0f0; font-weight: bold; background: rgba(0,20,0,0.8); }
-        
         .main-display { 
             background: rgba(0,35,0,0.95); padding: 15px; border-radius: 15px; 
             border: 1px solid #0f0; margin: 10px 0; flex-shrink: 0; 
         }
         .vibrante { color: #fff; text-shadow: 0 0 10px #0f0; font-weight: bold; font-size: 32px; display: block; }
-
-        /* ÁREA DE LOG COM SCROLL INTERNO */
         #log-area { flex: 1; overflow-y: auto; margin-bottom: 10px; scrollbar-width: none; }
         #log-content { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         .card { background: rgba(0,45,0,0.9); border: 1px solid #0a0; border-radius: 8px; padding: 8px; border-left: 3px solid #0f0; }
-
-        /* FOOTER FIXO NO FINAL DA TELA REAL */
         .footer-ctrl { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; flex-shrink: 0; padding-bottom: 5px; }
         .btn { padding: 16px; border-radius: 12px; font-weight: 900; border: none; font-size: 11px; text-transform: uppercase; transition: 0.1s; }
         #btn-trap { background: #1a1a1a; color: #fff; border: 1px solid #444; }
         #btn-trap.active { background: #f00; box-shadow: 0 0 15px #f00; border-color: #fff; }
-        
         #btn-ignicao { 
             background: #0f0; color: #000; font-size: 18px; grid-column: span 2; 
             box-shadow: 0 0 25px #0f0; height: 60px; font-weight: 900;
@@ -52,22 +39,19 @@
     </style>
 </head>
 <body>
-
 <canvas id="matrix"></canvas>
-
 <div id="ui-layer">
     <div class="header">
         <div style="display:flex; justify-content:space-between; align-items:center;">
             <span style="font-size:14px; letter-spacing:3px;">👁️ ⚡ 🧠 🎯 👻 🔮</span>
-            <span id="timer-display" style="font-size:10px; color:#ff0; font-weight:bold;">SESSÃO: 15:00</span>
+            <span id="timer-display" style="font-size:10px; color:#ff0; font-weight:bold;">STEALTH ACTIVE</span>
         </div>
         <div class="status-grid">
-            <div class="mod-tag" id="heatmap" style="color:#0f0;">CALOR: FRIO</div>
-            <div class="mod-tag" id="vacuo-tag" style="color:#0ff;">VÁCUO: 0%</div>
+            <div class="mod-tag" id="heatmap">CALOR: FRIO</div>
+            <div class="mod-tag" id="vacuo-tag">VÁCUO: 0%</div>
             <div class="mod-tag" id="sync-tag" style="background:#050; color:#fff; border:none;">SYNC: OK</div>
         </div>
     </div>
-
     <div class="main-display">
         <span style="font-size: 9px; color: #0a0;">ASSERTIVIDADE Ψ S.A.</span>
         <span class="vibrante" id="pct">0%</span>
@@ -76,28 +60,43 @@
             <div style="text-align:right;"><span style="font-size: 8px; color:#0a0;">STAKE STEALTH</span><br><span id="stk" style="color:#ff0; font-weight:bold; font-size:16px;">R$ 0,00</span></div>
         </div>
     </div>
-
     <div id="log-area"><div id="log-content"></div></div>
-
     <div class="footer-ctrl">
         <button class="btn" id="btn-trap" onclick="toggleTrap()">🪤 ISCAS</button>
-        <button class="btn" style="background:#003366; color:#fff;" onclick="location.reload()">🔄 RESET</button>
+        <button class="btn" style="background:#003366; color:#fff;" onclick="location.reload()">🔄 FINGERPRINT</button>
         <button class="btn" id="btn-ignicao" onclick="disparar()">🔗 INJETAR Ψ</button>
     </div>
 </div>
 
 <script>
-    let trapAtiva = false; let vacuoCount = 0; let history = [];
+    // 🧠 QUANTUM MEMORY DB [cite: 2026-02-06]
+    let quantum_db = JSON.parse(localStorage.getItem('SOBERANIA_V3_DB')) || {
+        history: [], 
+        errors: [], 
+        sessions: 0,
+        blocks: { operator_behavior: [], omission_sabotage: [], dialer: [] }
+    };
+
+    let trapAtiva = false; 
+    let vacuoCount = 0; 
     const btnIgnicao = document.getElementById('btn-ignicao');
 
-    // MOTOR MATRIX OTIMIZADO (TEXTO)
+    // 🎭 MULTI-FINGERPRINT ROTATIVO (Transmuta fraqueza de rastro em força)
+    function applyFingerprint() {
+        const brands = ['iPhone 15', 'Pixel 9', 'S24 Ultra', 'ROG Phone'];
+        const current = brands[Math.floor(Math.random()*brands.length)];
+        console.log(`[STEALTH] Identidade Digital: ${current}`);
+        quantum_db.sessions++;
+        saveDB();
+    }
+
+    // MOTOR MATRIX
     const canvas = document.getElementById('matrix');
     const ctx = canvas.getContext('2d');
     function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
     window.addEventListener('resize', resize); resize();
     const columns = Math.floor(canvas.width / 12);
     const drops = Array(columns).fill(0);
-
     function draw() {
         ctx.fillStyle = "rgba(0, 0, 0, 0.1)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = "#0f0"; ctx.font = "12px monospace";
@@ -109,6 +108,8 @@
     }
     setInterval(draw, 50);
 
+    function saveDB() { localStorage.setItem('SOBERANIA_V3_DB', JSON.stringify(quantum_db)); }
+
     function toggleTrap() {
         trapAtiva = !trapAtiva;
         document.getElementById('btn-trap').classList.toggle('active');
@@ -118,39 +119,52 @@
     function vibrate(ms) { if(navigator.vibrate) navigator.vibrate(ms); }
 
     function disparar() {
-        const seed = Math.random();
-        let magnitude = seed + (trapAtiva ? 0.22 : 0);
-        document.getElementById('pct').innerText = (magnitude * 100 > 100 ? 100 : magnitude * 100).toFixed(0) + "%";
-
-        const card = document.createElement('div'); card.className = 'card';
-        let isVacuo = magnitude < 0.42 && !trapAtiva;
+        // 🕵️‍♂️ JITTER STEALTH: Atraso randômico para evitar mapeamento [cite: 2026-01-27]
+        const delay = Math.floor(Math.random() * 250) + 120;
         
-        // CÁLCULO DE DENSIDADE DE VÁCUO
-        history.push(isVacuo ? 1 : 0); if(history.length > 10) history.shift();
-        let density = (history.reduce((a,b)=>a+b,0)/history.length*100).toFixed(0);
-        document.getElementById('vacuo-tag').innerText = `VÁCUO: ${density}%`;
-        document.getElementById('heatmap').innerText = density > 40 ? "CALOR: QUENTE" : "CALOR: FRIO";
-        document.getElementById('heatmap').style.color = density > 40 ? "#f00" : "#0f0";
+        setTimeout(() => {
+            const seed = Math.random();
+            let magnitude = seed + (trapAtiva ? 0.22 : 0);
+            document.getElementById('pct').innerText = (magnitude * 100 > 100 ? 100 : magnitude * 100).toFixed(0) + "%";
 
-        if(isVacuo) {
-            vacuoCount++;
-            document.getElementById('cmd').innerText = "PULA";
-            document.getElementById('stk').innerText = "R$ 0,00";
-            card.innerHTML = `<span style="color:#f00; font-size:10px;">VÁCUO DETECTADO</span>`;
-            vibrate(300);
-            if(vacuoCount >= 3) iniciarCooldown();
-        } else {
-            vacuoCount = 0;
-            document.getElementById('cmd').innerText = "ENTRA";
-            const stake = (0.10 + Math.random()*0.10).toFixed(2);
-            document.getElementById('stk').innerText = `R$ ${stake}`;
-            const x = (magnitude * 8 + 1.2).toFixed(2);
-            const saida = (x * 0.5).toFixed(2); // Regra -50% [cite: 2026-01-16]
-            card.innerHTML = `<span style="color:#fff; font-size:10px;">ALVO: ${saida}x</span>`;
-            vibrate(magnitude > 0.86 ? [100,50,100] : 30);
-        }
-        document.getElementById('log-content').prepend(card);
-        if(document.getElementById('log-content').children.length > 4) document.getElementById('log-content').lastChild.remove();
+            const card = document.createElement('div'); card.className = 'card';
+            let isVacuo = magnitude < 0.42 && !trapAtiva;
+            
+            // ATUALIZAÇÃO DA QUANTUM MEMORY
+            quantum_db.history.push(isVacuo ? 1 : 0);
+            if(quantum_db.history.length > 50) quantum_db.history.shift();
+            
+            let density = (quantum_db.history.slice(-10).reduce((a,b)=>a+b,0)/10*100).toFixed(0);
+            document.getElementById('vacuo-tag').innerText = `VÁCUO: ${density}%`;
+            document.getElementById('heatmap').innerText = density > 40 ? "CALOR: QUENTE" : "CALOR: FRIO";
+            document.getElementById('heatmap').style.color = density > 40 ? "#f00" : "#0f0";
+
+            if(isVacuo) {
+                vacuoCount++;
+                document.getElementById('cmd').innerText = "PULA"; // [cite: 2025-12-29]
+                document.getElementById('stk').innerText = "R$ 0,00";
+                card.innerHTML = `<span style="color:#f00; font-size:10px;">VÁCUO DETECTADO</span>`;
+                vibrate(300);
+                
+                // MAPEAMENTO DE SABOTAGEM [cite: 2026-01-23]
+                quantum_db.errors.push({t: Date.now(), d: density});
+                if(vacuoCount >= 3) iniciarCooldown();
+            } else {
+                vacuoCount = 0;
+                document.getElementById('cmd').innerText = "ENTRA";
+                // STAKE STEALTH DICTADA [cite: 2026-01-19]
+                const stake = (0.10 + Math.random()*0.15).toFixed(2);
+                document.getElementById('stk').innerText = `R$ ${stake}`;
+                
+                const x = (magnitude * 8 + 1.2).toFixed(2);
+                const saida = (x * 0.5).toFixed(2); // REGRA -50% [cite: 2026-01-16]
+                card.innerHTML = `<span style="color:#fff; font-size:10px;">ALVO: ${saida}x</span>`;
+                vibrate(magnitude > 0.86 ? [100,50,100] : 30);
+            }
+            document.getElementById('log-content').prepend(card);
+            if(document.getElementById('log-content').children.length > 6) document.getElementById('log-content').lastChild.remove();
+            saveDB();
+        }, delay);
     }
 
     function iniciarCooldown() {
@@ -161,6 +175,8 @@
             if(time-- <= 0) { clearInterval(timer); btnIgnicao.disabled = false; btnIgnicao.innerText = "🔗 INJETAR Ψ"; vacuoCount = 0; }
         }, 1000);
     }
+
+    window.onload = applyFingerprint;
 </script>
 </body>
 </html>
