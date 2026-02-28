@@ -43,7 +43,7 @@
         <div class="status-grid">
             <div class="mod-tag" id="heatmap">CALOR: FRIO</div>
             <div class="mod-tag" id="vacuo-tag">VÁCUO: 0%</div>
-            <div class="mod-tag" id="sync-tag">ID: ELITE</div>
+            <div class="mod-tag" id="sync-tag">MOTO-G60S</div>
         </div>
         <div class="dna-container">
             <div class="dna-row"><span class="dna-label">ZONA VÁCUO</span><div class="dna-dots" id="row-vacuo"></div></div>
@@ -66,28 +66,34 @@
     </div>
 </div>
 <script>
-    let quantum_db = JSON.parse(localStorage.getItem('SOBERANIA_V8_DB')) || { history: [], power_history: [] };
+    let quantum_db = JSON.parse(localStorage.getItem('SOBERANIA_V9_DB')) || { history: [], power_history: [] };
     let trapAtiva = false;
     let trapTimer = null;
 
-    // 🔱 DISPERSÃO BIOMÉTRICA E AUDIO MASK [cite: 2026-02-13]
+    // 🔱 SYNC MOTO G60s DNA [cite: 2026-02-13]
+    const DEVICE_DNA = {
+        gpu: "Mali-G76 MC4",
+        build: "S3RLS32.114-25-13",
+        screen: { w: 1080, h: 2460 }
+    };
+
     function touchScatter() {
         const force = (Math.random() * 0.5 + 0.4).toFixed(2);
-        const radius = Math.floor(Math.random() * 10) + 5;
         try {
             const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             const oscillator = audioCtx.createOscillator();
-            oscillator.type = 'sine';
-            oscillator.frequency.setValueAtTime(Math.random() * 50, audioCtx.currentTime);
+            oscillator.frequency.setValueAtTime(Math.random() * 40, audioCtx.currentTime);
             audioCtx.close();
         } catch(e) {}
-        return { force, radius };
+        return force;
     }
 
-    function getStealthFingerprint() {
+    function getMotoFingerprint() {
         const noise = Math.random().toString(36).substring(7).toUpperCase();
-        const screenNoise = `${window.innerWidth + Math.floor(Math.random()*2)}x${window.innerHeight + Math.floor(Math.random()*2)}`;
-        return btoa(screenNoise + noise).substring(0, 8).toUpperCase();
+        // Simula pequena variação de tela (Screen-Leaking Protection)
+        const vW = DEVICE_DNA.screen.w - Math.floor(Math.random() * 2);
+        const vH = DEVICE_DNA.screen.h - Math.floor(Math.random() * 2);
+        return btoa(`${DEVICE_DNA.gpu}-${DEVICE_DNA.build}-${vW}x${vH}-${noise}`).substring(0, 10).toUpperCase();
     }
 
     function updatePulse() {
@@ -117,7 +123,7 @@
         }
     }
 
-    function saveDB() { localStorage.setItem('SOBERANIA_V8_DB', JSON.stringify(quantum_db)); updateDNAMapping(); }
+    function saveDB() { localStorage.setItem('SOBERANIA_V9_DB', JSON.stringify(quantum_db)); updateDNAMapping(); }
 
     function toggleTrap() {
         trapAtiva = !trapAtiva;
@@ -139,8 +145,8 @@
 
     function prepareDisparo() {
         const btn = document.getElementById('btn-ignicao');
-        touchScatter(); // Aciona a dispersão no toque
-        const delay = Math.floor(Math.random() * 400) + 150; 
+        touchScatter(); 
+        const delay = Math.floor(Math.random() * 350) + 150; 
         btn.style.opacity = "0.5";
         btn.innerText = "SINC Ψ...";
         setTimeout(() => {
@@ -180,7 +186,7 @@
         vacuoTag.innerText = `VÁCUO: ${vPct}%`;
         vacuoTag.style.color = vPct > 30 ? "#f00" : "#0f0";
 
-        document.getElementById('sync-tag').innerText = "ID:" + getStealthFingerprint();
+        document.getElementById('sync-tag').innerText = "ID:" + getMotoFingerprint();
 
         const cmdEl = document.getElementById('cmd');
         const stkEl = document.getElementById('stk');
@@ -227,5 +233,4 @@
     window.onload = () => { updatePulse(); updateDNAMapping(); };
 </script>
 </body>
-    </html>
-    
+</html>
