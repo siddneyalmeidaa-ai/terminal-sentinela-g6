@@ -70,7 +70,6 @@
     let trapAtiva = false;
     let trapTimer = null;
 
-    // 🔱 SYNC MOTO G60s DNA [cite: 2026-02-13]
     const DEVICE_DNA = {
         gpu: "Mali-G76 MC4",
         build: "S3RLS32.114-25-13",
@@ -88,12 +87,20 @@
         return force;
     }
 
+    // 🔱 CORREÇÃO: HASH DINÂMICO [cite: 2026-02-13]
     function getMotoFingerprint() {
-        const noise = Math.random().toString(36).substring(7).toUpperCase();
-        // Simula pequena variação de tela (Screen-Leaking Protection)
+        const salt = Date.now().toString(36).toUpperCase();
+        const noise = Math.random().toString(36).substring(5).toUpperCase();
         const vW = DEVICE_DNA.screen.w - Math.floor(Math.random() * 2);
         const vH = DEVICE_DNA.screen.h - Math.floor(Math.random() * 2);
-        return btoa(`${DEVICE_DNA.gpu}-${DEVICE_DNA.build}-${vW}x${vH}-${noise}`).substring(0, 10).toUpperCase();
+        
+        const finalID = btoa(`${DEVICE_DNA.gpu}-${salt}-${vW}x${vH}-${noise}`).substring(0, 10).toUpperCase();
+        
+        // 🔱 CORREÇÃO: ATUALIZAÇÃO VISUAL OBRIGATÓRIA
+        const syncTag = document.getElementById('sync-tag');
+        if(syncTag) syncTag.innerText = "ID:" + finalID;
+        
+        return finalID;
     }
 
     function updatePulse() {
@@ -186,7 +193,8 @@
         vacuoTag.innerText = `VÁCUO: ${vPct}%`;
         vacuoTag.style.color = vPct > 30 ? "#f00" : "#0f0";
 
-        document.getElementById('sync-tag').innerText = "ID:" + getMotoFingerprint();
+        // GERA E ATUALIZA O ID A CADA DISPARO
+        getMotoFingerprint();
 
         const cmdEl = document.getElementById('cmd');
         const stkEl = document.getElementById('stk');
@@ -230,7 +238,7 @@
         });
     }
     setInterval(draw, 50);
-    window.onload = () => { updatePulse(); updateDNAMapping(); };
+    window.onload = () => { updatePulse(); updateDNAMapping(); getMotoFingerprint(); };
 </script>
 </body>
 </html>
