@@ -30,7 +30,8 @@
         .footer-ctrl { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; flex-shrink: 0; padding-bottom: 5px; }
         .btn { padding: 16px; border-radius: 12px; font-weight: 900; border: none; font-size: 11px; text-transform: uppercase; transition: 0.1s; }
         #btn-trap { background: #1a1a1a; color: #fff; border: 1px solid #444; }
-        #btn-trap.active { background: #f00; box-shadow: 0 0 15px #f00; border-color: #fff; }
+        #btn-trap.active { background: #f00; box-shadow: 0 0 15px #f00; border-color: #fff; animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
         #btn-ignicao { 
             background: #0f0; color: #000; font-size: 18px; grid-column: span 2; 
             box-shadow: 0 0 25px #0f0; height: 60px; font-weight: 900;
@@ -44,7 +45,7 @@
     <div class="header">
         <div style="display:flex; justify-content:space-between; align-items:center;">
             <span style="font-size:14px; letter-spacing:3px;">👁️ ⚡ 🧠 🎯 👻 🔮</span>
-            <span id="timer-display" style="font-size:10px; color:#ff0; font-weight:bold;">STEALTH ACTIVE</span>
+            <span id="timer-display" style="font-size:10px; color:#ff0; font-weight:bold;">STEALTH V4</span>
         </div>
         <div class="status-grid">
             <div class="mod-tag" id="heatmap">CALOR: FRIO</div>
@@ -62,7 +63,7 @@
     </div>
     <div id="log-area"><div id="log-content"></div></div>
     <div class="footer-ctrl">
-        <button class="btn" id="btn-trap" onclick="toggleTrap()">🪤 ISCAS</button>
+        <button class="btn" id="btn-trap" onclick="toggleTrap()">🪤 ISCAS [OFF]</button>
         <button class="btn" style="background:#003366; color:#fff;" onclick="location.reload()">🔄 FINGERPRINT</button>
         <button class="btn" id="btn-ignicao" onclick="disparar()">🔗 INJETAR Ψ</button>
     </div>
@@ -70,27 +71,26 @@
 
 <script>
     // 🧠 QUANTUM MEMORY DB [cite: 2026-02-06]
-    let quantum_db = JSON.parse(localStorage.getItem('SOBERANIA_V3_DB')) || {
+    let quantum_db = JSON.parse(localStorage.getItem('SOBERANIA_V4_DB')) || {
         history: [], 
         errors: [], 
         sessions: 0,
-        blocks: { operator_behavior: [], omission_sabotage: [], dialer: [] }
+        trap_cycle: 0
     };
 
     let trapAtiva = false; 
     let vacuoCount = 0; 
     const btnIgnicao = document.getElementById('btn-ignicao');
+    const btnTrap = document.getElementById('btn-trap');
 
-    // 🎭 MULTI-FINGERPRINT ROTATIVO (Transmuta fraqueza de rastro em força)
     function applyFingerprint() {
         const brands = ['iPhone 15', 'Pixel 9', 'S24 Ultra', 'ROG Phone'];
-        const current = brands[Math.floor(Math.random()*brands.length)];
-        console.log(`[STEALTH] Identidade Digital: ${current}`);
+        console.log(`[STEALTH] Identidade Digital: ${brands[Math.floor(Math.random()*brands.length)]}`);
         quantum_db.sessions++;
         saveDB();
     }
 
-    // MOTOR MATRIX
+    // MATRIX BG
     const canvas = document.getElementById('matrix');
     const ctx = canvas.getContext('2d');
     function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
@@ -108,29 +108,30 @@
     }
     setInterval(draw, 50);
 
-    function saveDB() { localStorage.setItem('SOBERANIA_V3_DB', JSON.stringify(quantum_db)); }
+    function saveDB() { localStorage.setItem('SOBERANIA_V4_DB', JSON.stringify(quantum_db)); }
 
     function toggleTrap() {
         trapAtiva = !trapAtiva;
-        document.getElementById('btn-trap').classList.toggle('active');
+        btnTrap.classList.toggle('active');
+        btnTrap.innerText = trapAtiva ? "🪤 ISCAS [ON]" : "🪤 ISCAS [OFF]";
         vibrate(20);
+        if(trapAtiva) quantum_db.trap_cycle = 0; // Reseta ciclo ao ligar
     }
 
     function vibrate(ms) { if(navigator.vibrate) navigator.vibrate(ms); }
 
     function disparar() {
-        // 🕵️‍♂️ JITTER STEALTH: Atraso randômico para evitar mapeamento [cite: 2026-01-27]
-        const delay = Math.floor(Math.random() * 250) + 120;
+        const delay = Math.floor(Math.random() * 250) + 120; // Jitter Stealth [cite: 2026-01-27]
         
         setTimeout(() => {
             const seed = Math.random();
-            let magnitude = seed + (trapAtiva ? 0.22 : 0);
+            // 🔱 LOGICA ISCA INTELIGENTE: magnitude aumentada + simulação de perda
+            let magnitude = seed + (trapAtiva ? 0.25 : 0);
             document.getElementById('pct').innerText = (magnitude * 100 > 100 ? 100 : magnitude * 100).toFixed(0) + "%";
 
             const card = document.createElement('div'); card.className = 'card';
             let isVacuo = magnitude < 0.42 && !trapAtiva;
             
-            // ATUALIZAÇÃO DA QUANTUM MEMORY
             quantum_db.history.push(isVacuo ? 1 : 0);
             if(quantum_db.history.length > 50) quantum_db.history.shift();
             
@@ -139,20 +140,23 @@
             document.getElementById('heatmap').innerText = density > 40 ? "CALOR: QUENTE" : "CALOR: FRIO";
             document.getElementById('heatmap').style.color = density > 40 ? "#f00" : "#0f0";
 
-            if(isVacuo) {
+            if(isVacuo || (trapAtiva && magnitude < 0.6)) {
                 vacuoCount++;
-                document.getElementById('cmd').innerText = "PULA"; // [cite: 2025-12-29]
-                document.getElementById('stk').innerText = "R$ 0,00";
-                card.innerHTML = `<span style="color:#f00; font-size:10px;">VÁCUO DETECTADO</span>`;
-                vibrate(300);
+                if(trapAtiva) quantum_db.trap_cycle++;
                 
-                // MAPEAMENTO DE SABOTAGEM [cite: 2026-01-23]
-                quantum_db.errors.push({t: Date.now(), d: density});
+                document.getElementById('cmd').innerText = "PULA";
+                document.getElementById('stk').innerText = "R$ 0,00";
+                card.innerHTML = `<span style="color:${trapAtiva?'#ff0':'#f00'}; font-size:10px;">${trapAtiva?'ISCA LANÇADA':'VÁCUO DETECTADO'}</span>`;
+                vibrate(trapAtiva ? 50 : 300);
+                
+                // AUTO-OFF STEALTH: Desliga isca após 3 rodadas de "limpeza"
+                if(trapAtiva && quantum_db.trap_cycle >= 3) toggleTrap();
+                
                 if(vacuoCount >= 3) iniciarCooldown();
             } else {
                 vacuoCount = 0;
                 document.getElementById('cmd').innerText = "ENTRA";
-                // STAKE STEALTH DICTADA [cite: 2026-01-19]
+                // STAKE STEALTH [cite: 2026-01-19]
                 const stake = (0.10 + Math.random()*0.15).toFixed(2);
                 document.getElementById('stk').innerText = `R$ ${stake}`;
                 
