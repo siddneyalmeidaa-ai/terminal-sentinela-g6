@@ -43,7 +43,7 @@
         <div class="status-grid">
             <div class="mod-tag" id="heatmap">CALOR: FRIO</div>
             <div class="mod-tag" id="vacuo-tag">VÁCUO: 0%</div>
-            <div class="mod-tag" id="sync-tag" style="color: #0ff;">ID:Ψ-INICIAL</div>
+            <div class="mod-tag" id="sync-tag" style="color: #0ff;">ID:Ψ-SINC...</div>
         </div>
         <div class="dna-container">
             <div class="dna-row"><span class="dna-label">ZONA VÁCUO</span><div class="dna-dots" id="row-vacuo"></div></div>
@@ -67,36 +67,32 @@
 </div>
 
 <script>
-    // 🔱 QUANTUM MEMORY E DNA MOTO G60s [cite: 2026-02-13, 2026-02-06]
     let quantum_db = { history: [], power_history: [] };
     let trapAtiva = false;
-    let trapTimer = null;
 
-    // 🔱 ROTAÇÃO DE ID SEM TRAVAMENTO [cite: 2026-02-28]
     function rotateID() {
         const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         let str = "Ψ-";
         for(let i=0; i<8; i++) str += chars.charAt(Math.floor(Math.random() * chars.length));
-        const el = document.getElementById('sync-tag');
-        if(el) el.innerText = "ID:" + str;
+        document.getElementById('sync-tag').innerText = "ID:" + str;
+    }
+
+    // 🔱 GERADOR DE NOISE (VALORES NÃO REDONDOS) [cite: 2026-01-19]
+    function getStealthValue(base) {
+        if (base === 0) return "R$ 0,00";
+        const cents = (Math.random() * 0.95).toFixed(2); // Gera centavos aleatórios
+        return "R$ " + (parseFloat(base) + parseFloat(cents)).toFixed(2);
     }
 
     function toggleTrap() {
         trapAtiva = !trapAtiva;
         const btn = document.getElementById('btn-trap');
         btn.classList.toggle('active');
-        if(trapAtiva) {
-            let timeLeft = 15;
-            trapTimer = setInterval(() => {
-                timeLeft--; btn.innerText = `🪤 ISCA: ${timeLeft}s`;
-                if(timeLeft <= 0) { clearInterval(trapTimer); toggleTrap(); }
-            }, 1000);
-        } else btn.innerText = "🪤 ISCAS [OFF]";
+        btn.innerText = trapAtiva ? "🪤 ISCA ATIVA" : "🪤 ISCAS [OFF]";
     }
 
-    // 🔱 DISPARO CORRIGIDO (FIM DO CONGELAMENTO)
     function prepareDisparo() {
-        rotateID(); 
+        rotateID();
         disparar();
     }
 
@@ -115,34 +111,37 @@
         quantum_db.power_history.push(powerLevel);
         if(quantum_db.history.length > 12) { quantum_db.history.shift(); quantum_db.power_history.shift(); }
 
-        // CALOR E VÁCUO
         const calorEl = document.getElementById('heatmap');
         const pCount = quantum_db.power_history.filter(p => p >= 2).length;
         calorEl.innerText = pCount >= 3 ? "CALOR: BRASAS" : (pCount >= 1 ? "CALOR: QUENTE" : "CALOR: FRIO");
         calorEl.style.background = pCount >= 3 ? "#f00" : (pCount >= 1 ? "#ffae00" : "rgba(0,20,0,0.8)");
 
-        const vCount = quantum_db.history.filter(v => v === 1).length;
-        document.getElementById('vacuo-tag').innerText = `VÁCUO: ${Math.floor((vCount/12)*100)}%`;
+        document.getElementById('vacuo-tag').innerText = `VÁCUO: ${Math.floor((quantum_db.history.filter(v => v === 1).length/12)*100)}%`;
 
         const cmdEl = document.getElementById('cmd');
         const stkEl = document.getElementById('stk');
         const card = document.createElement('div');
         card.className = 'card';
 
+        // 🔱 LÓGICA DE STAKE QUEBRADA (MÍNIMO R$ 1.00) [cite: 2026-01-19]
         if(isVacuo) {
             cmdEl.innerText = "PULA"; cmdEl.style.color = "#f00"; stkEl.innerText = "R$ 0,00";
             card.innerHTML = `<span style="font-size:9px; color:#f00;">🛡️ VÁCUO DETECTADO</span>`;
         } else {
-            cmdEl.innerText = pctVal < 55 ? "SONDAGEM" : "ENTRA";
-            cmdEl.style.color = pctVal < 55 ? "#ff0" : "#0ff";
-            stkEl.innerText = pctVal < 55 ? "10 centavos" : (pctVal > 85 ? "1 Real" : "20 centavos");
+            let baseStake = pctVal < 70 ? 1 : (pctVal < 90 ? 2 : 5);
+            cmdEl.innerText = pctVal < 70 ? "SONDAGEM" : "ENTRA";
+            cmdEl.style.color = pctVal < 70 ? "#ff0" : "#0ff";
+            
+            // Dita o valor quebrado: Ex: R$ 1,42 ou R$ 5,87
+            stkEl.innerText = getStealthValue(baseStake); 
+            
+            // Multiplicador com redutor de -50% [cite: 2026-01-16]
             let xSaida = ((magnitude * 10) * 0.5).toFixed(2);
             card.innerHTML = `<span style="font-size:9px; color:#fff;">🎯 ALVO: ${xSaida}x</span>`;
         }
 
         document.getElementById('log-content').prepend(card);
         if(document.getElementById('log-content').children.length > 6) document.getElementById('log-content').lastChild.remove();
-        
         updateDNAMapping();
     }
 
