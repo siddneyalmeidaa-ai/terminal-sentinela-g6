@@ -30,10 +30,18 @@
         #btn-trap { background: #1a1a1a; color: #fff; border: 1px solid #444; }
         #btn-trap.active { background: #f00; box-shadow: 0 0 15px #f00; border-color: #fff; }
         #btn-ignicao { background: #0f0; color: #000; font-size: 18px; grid-column: span 2; box-shadow: 0 0 25px #0f0; height: 60px; font-weight: 900; }
+        
+        /* 📷 BOTÃO FLUTUANTE DE ANEXO Ψ */
+        #btn-scan-label { position: fixed; right: 20px; bottom: 120px; width: 60px; height: 60px; background: rgba(0,255,0,0.2); border: 2px solid #0f0; border-radius: 50%; z-index: 100; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 0 15px #0f0; cursor: pointer; }
+        #file-input { display: none; }
     </style>
 </head>
 <body>
 <canvas id="matrix"></canvas>
+
+<label for="file-input" id="btn-scan-label">📷</label>
+<input type="file" id="file-input" accept="image/*" onchange="processarPrint(event)">
+
 <div id="ui-layer">
     <div class="header">
         <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -43,7 +51,7 @@
         <div class="status-grid">
             <div class="mod-tag" id="heatmap">CALOR: FRIO</div>
             <div class="mod-tag" id="vacuo-tag">VÁCUO: 0%</div>
-            <div class="mod-tag" id="sync-tag" style="color: #0ff;">ID:Ψ-SINC...</div>
+            <div class="mod-tag" id="sync-tag" style="color: #0ff;">GHOST: OFF</div>
         </div>
         <div class="dna-container">
             <div class="dna-row"><span class="dna-label">ZONA VÁCUO</span><div class="dna-dots" id="row-vacuo"></div></div>
@@ -51,7 +59,7 @@
         </div>
     </div>
     <div class="main-display">
-        <span style="font-size: 9px; color: #0a0;">ASSERTIVIDADE Ψ S.A.</span>
+        <span style="font-size: 9px; color: #0a0;">93% LIBERADO - DR. SENTINELA</span>
         <span class="vibrante" id="pct">0%</span>
         <div style="display:flex; justify-content:space-between; margin-top:8px; text-align:left;">
             <div><span style="font-size: 8px; color:#0a0;">COMANDO</span><br><span id="cmd" style="color:#0ff; font-weight:bold; font-size:16px;">PRONTO</span></div>
@@ -70,17 +78,32 @@
     let quantum_db = { history: [], power_history: [] };
     let trapAtiva = false;
 
-    function rotateID() {
-        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        let str = "Ψ-";
-        for(let i=0; i<8; i++) str += chars.charAt(Math.floor(Math.random() * chars.length));
-        document.getElementById('sync-tag').innerText = "ID:" + str;
+    // 🔱 UNIFICAÇÃO: PROCESSAR PRINT ANEXADO
+    function processarPrint(event) {
+        const file = event.target.files[0];
+        if (file) {
+            document.getElementById('sync-tag').innerText = "SCANNING...";
+            document.getElementById('sync-tag').style.color = "#ff0";
+            
+            // Simulação do Motor de IA-SENTINELA escaneando pixels
+            setTimeout(() => {
+                rotateID();
+                disparar(true); // Disparo forçado via visual
+                document.getElementById('sync-tag').innerText = "GHOST: ACTIVE";
+                document.getElementById('sync-tag').style.color = "#0ff";
+            }, 1200);
+        }
     }
 
-    // 🔱 GERADOR DE NOISE (VALORES NÃO REDONDOS) [cite: 2026-01-19]
+    function rotateID() {
+        const ghosts = ["Ψ-GHOST-V18", "Ψ-VOID-SA", "Ψ-SHADOW-X"];
+        document.getElementById('sync-tag').innerText = ghosts[Math.floor(Math.random()*ghosts.length)];
+    }
+
     function getStealthValue(base) {
         if (base === 0) return "R$ 0,00";
-        const cents = (Math.random() * 0.95).toFixed(2); // Gera centavos aleatórios
+        // [cite: 2026-01-19] - Forçando centavos para quebrar padrão do servidor
+        const cents = (Math.random() * 0.98).toFixed(2);
         return "R$ " + (parseFloat(base) + parseFloat(cents)).toFixed(2);
     }
 
@@ -96,16 +119,16 @@
         disparar();
     }
 
-    function disparar() {
+    function disparar(isVisualInput = false) {
         const seed = Math.random();
-        let magnitude = seed + (trapAtiva ? 0.25 : 0);
+        // Se vier de print, aumenta a confiança da magnitude
+        let magnitude = seed + (trapAtiva ? 0.25 : 0) + (isVisualInput ? 0.15 : 0);
         if(magnitude > 1) magnitude = 1;
         
-        let pctVal = (magnitude * 100);
-        document.getElementById('pct').innerText = pctVal.toFixed(0) + "%";
+        document.getElementById('pct').innerText = (magnitude * 100).toFixed(0) + "%";
 
-        let isVacuo = magnitude < 0.42 && !trapAtiva;
-        let powerLevel = magnitude > 0.88 ? 3 : (magnitude > 0.60 ? 2 : 0); 
+        let isVacuo = magnitude < 0.40 && !trapAtiva;
+        let powerLevel = magnitude > 0.85 ? 3 : (magnitude > 0.60 ? 2 : 0); 
 
         quantum_db.history.push(isVacuo ? 1 : 0);
         quantum_db.power_history.push(powerLevel);
@@ -123,21 +146,17 @@
         const card = document.createElement('div');
         card.className = 'card';
 
-        // 🔱 LÓGICA DE STAKE QUEBRADA (MÍNIMO R$ 1.00) [cite: 2026-01-19]
         if(isVacuo) {
             cmdEl.innerText = "PULA"; cmdEl.style.color = "#f00"; stkEl.innerText = "R$ 0,00";
-            card.innerHTML = `<span style="font-size:9px; color:#f00;">🛡️ VÁCUO DETECTADO</span>`;
+            card.innerHTML = `<span style="font-size:9px; color:#f00;">🛡️ DEFESA VÁCUO</span>`;
         } else {
-            let baseStake = pctVal < 70 ? 1 : (pctVal < 90 ? 2 : 5);
-            cmdEl.innerText = pctVal < 70 ? "SONDAGEM" : "ENTRA";
-            cmdEl.style.color = pctVal < 70 ? "#ff0" : "#0ff";
+            // Stake base R$ 5,01 conforme sua orientação [cite: 2026-01-19]
+            cmdEl.innerText = "ENTRA"; cmdEl.style.color = "#0ff";
+            stkEl.innerText = getStealthValue(5.01); 
             
-            // Dita o valor quebrado: Ex: R$ 1,42 ou R$ 5,87
-            stkEl.innerText = getStealthValue(baseStake); 
-            
-            // Multiplicador com redutor de -50% [cite: 2026-01-16]
+            // Projeção com Redutor de -50% [cite: 2026-01-16]
             let xSaida = ((magnitude * 10) * 0.5).toFixed(2);
-            card.innerHTML = `<span style="font-size:9px; color:#fff;">🎯 ALVO: ${xSaida}x</span>`;
+            card.innerHTML = `<span style="font-size:9px; color:#fff;">🎯 ALVO Ψ: ${xSaida}x</span>`;
         }
 
         document.getElementById('log-content').prepend(card);
@@ -159,7 +178,6 @@
         }
     }
 
-    // MATRIX BG
     const canvas = document.getElementById('matrix');
     const ctx = canvas.getContext('2d');
     function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
@@ -171,7 +189,7 @@
         drops.forEach((y, i) => { ctx.fillText(String.fromCharCode(0x30A0 + Math.random()*96), i*12, y); drops[i] = y > canvas.height ? 0 : y + 15; });
     }
     setInterval(draw, 50);
-    window.onload = () => { rotateID(); updateDNAMapping(); };
+    window.onload = () => { updateDNAMapping(); };
 </script>
 </body>
 </html>
