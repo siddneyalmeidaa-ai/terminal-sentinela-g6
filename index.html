@@ -9,34 +9,27 @@
         body { background: #000; margin: 0; font-family: 'Courier New', monospace; color: #0f0; overflow: hidden; height: 100dvh; display: flex; flex-direction: column; }
         canvas#matrix { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.25; }
         #ui-layer { position: relative; z-index: 10; height: 100%; display: flex; flex-direction: column; padding: 12px; background: rgba(0,0,0,0.5); }
-        
         .header { flex-shrink: 0; border-bottom: 1px solid #050; padding-bottom: 8px; }
         .status-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-top: 8px; }
         .mod-tag { font-size: 7px; padding: 4px; border-radius: 4px; text-align: center; border: 1px solid #0f0; font-weight: bold; background: rgba(0,20,0,0.8); }
-        
-        /* 🔱 DUPLA VISÃO DE HISTÓRICO S.A. [cite: 2025-12-28, 2025-12-29] */
         .dna-container { margin: 10px 0; padding: 8px; background: rgba(0,25,0,0.7); border-radius: 12px; border: 1px solid #0f0; }
         .dna-row { display: flex; gap: 5px; align-items: center; margin-bottom: 4px; justify-content: space-between; }
         .dna-label { font-size: 6px; color: #0f0; min-width: 50px; text-transform: uppercase; font-weight: bold; }
         .dna-dots { display: flex; gap: 3px; }
         .dot { width: 8px; height: 8px; border-radius: 50%; background: #111; border: 1px solid #333; transition: 0.3s; }
-        .dot.v-loss { background: #f00; box-shadow: 0 0 8px #f00; border-color: #fff; } /* Vácuo Detectado */
-        .dot.v-win { background: #9d00ff; box-shadow: 0 0 8px #9d00ff; border-color: #fff; } /* Poder Roxo */
-        .dot.v-elite { background: #ff00ea; box-shadow: 0 0 8px #ff00ea; border-color: #fff; } /* Poder Rosa */
-
+        .dot.v-loss { background: #f00; box-shadow: 0 0 8px #f00; border-color: #fff; }
+        .dot.v-win { background: #9d00ff; box-shadow: 0 0 8px #9d00ff; border-color: #fff; }
+        .dot.v-elite { background: #ff00ea; box-shadow: 0 0 8px #ff00ea; border-color: #fff; }
         .main-display { background: rgba(0,35,0,0.95); padding: 15px; border-radius: 15px; border: 1px solid #0f0; margin: 5px 0; text-align: center; }
         .vibrante { color: #fff; text-shadow: 0 0 10px #0f0; font-weight: bold; font-size: 32px; display: block; }
-        
         #log-area { flex: 1; overflow-y: auto; margin-bottom: 10px; scrollbar-width: none; }
         #log-content { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         .card { background: rgba(0,45,0,0.9); border: 1px solid #0a0; border-radius: 8px; padding: 8px; border-left: 3px solid #0f0; }
-        
         .footer-ctrl { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; flex-shrink: 0; }
         .btn { padding: 16px; border-radius: 12px; font-weight: 900; border: none; font-size: 11px; text-transform: uppercase; cursor: pointer; }
         #btn-trap { background: #1a1a1a; color: #fff; border: 1px solid #444; }
         #btn-trap.active { background: #f00; box-shadow: 0 0 15px #f00; border-color: #fff; }
         #btn-ignicao { background: #0f0; color: #000; font-size: 18px; grid-column: span 2; box-shadow: 0 0 25px #0f0; height: 60px; font-weight: 900; }
-        #btn-ignicao:disabled { background: #111; color: #444; box-shadow: none; }
     </style>
 </head>
 <body>
@@ -52,19 +45,11 @@
             <div class="mod-tag" id="vacuo-tag">VÁCUO: 0%</div>
             <div class="mod-tag" id="sync-tag" style="background:#050; color:#fff; border:none;">SYNC: OK</div>
         </div>
-
         <div class="dna-container">
-            <div class="dna-row">
-                <span class="dna-label">ZONA VÁCUO</span>
-                <div class="dna-dots" id="row-vacuo"></div>
-            </div>
-            <div class="dna-row">
-                <span class="dna-label">PODER Ψ</span>
-                <div class="dna-dots" id="row-power"></div>
-            </div>
+            <div class="dna-row"><span class="dna-label">ZONA VÁCUO</span><div class="dna-dots" id="row-vacuo"></div></div>
+            <div class="dna-row"><span class="dna-label">PODER Ψ</span><div class="dna-dots" id="row-power"></div></div>
         </div>
     </div>
-
     <div class="main-display">
         <span style="font-size: 9px; color: #0a0;">ASSERTIVIDADE Ψ S.A.</span>
         <span class="vibrante" id="pct">0%</span>
@@ -73,52 +58,42 @@
             <div style="text-align:right;"><span style="font-size: 8px; color:#0a0;">STAKE STEALTH</span><br><span id="stk" style="color:#ff0; font-weight:bold; font-size:16px;">R$ 0,00</span></div>
         </div>
     </div>
-
     <div id="log-area"><div id="log-content"></div></div>
-
     <div class="footer-ctrl">
         <button class="btn" id="btn-trap" onclick="toggleTrap()">🪤 ISCAS [OFF]</button>
         <button class="btn" style="background:#003366; color:#fff;" onclick="location.reload()">🔄 FINGERPRINT</button>
         <button class="btn" id="btn-ignicao" onclick="disparar()">🔗 INJETAR Ψ</button>
     </div>
 </div>
-
 <script>
-    // 🧠 QUANTUM MEMORY [cite: 2026-02-06]
-    let quantum_db = JSON.parse(localStorage.getItem('SOBERANIA_V6_DB')) || {
-        history: [], power_history: [], sessions: 0
-    };
-
+    let quantum_db = JSON.parse(localStorage.getItem('SOBERANIA_V6_DB')) || { history: [], power_history: [] };
     let trapAtiva = false;
-    const btnIgnicao = document.getElementById('btn-ignicao');
 
     function updatePulse() {
         const ms = Math.floor(Math.random() * 5) + 1;
         const display = document.getElementById('pulse-display');
-        display.innerText = `PULSE: 0${ms}ms`;
-        display.style.color = ms > 4 ? "#f00" : "#0f0";
+        if(display) { display.innerText = `PULSE: 0${ms}ms`; display.style.color = ms > 4 ? "#f00" : "#0f0"; }
         setTimeout(updatePulse, 3000);
     }
 
     function updateDNAMapping() {
         const vRow = document.getElementById('row-vacuo');
         const pRow = document.getElementById('row-power');
+        if(!vRow || !pRow) return;
         vRow.innerHTML = ''; pRow.innerHTML = '';
-
-        // Renderiza 12 visões de Vácuo
         for(let i=0; i<12; i++) {
-            const val = quantum_db.history[quantum_db.history.length - 12 + i];
-            const dot = document.createElement('div');
-            dot.className = `dot ${val === 1 ? 'v-loss' : ''}`;
-            vRow.appendChild(dot);
-        }
+            // FIX: Lógica segura para evitar travamento em históricos curtos
+            const hIdx = quantum_db.history.length - 12 + i;
+            const valV = hIdx >= 0 ? quantum_db.history[hIdx] : 0;
+            const dotV = document.createElement('div');
+            dotV.className = `dot ${valV === 1 ? 'v-loss' : ''}`;
+            vRow.appendChild(dotV);
 
-        // Renderiza 12 visões de Poder (Roxo/Rosa)
-        for(let i=0; i<12; i++) {
-            const val = quantum_db.power_history[quantum_db.power_history.length - 12 + i];
-            const dot = document.createElement('div');
-            dot.className = `dot ${val === 2 ? 'v-win' : (val === 3 ? 'v-elite' : '')}`;
-            pRow.appendChild(dot);
+            const pIdx = quantum_db.power_history.length - 12 + i;
+            const valP = pIdx >= 0 ? quantum_db.power_history[pIdx] : 0;
+            const dotP = document.createElement('div');
+            dotP.className = `dot ${valP === 2 ? 'v-win' : (valP === 3 ? 'v-elite' : '')}`;
+            pRow.appendChild(dotP);
         }
     }
 
@@ -131,36 +106,38 @@
     }
 
     function disparar() {
-        const delay = Math.floor(Math.random() * 200) + 100;
-        setTimeout(() => {
-            const seed = Math.random();
-            let magnitude = seed + (trapAtiva ? 0.25 : 0);
-            document.getElementById('pct').innerText = (magnitude * 100 > 100 ? 100 : magnitude * 100).toFixed(0) + "%";
+        const seed = Math.random();
+        let magnitude = seed + (trapAtiva ? 0.25 : 0);
+        if(magnitude > 1) magnitude = 1;
 
-            let isVacuo = magnitude < 0.42 && !trapAtiva;
-            let powerLevel = 0; 
-            if (magnitude > 0.88) powerLevel = 3; // ROSA
-            else if (magnitude > 0.60) powerLevel = 2; // ROXO
+        document.getElementById('pct').innerText = (magnitude * 100).toFixed(0) + "%";
 
-            quantum_db.history.push(isVacuo ? 1 : 0);
-            quantum_db.power_history.push(powerLevel);
-            
-            if(quantum_db.history.length > 50) { quantum_db.history.shift(); quantum_db.power_history.shift(); }
+        let isVacuo = magnitude < 0.42 && !trapAtiva;
+        let powerLevel = 0; 
+        if (magnitude > 0.88) powerLevel = 3; 
+        else if (magnitude > 0.60) powerLevel = 2; 
 
-            if(isVacuo) {
-                document.getElementById('cmd').innerText = "PULA"; [cite: 2025-12-29]
-                document.getElementById('stk').innerText = "R$ 0,00";
-            } else {
-                document.getElementById('cmd').innerText = "ENTRA";
-                // Stake precisa [cite: 2026-01-19]
-                document.getElementById('stk').innerText = magnitude > 0.9 ? "1 Real" : "20 centavos";
-            }
-            
-            saveDB();
-        }, delay);
+        quantum_db.history.push(isVacuo ? 1 : 0);
+        quantum_db.power_history.push(powerLevel);
+        if(quantum_db.history.length > 50) { quantum_db.history.shift(); quantum_db.power_history.shift(); }
+
+        if(isVacuo) {
+            document.getElementById('cmd').innerText = "PULA";
+            document.getElementById('stk').innerText = "R$ 0,00";
+        } else {
+            document.getElementById('cmd').innerText = "ENTRA";
+            document.getElementById('stk').innerText = magnitude > 0.8 ? "1 Real" : "20 centavos";
+        }
+
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `<span style="font-size:9px; color:#fff;">RODADA Ψ: ${magnitude > 0.6 ? 'SUCESSO' : 'SKIP'}</span>`;
+        document.getElementById('log-content').prepend(card);
+        if(document.getElementById('log-content').children.length > 6) document.getElementById('log-content').lastChild.remove();
+        
+        saveDB();
     }
 
-    // MATRIX EFFECT
     const canvas = document.getElementById('matrix');
     const ctx = canvas.getContext('2d');
     function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
