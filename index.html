@@ -43,7 +43,7 @@
         <div class="status-grid">
             <div class="mod-tag" id="heatmap">CALOR: FRIO</div>
             <div class="mod-tag" id="vacuo-tag">VÁCUO: 0%</div>
-            <div class="mod-tag" id="sync-tag">MOTO-G60S</div>
+            <div class="mod-tag" id="sync-tag">SINC_DNA...</div>
         </div>
         <div class="dna-container">
             <div class="dna-row"><span class="dna-label">ZONA VÁCUO</span><div class="dna-dots" id="row-vacuo"></div></div>
@@ -65,7 +65,9 @@
         <button class="btn" id="btn-ignicao" onclick="prepareDisparo()">🔗 INJETAR Ψ</button>
     </div>
 </div>
+
 <script>
+    // 🔱 QUANTUM MEMORY E DNA MOTO G60s [cite: 2026-02-13, 2026-02-06]
     let quantum_db = JSON.parse(localStorage.getItem('SOBERANIA_V9_DB')) || { history: [], power_history: [] };
     let trapAtiva = false;
     let trapTimer = null;
@@ -76,31 +78,31 @@
         screen: { w: 1080, h: 2460 }
     };
 
-    function touchScatter() {
-        const force = (Math.random() * 0.5 + 0.4).toFixed(2);
-        try {
-            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            const oscillator = audioCtx.createOscillator();
-            oscillator.frequency.setValueAtTime(Math.random() * 40, audioCtx.currentTime);
-            audioCtx.close();
-        } catch(e) {}
-        return force;
-    }
-
-    // 🔱 CORREÇÃO: HASH DINÂMICO [cite: 2026-02-13]
+    // 🔱 GERAÇÃO DE ID DINÂMICO COM FEEDBACK VISUAL
     function getMotoFingerprint() {
         const salt = Date.now().toString(36).toUpperCase();
         const noise = Math.random().toString(36).substring(5).toUpperCase();
-        const vW = DEVICE_DNA.screen.w - Math.floor(Math.random() * 2);
-        const vH = DEVICE_DNA.screen.h - Math.floor(Math.random() * 2);
+        const finalID = btoa(`${DEVICE_DNA.gpu}-${salt}-${noise}`).substring(0, 10).toUpperCase();
         
-        const finalID = btoa(`${DEVICE_DNA.gpu}-${salt}-${vW}x${vH}-${noise}`).substring(0, 10).toUpperCase();
-        
-        // 🔱 CORREÇÃO: ATUALIZAÇÃO VISUAL OBRIGATÓRIA
         const syncTag = document.getElementById('sync-tag');
-        if(syncTag) syncTag.innerText = "ID:" + finalID;
-        
+        if(syncTag) {
+            syncTag.innerText = ""; // Limpa buffer visual
+            setTimeout(() => {
+                syncTag.innerText = "ID:" + finalID;
+                syncTag.style.color = "#0ff"; // Pisca cor de injeção
+                setTimeout(() => syncTag.style.color = "#0f0", 150);
+            }, 10);
+        }
         return finalID;
+    }
+
+    function touchScatter() {
+        try {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = audioCtx.createOscillator();
+            osc.frequency.setValueAtTime(Math.random() * 40, audioCtx.currentTime);
+            audioCtx.close();
+        } catch(e) {}
     }
 
     function updatePulse() {
@@ -140,27 +142,26 @@
             let timeLeft = 15;
             btn.innerText = `🪤 ISCA: ${timeLeft}s`;
             trapTimer = setInterval(() => {
-                timeLeft--;
-                btn.innerText = `🪤 ISCA: ${timeLeft}s`;
+                timeLeft--; btn.innerText = `🪤 ISCA: ${timeLeft}s`;
                 if(timeLeft <= 0) { clearInterval(trapTimer); toggleTrap(); }
             }, 1000);
         } else {
-            clearInterval(trapTimer);
-            btn.innerText = "🪤 ISCAS [OFF]";
+            clearInterval(trapTimer); btn.innerText = "🪤 ISCAS [OFF]";
         }
     }
 
     function prepareDisparo() {
         const btn = document.getElementById('btn-ignicao');
         touchScatter(); 
-        const delay = Math.floor(Math.random() * 350) + 150; 
+        getMotoFingerprint(); // Força a mudança do ID no clique
+        
         btn.style.opacity = "0.5";
         btn.innerText = "SINC Ψ...";
         setTimeout(() => {
             disparar();
             btn.style.opacity = "1";
             btn.innerText = "🔗 INJETAR Ψ";
-        }, delay);
+        }, 200);
     }
 
     function disparar() {
@@ -172,30 +173,22 @@
         document.getElementById('pct').innerText = pctVal.toFixed(0) + "%";
 
         let isVacuo = magnitude < 0.42 && !trapAtiva;
-        let powerLevel = 0; 
-        if (magnitude > 0.88) powerLevel = 3; 
-        else if (magnitude > 0.60) powerLevel = 2; 
+        let powerLevel = magnitude > 0.88 ? 3 : (magnitude > 0.60 ? 2 : 0); 
 
         quantum_db.history.push(isVacuo ? 1 : 0);
         quantum_db.power_history.push(powerLevel);
         if(quantum_db.history.length > 50) { quantum_db.history.shift(); quantum_db.power_history.shift(); }
 
+        // CALOR E VÁCUO
         const calorEl = document.getElementById('heatmap');
-        const recentPower = quantum_db.power_history.slice(-4);
-        const pCount = recentPower.filter(p => p >= 2).length;
-        if(pCount >= 3) { calorEl.innerText = "CALOR: BRASAS"; calorEl.style.background = "#f00"; }
-        else if(pCount >= 1) { calorEl.innerText = "CALOR: QUENTE"; calorEl.style.background = "#ffae00"; }
-        else { calorEl.innerText = "CALOR: FRIO"; calorEl.style.background = "rgba(0,20,0,0.8)"; }
+        const pCount = quantum_db.power_history.slice(-4).filter(p => p >= 2).length;
+        calorEl.innerText = pCount >= 3 ? "CALOR: BRASAS" : (pCount >= 1 ? "CALOR: QUENTE" : "CALOR: FRIO");
+        calorEl.style.background = pCount >= 3 ? "#f00" : (pCount >= 1 ? "#ffae00" : "rgba(0,20,0,0.8)");
 
-        const vacuoTag = document.getElementById('vacuo-tag');
-        const totalVacuo = quantum_db.history.slice(-6).filter(v => v === 1).length;
-        const vPct = ((totalVacuo / 6) * 100).toFixed(0);
-        vacuoTag.innerText = `VÁCUO: ${vPct}%`;
-        vacuoTag.style.color = vPct > 30 ? "#f00" : "#0f0";
+        const vPct = ((quantum_db.history.slice(-6).filter(v => v === 1).length / 6) * 100).toFixed(0);
+        document.getElementById('vacuo-tag').innerText = `VÁCUO: ${vPct}%`;
 
-        // GERA E ATUALIZA O ID A CADA DISPARO
-        getMotoFingerprint();
-
+        // 🔱 TABELA DA FAVELINHA E AÇÃO IMEDIATA [cite: 2025-12-28, 2026-01-19]
         const cmdEl = document.getElementById('cmd');
         const stkEl = document.getElementById('stk');
         const card = document.createElement('div');
@@ -204,7 +197,7 @@
         if(isVacuo) {
             cmdEl.innerText = "PULA"; cmdEl.style.color = "#f00";
             stkEl.innerText = "R$ 0,00";
-            card.innerHTML = `<span style="font-size:9px; color:#f00;">🛡️ RECUAR</span>`;
+            card.innerHTML = `<span style="font-size:9px; color:#f00;">🛡️ VÁCUO DETECTADO</span>`;
         } else if (pctVal < 55) {
             cmdEl.innerText = "SONDAGEM"; cmdEl.style.color = "#ff0";
             stkEl.innerText = "10 centavos";
@@ -222,18 +215,17 @@
         saveDB();
     }
 
+    // MATRIX BG
     const canvas = document.getElementById('matrix');
     const ctx = canvas.getContext('2d');
     function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
     window.addEventListener('resize', resize); resize();
-    const columns = Math.floor(canvas.width / 12);
-    const drops = Array(columns).fill(0);
+    const drops = Array(Math.floor(canvas.width / 12)).fill(0);
     function draw() {
         ctx.fillStyle = "rgba(0, 0, 0, 0.1)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = "#0f0"; ctx.font = "12px monospace";
         drops.forEach((y, i) => {
-            const text = String.fromCharCode(0x30A0 + Math.random()*96);
-            ctx.fillText(text, i*12, y);
+            ctx.fillText(String.fromCharCode(0x30A0 + Math.random()*96), i*12, y);
             drops[i] = y > canvas.height ? 0 : y + 15;
         });
     }
