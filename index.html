@@ -103,7 +103,6 @@
         trapAtiva = !trapAtiva;
         const btn = document.getElementById('btn-trap');
         btn.classList.toggle('active');
-        
         if(trapAtiva) {
             let timeLeft = 15;
             btn.innerText = `🪤 ISCA: ${timeLeft}s`;
@@ -123,7 +122,8 @@
         let magnitude = seed + (trapAtiva ? 0.25 : 0);
         if(magnitude > 1) magnitude = 1;
 
-        document.getElementById('pct').innerText = (magnitude * 100).toFixed(0) + "%";
+        let pctVal = (magnitude * 100);
+        document.getElementById('pct').innerText = pctVal.toFixed(0) + "%";
 
         let isVacuo = magnitude < 0.42 && !trapAtiva;
         let powerLevel = 0; 
@@ -134,27 +134,33 @@
         quantum_db.power_history.push(powerLevel);
         if(quantum_db.history.length > 50) { quantum_db.history.shift(); quantum_db.power_history.shift(); }
 
+        const cmdEl = document.getElementById('cmd');
+        const stkEl = document.getElementById('stk');
         const card = document.createElement('div');
         card.className = 'card';
 
+        // 🔱 LÓGICA DE COMANDO UNIFICADA [cite: 2026-02-13, 2026-01-19, 2025-12-29]
         if(isVacuo) {
-            document.getElementById('cmd').innerText = "PULA";
-            document.getElementById('stk').innerText = "R$ 0,00";
-            card.innerHTML = `<span style="font-size:9px; color:#f00;">VÁCUO DETECTADO</span>`;
+            cmdEl.innerText = "PULA";
+            cmdEl.style.color = "#f00";
+            stkEl.innerText = "R$ 0,00";
+            card.innerHTML = `<span style="font-size:9px; color:#f00;">🛡️ RECUAR: VÁCUO</span>`;
+        } else if (pctVal < 55) {
+            cmdEl.innerText = "SONDAGEM";
+            cmdEl.style.color = "#ff0";
+            stkEl.innerText = "10 centavos";
+            let xSaida = ((magnitude * 10) * 0.5).toFixed(2);
+            card.innerHTML = `<span style="font-size:9px; color:#ff0;">📡 SONDAGEM: ${xSaida}x</span>`;
         } else {
-            document.getElementById('cmd').innerText = "ENTRA";
-            // Stake precisa [cite: 2026-01-19]
-            document.getElementById('stk').innerText = magnitude > 0.8 ? "1 Real" : "20 centavos";
-            
-            // 🔱 CÁLCULO DE X COM REGRA -50% [cite: 2026-01-16, 2025-12-29]
-            let xBase = (magnitude * 10).toFixed(2);
-            let xSaida = (xBase * 0.5).toFixed(2);
-            card.innerHTML = `<span style="font-size:9px; color:#fff;">ALVO: ${xSaida}x</span>`;
+            cmdEl.innerText = "ENTRA";
+            cmdEl.style.color = "#0ff";
+            stkEl.innerText = pctVal > 85 ? "1 Real" : "20 centavos";
+            let xSaida = ((magnitude * 10) * 0.5).toFixed(2);
+            card.innerHTML = `<span style="font-size:9px; color:#fff;">🎯 ALVO: ${xSaida}x</span>`;
         }
 
         document.getElementById('log-content').prepend(card);
         if(document.getElementById('log-content').children.length > 6) document.getElementById('log-content').lastChild.remove();
-        
         saveDB();
     }
 
