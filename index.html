@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>🔗 CADEIA Ψ SOBERANIA - OPERADOR S.A. V14</title>
+    <title>🔗 CADEIA Ψ SOBERANIA - OPERADOR S.A. V15</title>
     <style>
         * { -webkit-tap-highlight-color: transparent; outline: none; box-sizing: border-box; }
         body { background: #000; margin: 0; font-family: 'Courier New', monospace; color: #0f0; overflow: hidden; height: 100dvh; display: flex; flex-direction: column; }
@@ -12,7 +12,7 @@
         .header { flex-shrink: 0; border-bottom: 1px solid #050; padding-bottom: 8px; }
         .status-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-top: 8px; }
         .mod-tag { font-size: 7px; padding: 4px; border-radius: 4px; text-align: center; border: 1px solid #0f0; font-weight: bold; background: rgba(0,20,0,0.8); }
-        .dna-container { margin: 10px 0; padding: 8px; background: rgba(0,25,0,0.7); border-radius: 12px; border: 1px solid #0f0; }
+        .dna-container { margin: 10px 0; padding: 8px; background: rgba(0,25,0,0.7); border-radius: 12px; border: 1px solid #0f0; min-height: 45px; }
         .dna-row { display: flex; gap: 5px; align-items: center; margin-bottom: 4px; justify-content: space-between; }
         .dna-label { font-size: 6px; color: #0f0; min-width: 50px; text-transform: uppercase; font-weight: bold; }
         .dna-dots { display: flex; gap: 3px; }
@@ -27,7 +27,7 @@
         .card { background: rgba(0,45,0,0.9); border: 1px solid #0a0; border-radius: 8px; padding: 8px; border-left: 3px solid #0f0; }
         .footer-ctrl { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; flex-shrink: 0; }
         .btn { padding: 16px; border-radius: 12px; font-weight: 900; border: none; font-size: 11px; text-transform: uppercase; cursor: pointer; }
-        #btn-trap { background: #1a1a1a; color: #fff; border: 1px solid #444; transition: 0.2s; }
+        #btn-trap { background: #1a1a1a; color: #fff; border: 1px solid #444; }
         #btn-trap.active { background: #f00; box-shadow: 0 0 15px #f00; border-color: #fff; }
         #btn-ignicao { background: #0f0; color: #000; font-size: 18px; grid-column: span 2; box-shadow: 0 0 25px #0f0; height: 60px; font-weight: 900; }
     </style>
@@ -43,7 +43,7 @@
         <div class="status-grid">
             <div class="mod-tag" id="heatmap">CALOR: FRIO</div>
             <div class="mod-tag" id="vacuo-tag">VÁCUO: 0%</div>
-            <div class="mod-tag" id="sync-tag" style="color: #0ff;">ID:Ψ-SINC...</div>
+            <div class="mod-tag" id="sync-tag" style="color: #0ff;">ID:Ψ-AGUARDANDO</div>
         </div>
         <div class="dna-container">
             <div class="dna-row"><span class="dna-label">ZONA VÁCUO</span><div class="dna-dots" id="row-vacuo"></div></div>
@@ -72,7 +72,7 @@
     let trapAtiva = false;
     let trapTimer = null; 
 
-    // 🔱 ROTAÇÃO DE ID Ψ [cite: 2026-01-27]
+    // 🔱 ROTAÇÃO DE ID Ψ SEM CONFLITO [cite: 2026-01-27, 2026-02-28]
     function rotateID() {
         const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         let str = "Ψ-";
@@ -80,14 +80,14 @@
         document.getElementById('sync-tag').innerText = "ID:" + str;
     }
 
-    // 🔱 GERADOR DE VALORES QUEBRADOS (MÍNIMO R$ 1.00) [cite: 2026-01-19]
+    // 🔱 GERADOR DE STAKES QUEBRADAS (MÍNIMO R$ 1.00) [cite: 2026-01-19]
     function getStealthValue(base) {
         if (base === 0) return "R$ 0,00";
         const cents = (Math.random() * 0.95).toFixed(2);
         return "R$ " + (parseFloat(base) + parseFloat(cents)).toFixed(2);
     }
 
-    // 🔱 MOTOR DA ISCA (TEMPORIZADOR CORRIGIDO) [cite: 2026-02-03]
+    // 🔱 MOTOR DE ISCA ISOLADO (FIXED) [cite: 2026-02-03]
     function toggleTrap() {
         const btn = document.getElementById('btn-trap');
         if (trapTimer) { clearInterval(trapTimer); trapTimer = null; }
@@ -115,8 +115,11 @@
     }
 
     function prepareDisparo() {
-        rotateID();
-        disparar();
+        // Usa requestAnimationFrame para não travar a UI durante a rotação
+        requestAnimationFrame(() => {
+            rotateID();
+            disparar();
+        });
     }
 
     function disparar() {
@@ -139,15 +142,13 @@
         calorEl.innerText = pCount >= 3 ? "CALOR: BRASAS" : (pCount >= 1 ? "CALOR: QUENTE" : "CALOR: FRIO");
         calorEl.style.background = pCount >= 3 ? "#f00" : (pCount >= 1 ? "#ffae00" : "rgba(0,20,0,0.8)");
 
-        const vCount = quantum_db.history.filter(v => v === 1).length;
-        document.getElementById('vacuo-tag').innerText = `VÁCUO: ${Math.floor((vCount/12)*100)}%`;
+        document.getElementById('vacuo-tag').innerText = `VÁCUO: ${Math.floor((quantum_db.history.filter(v => v === 1).length/12)*100)}%`;
 
         const cmdEl = document.getElementById('cmd');
         const stkEl = document.getElementById('stk');
         const card = document.createElement('div');
         card.className = 'card';
 
-        // 🔱 LÓGICA DE STAKE QUEBRADA (MÍNIMO R$ 1.00) [cite: 2026-01-19]
         if(isVacuo) {
             cmdEl.innerText = "PULA"; cmdEl.style.color = "#f00"; stkEl.innerText = "R$ 0,00";
             card.innerHTML = `<span style="font-size:9px; color:#f00;">🛡️ VÁCUO</span>`;
@@ -180,7 +181,6 @@
         }
     }
 
-    // MATRIX BG
     const canvas = document.getElementById('matrix');
     const ctx = canvas.getContext('2d');
     function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
@@ -195,4 +195,5 @@
     window.onload = () => { rotateID(); updateDNAMapping(); };
 </script>
 </body>
-</html>
+    </html>
+    
