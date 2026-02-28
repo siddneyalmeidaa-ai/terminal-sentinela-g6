@@ -43,7 +43,7 @@
         <div class="status-grid">
             <div class="mod-tag" id="heatmap">CALOR: FRIO</div>
             <div class="mod-tag" id="vacuo-tag">VÁCUO: 0%</div>
-            <div class="mod-tag" id="sync-tag">SYNC: FANTASMA</div>
+            <div class="mod-tag" id="sync-tag">ID: ELITE</div>
         </div>
         <div class="dna-container">
             <div class="dna-row"><span class="dna-label">ZONA VÁCUO</span><div class="dna-dots" id="row-vacuo"></div></div>
@@ -66,12 +66,16 @@
     </div>
 </div>
 <script>
-    let quantum_db = JSON.parse(localStorage.getItem('SOBERANIA_V6_DB')) || { history: [], power_history: [] };
+    let quantum_db = JSON.parse(localStorage.getItem('SOBERANIA_V7_DB')) || { history: [], power_history: [] };
     let trapAtiva = false;
     let trapTimer = null;
 
-    function getFingerprint() {
-        return (Math.random() * 1000).toString(16).substring(0, 8).toUpperCase();
+    // 🔱 REFINO ELITE: GERAÇÃO DE ASSINATURA DE HARDWARE DINÂMICA [cite: 2026-02-13]
+    function getStealthFingerprint() {
+        const noise = Math.random().toString(36).substring(7).toUpperCase();
+        const screenNoise = `${window.innerWidth + Math.floor(Math.random()*2)}x${window.innerHeight + Math.floor(Math.random()*2)}`;
+        // Retorna um hash que simula a digital da GPU + Resolução lógica
+        return btoa(screenNoise + noise).substring(0, 8).toUpperCase();
     }
 
     function updatePulse() {
@@ -101,7 +105,7 @@
         }
     }
 
-    function saveDB() { localStorage.setItem('SOBERANIA_V6_DB', JSON.stringify(quantum_db)); updateDNAMapping(); }
+    function saveDB() { localStorage.setItem('SOBERANIA_V7_DB', JSON.stringify(quantum_db)); updateDNAMapping(); }
 
     function toggleTrap() {
         trapAtiva = !trapAtiva;
@@ -121,10 +125,10 @@
         }
     }
 
-    // 🔱 MODULO FANTASMA: HESITAÇÃO HUMANA [cite: 2026-02-13]
     function prepareDisparo() {
         const btn = document.getElementById('btn-ignicao');
-        const delay = Math.floor(Math.random() * 300) + 150; 
+        // Hesitação Humana Dinâmica
+        const delay = Math.floor(Math.random() * 400) + 150; 
         btn.style.opacity = "0.5";
         btn.innerText = "SINC Ψ...";
         setTimeout(() => {
@@ -164,7 +168,8 @@
         vacuoTag.innerText = `VÁCUO: ${vPct}%`;
         vacuoTag.style.color = vPct > 30 ? "#f00" : "#0f0";
 
-        document.getElementById('sync-tag').innerText = "ID:" + getFingerprint();
+        // Atualiza a Identidade Digital a cada clique
+        document.getElementById('sync-tag').innerText = "ID:" + getStealthFingerprint();
 
         const cmdEl = document.getElementById('cmd');
         const stkEl = document.getElementById('stk');
