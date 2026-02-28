@@ -38,12 +38,12 @@
     <div class="header">
         <div style="display:flex; justify-content:space-between; align-items:center;">
             <span style="font-size:14px; letter-spacing:3px;">👁️ ⚡ 🧠 🎯 👻 🔮</span>
-            <span id="pulse-display" style="font-size:9px; color:#0f0;">PULSE: 02ms</span>
+            <span id="pulse-display" style="font-size:9px; color:#0f0;">PULSE: --ms</span>
         </div>
         <div class="status-grid">
             <div class="mod-tag" id="heatmap">CALOR: FRIO</div>
             <div class="mod-tag" id="vacuo-tag">VÁCUO: 0%</div>
-            <div class="mod-tag" id="sync-tag">SYNC: 99.8%</div>
+            <div class="mod-tag" id="sync-tag">SYNC: FANTASMA</div>
         </div>
         <div class="dna-container">
             <div class="dna-row"><span class="dna-label">ZONA VÁCUO</span><div class="dna-dots" id="row-vacuo"></div></div>
@@ -62,13 +62,17 @@
     <div class="footer-ctrl">
         <button class="btn" id="btn-trap" onclick="toggleTrap()">🪤 ISCAS [OFF]</button>
         <button class="btn" style="background:#003366; color:#fff;" onclick="location.reload()">🔄 FINGERPRINT</button>
-        <button class="btn" id="btn-ignicao" onclick="disparar()">🔗 INJETAR Ψ</button>
+        <button class="btn" id="btn-ignicao" onclick="prepareDisparo()">🔗 INJETAR Ψ</button>
     </div>
 </div>
 <script>
     let quantum_db = JSON.parse(localStorage.getItem('SOBERANIA_V6_DB')) || { history: [], power_history: [] };
     let trapAtiva = false;
     let trapTimer = null;
+
+    function getFingerprint() {
+        return (Math.random() * 1000).toString(16).substring(0, 8).toUpperCase();
+    }
 
     function updatePulse() {
         const ms = Math.floor(Math.random() * 5) + 1;
@@ -117,6 +121,19 @@
         }
     }
 
+    // 🔱 MODULO FANTASMA: HESITAÇÃO HUMANA [cite: 2026-02-13]
+    function prepareDisparo() {
+        const btn = document.getElementById('btn-ignicao');
+        const delay = Math.floor(Math.random() * 300) + 150; 
+        btn.style.opacity = "0.5";
+        btn.innerText = "SINC Ψ...";
+        setTimeout(() => {
+            disparar();
+            btn.style.opacity = "1";
+            btn.innerText = "🔗 INJETAR Ψ";
+        }, delay);
+    }
+
     function disparar() {
         const seed = Math.random();
         let magnitude = seed + (trapAtiva ? 0.25 : 0);
@@ -134,23 +151,20 @@
         quantum_db.power_history.push(powerLevel);
         if(quantum_db.history.length > 50) { quantum_db.history.shift(); quantum_db.power_history.shift(); }
 
-        // --- REFINO SENSORES ULTRA SENSÍVEIS ---
         const calorEl = document.getElementById('heatmap');
         const recentPower = quantum_db.power_history.slice(-4);
         const pCount = recentPower.filter(p => p >= 2).length;
-        if(pCount >= 3) { calorEl.innerText = "CALOR: BRASAS"; calorEl.style.background = "#f00"; calorEl.style.boxShadow = "0 0 10px #f00"; }
-        else if(pCount >= 1) { calorEl.innerText = "CALOR: QUENTE"; calorEl.style.background = "#ffae00"; calorEl.style.boxShadow = "none"; }
-        else { calorEl.innerText = "CALOR: FRIO"; calorEl.style.background = "rgba(0,20,0,0.8)"; calorEl.style.boxShadow = "none"; }
+        if(pCount >= 3) { calorEl.innerText = "CALOR: BRASAS"; calorEl.style.background = "#f00"; }
+        else if(pCount >= 1) { calorEl.innerText = "CALOR: QUENTE"; calorEl.style.background = "#ffae00"; }
+        else { calorEl.innerText = "CALOR: FRIO"; calorEl.style.background = "rgba(0,20,0,0.8)"; }
 
         const vacuoTag = document.getElementById('vacuo-tag');
         const totalVacuo = quantum_db.history.slice(-6).filter(v => v === 1).length;
         const vPct = ((totalVacuo / 6) * 100).toFixed(0);
         vacuoTag.innerText = `VÁCUO: ${vPct}%`;
-        vacuoTag.style.border = vPct > 30 ? "1px solid #f00" : "1px solid #0f0";
         vacuoTag.style.color = vPct > 30 ? "#f00" : "#0f0";
 
-        document.getElementById('sync-tag').innerText = "SYNC: " + (99 + Math.random()).toFixed(1) + "%";
-        // ---------------------------------------
+        document.getElementById('sync-tag').innerText = "ID:" + getFingerprint();
 
         const cmdEl = document.getElementById('cmd');
         const stkEl = document.getElementById('stk');
