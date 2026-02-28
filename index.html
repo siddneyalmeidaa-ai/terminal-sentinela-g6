@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>🔗 CADEIA Ψ SOBERANIA - OPERADOR S.A.</title>
+    <title>🔗 CADEIA Ψ SOBERANIA - OPERADOR S.A. V14</title>
     <style>
         * { -webkit-tap-highlight-color: transparent; outline: none; box-sizing: border-box; }
         body { background: #000; margin: 0; font-family: 'Courier New', monospace; color: #0f0; overflow: hidden; height: 100dvh; display: flex; flex-direction: column; }
@@ -27,7 +27,7 @@
         .card { background: rgba(0,45,0,0.9); border: 1px solid #0a0; border-radius: 8px; padding: 8px; border-left: 3px solid #0f0; }
         .footer-ctrl { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; flex-shrink: 0; }
         .btn { padding: 16px; border-radius: 12px; font-weight: 900; border: none; font-size: 11px; text-transform: uppercase; cursor: pointer; }
-        #btn-trap { background: #1a1a1a; color: #fff; border: 1px solid #444; }
+        #btn-trap { background: #1a1a1a; color: #fff; border: 1px solid #444; transition: 0.2s; }
         #btn-trap.active { background: #f00; box-shadow: 0 0 15px #f00; border-color: #fff; }
         #btn-ignicao { background: #0f0; color: #000; font-size: 18px; grid-column: span 2; box-shadow: 0 0 25px #0f0; height: 60px; font-weight: 900; }
     </style>
@@ -67,9 +67,12 @@
 </div>
 
 <script>
+    // 🔱 QUANTUM MEMORY [cite: 2026-02-06]
     let quantum_db = { history: [], power_history: [] };
     let trapAtiva = false;
+    let trapTimer = null; 
 
+    // 🔱 ROTAÇÃO DE ID Ψ [cite: 2026-01-27]
     function rotateID() {
         const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         let str = "Ψ-";
@@ -77,18 +80,38 @@
         document.getElementById('sync-tag').innerText = "ID:" + str;
     }
 
-    // 🔱 GERADOR DE NOISE (VALORES NÃO REDONDOS) [cite: 2026-01-19]
+    // 🔱 GERADOR DE VALORES QUEBRADOS (MÍNIMO R$ 1.00) [cite: 2026-01-19]
     function getStealthValue(base) {
         if (base === 0) return "R$ 0,00";
-        const cents = (Math.random() * 0.95).toFixed(2); // Gera centavos aleatórios
+        const cents = (Math.random() * 0.95).toFixed(2);
         return "R$ " + (parseFloat(base) + parseFloat(cents)).toFixed(2);
     }
 
+    // 🔱 MOTOR DA ISCA (TEMPORIZADOR CORRIGIDO) [cite: 2026-02-03]
     function toggleTrap() {
-        trapAtiva = !trapAtiva;
         const btn = document.getElementById('btn-trap');
-        btn.classList.toggle('active');
-        btn.innerText = trapAtiva ? "🪤 ISCA ATIVA" : "🪤 ISCAS [OFF]";
+        if (trapTimer) { clearInterval(trapTimer); trapTimer = null; }
+
+        trapAtiva = !trapAtiva;
+        if (trapAtiva) {
+            btn.classList.add('active');
+            let timeLeft = 15;
+            btn.innerText = `🪤 ISCA: ${timeLeft}s`;
+            trapTimer = setInterval(() => {
+                timeLeft--;
+                if (timeLeft <= 0) {
+                    clearInterval(trapTimer);
+                    trapAtiva = false;
+                    btn.classList.remove('active');
+                    btn.innerText = "🪤 ISCAS [OFF]";
+                } else {
+                    btn.innerText = `🪤 ISCA: ${timeLeft}s`;
+                }
+            }, 1000);
+        } else {
+            btn.classList.remove('active');
+            btn.innerText = "🪤 ISCAS [OFF]";
+        }
     }
 
     function prepareDisparo() {
@@ -98,13 +121,13 @@
 
     function disparar() {
         const seed = Math.random();
-        let magnitude = seed + (trapAtiva ? 0.25 : 0);
+        let magnitude = seed + (trapAtiva ? 0.22 : 0);
         if(magnitude > 1) magnitude = 1;
         
         let pctVal = (magnitude * 100);
         document.getElementById('pct').innerText = pctVal.toFixed(0) + "%";
 
-        let isVacuo = magnitude < 0.42 && !trapAtiva;
+        let isVacuo = magnitude < 0.40 && !trapAtiva; [cite: 2025-12-29]
         let powerLevel = magnitude > 0.88 ? 3 : (magnitude > 0.60 ? 2 : 0); 
 
         quantum_db.history.push(isVacuo ? 1 : 0);
@@ -116,7 +139,8 @@
         calorEl.innerText = pCount >= 3 ? "CALOR: BRASAS" : (pCount >= 1 ? "CALOR: QUENTE" : "CALOR: FRIO");
         calorEl.style.background = pCount >= 3 ? "#f00" : (pCount >= 1 ? "#ffae00" : "rgba(0,20,0,0.8)");
 
-        document.getElementById('vacuo-tag').innerText = `VÁCUO: ${Math.floor((quantum_db.history.filter(v => v === 1).length/12)*100)}%`;
+        const vCount = quantum_db.history.filter(v => v === 1).length;
+        document.getElementById('vacuo-tag').innerText = `VÁCUO: ${Math.floor((vCount/12)*100)}%`;
 
         const cmdEl = document.getElementById('cmd');
         const stkEl = document.getElementById('stk');
@@ -126,17 +150,14 @@
         // 🔱 LÓGICA DE STAKE QUEBRADA (MÍNIMO R$ 1.00) [cite: 2026-01-19]
         if(isVacuo) {
             cmdEl.innerText = "PULA"; cmdEl.style.color = "#f00"; stkEl.innerText = "R$ 0,00";
-            card.innerHTML = `<span style="font-size:9px; color:#f00;">🛡️ VÁCUO DETECTADO</span>`;
+            card.innerHTML = `<span style="font-size:9px; color:#f00;">🛡️ VÁCUO</span>`;
         } else {
             let baseStake = pctVal < 70 ? 1 : (pctVal < 90 ? 2 : 5);
-            cmdEl.innerText = pctVal < 70 ? "SONDAGEM" : "ENTRA";
+            cmdEl.innerText = pctVal < 70 ? "SONDAGEM" : (pctVal < 91 ? "ENTRA" : "ELITE");
             cmdEl.style.color = pctVal < 70 ? "#ff0" : "#0ff";
-            
-            // Dita o valor quebrado: Ex: R$ 1,42 ou R$ 5,87
             stkEl.innerText = getStealthValue(baseStake); 
             
-            // Multiplicador com redutor de -50% [cite: 2026-01-16]
-            let xSaida = ((magnitude * 10) * 0.5).toFixed(2);
+            let xSaida = ((magnitude * 10) * 0.5).toFixed(2); [cite: 2026-01-16]
             card.innerHTML = `<span style="font-size:9px; color:#fff;">🎯 ALVO: ${xSaida}x</span>`;
         }
 
